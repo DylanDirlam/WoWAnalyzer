@@ -20,8 +20,10 @@ import makeAnalyzerUrl from 'interface/common/makeAnalyzerUrl';
 import Tooltip from 'common/Tooltip';
 import PlayerSelection from 'interface/report/PlayerSelection';
 import RaidCompositionDetails from 'interface/report/RaidCompositionDetails';
+import ReportDurationWarning, { MAX_REPORT_DURATION } from 'interface/report/ReportDurationWarning';
 import ReportRaidBuffList from 'interface/ReportRaidBuffList';
 import { fetchCharacter } from 'interface/actions/characters';
+import { generateFakeCombatantInfo } from 'interface/report/CombatantInfoFaker';
 import handleApiError from './handleApiError';
 
 const defaultState = {
@@ -29,6 +31,8 @@ const defaultState = {
   combatants: null,
   combatantsFightId: null,
 };
+
+const FAKE_PLAYER_IF_DEV_ENV = true;
 
 class PlayerLoader extends React.PureComponent {
   tanks = 0;
@@ -48,6 +52,8 @@ class PlayerLoader extends React.PureComponent {
         name: PropTypes.string.isRequired,
       })),
       exportedCharacters: PropTypes.any,
+      start: PropTypes.number.isRequired,
+      end: PropTypes.number.isRequired,
     }).isRequired,
     fight: PropTypes.shape({
       id: PropTypes.number.isRequired,
@@ -121,11 +127,16 @@ class PlayerLoader extends React.PureComponent {
       characterDatas = characterDatas.filter(value => value);
       combatants.forEach(player => {
         if (player.error || player.specID === -1) {
-          return;
+          if (process.env.NODE_ENV === 'development' && FAKE_PLAYER_IF_DEV_ENV) {
+            console.error('This player (sourceID: ' + player.sourceID + ') has an error. Because you\'re in development environment, we have faked the missing information, see FakePlayerHelper.ts for more information.');
+            player = generateFakeCombatantInfo(player);
+          } else {
+            return;
+          }
         }
         const friendly = report.friendlies.find(friendly => friendly.id === player.sourceID);
-        if(!friendly) {
-          console.error("friendly missing from report for player", player.sourceID);
+        if (!friendly) {
+          console.error('friendly missing from report for player', player.sourceID);
           return;
         }
         const characterData = characterDatas ? characterDatas.find(data => data.id === friendly.guid) : null;
@@ -142,7 +153,8 @@ class PlayerLoader extends React.PureComponent {
           case ROLES.DPS.RANGED:
             this.ranged += 1;
             break;
-          default: break;
+          default:
+            break;
         }
         // Gear may be null for broken combatants
         this.ilvl += player.gear ? getAverageItemLevel(player.gear) : 0;
@@ -209,6 +221,7 @@ class PlayerLoader extends React.PureComponent {
       return this.renderLoading();
     }
 
+    const reportDuration = report.end - report.start;
 
     const players = playerId ? report.friendlies.filter(friendly => friendly.id === playerId) : report.friendlies.filter(friendly => friendly.name === playerName);
     const player = players[0];
@@ -255,6 +268,10 @@ class PlayerLoader extends React.PureComponent {
               </div>
             </div>
           </div>
+
+          {fight.end_time > MAX_REPORT_DURATION &&
+          <ReportDurationWarning duration={reportDuration} />}
+
           <PlayerSelection
             players={report.friendlies.map(friendly => {
               const combatant = combatants.find(combatant => combatant.sourceID === friendly.id);

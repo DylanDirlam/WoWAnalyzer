@@ -1,10 +1,13 @@
 import React from 'react';
-import Analyzer from 'parser/core/Analyzer';
+import Analyzer, { SELECTED_PLAYER } from 'parser/core/Analyzer';
 import SPELLS from 'common/SPELLS';
 import Statistic from 'interface/statistics/Statistic';
 import BoringSpellValueText from 'interface/statistics/components/BoringSpellValueText';
-import { ApplyDebuffEvent, ApplyDebuffStackEvent, CastEvent, RemoveDebuffEvent } from 'parser/core/Events';
+import Events, { ApplyDebuffEvent, ApplyDebuffStackEvent, CastEvent, EventType, RemoveDebuffEvent } from 'parser/core/Events';
 import STATISTIC_CATEGORY from 'interface/others/STATISTIC_CATEGORY';
+import { currentStacks } from 'parser/shared/modules/helpers/Stacks';
+import { MS_BUFFER } from 'parser/hunter/shared/constants';
+import { STEADY_AIM_MAX_STACKS } from 'parser/hunter/marksmanship/constants';
 
 /**
  * Steady Shot increases the damage of your next Aimed Shot against the target by X, stacking up to 5 times.
@@ -13,15 +16,7 @@ import STATISTIC_CATEGORY from 'interface/others/STATISTIC_CATEGORY';
  * https://www.warcraftlogs.com/reports/wPdQLfFnhTVYRyJm#fight=12&type=damage-done&source=640
  */
 
-const MAX_STACKS = 5;
-const MS_BUFFER = 100;
-
 class SteadyAim extends Analyzer {
-
-  constructor(options: any) {
-    super(options);
-    this.active = this.selectedCombatant.hasTrait(SPELLS.STEADY_AIM.id);
-  }
 
   applications = 0;
   _stacks = 0;
@@ -32,56 +27,43 @@ class SteadyAim extends Analyzer {
   utilised = 0;
   removeDebuffTimestamp: number = 0;
 
-  on_byPlayer_applydebuff(event: ApplyDebuffEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.STEADY_AIM_DEBUFF.id) {
-      return;
-    }
-    this.applications += 1;
-    this._stacks = 1;
-  }
-
-  on_byPlayer_applydebuffstack(event: ApplyDebuffStackEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.STEADY_AIM_DEBUFF.id) {
-      return;
-    }
-    this.applications += 1;
-    this._stacks = event.stack;
-  }
-
-  on_byPlayer_removedebuff(event: RemoveDebuffEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.STEADY_AIM_DEBUFF.id) {
-      return;
-    }
-    this.removeDebuffTimestamp = event.timestamp;
-    this.aimedShotStacks = this._stacks;
-    this._stacks = 0;
-  }
-
-  on_byPlayer_cast(event: CastEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.STEADY_SHOT.id && spellId !== SPELLS.AIMED_SHOT.id) {
-      return;
-    }
-    if (spellId === SPELLS.STEADY_SHOT.id) {
-      this.maxPossible += 1;
-      if (this._stacks === MAX_STACKS) {
-        this.wasted += 1;
-      }
-    }
-    if (spellId === SPELLS.AIMED_SHOT.id) {
-      this.aimedShots += 1;
-      if (this.aimedShotStacks > 0 && event.timestamp + MS_BUFFER > this.removeDebuffTimestamp) {
-        this.utilised += this.aimedShotStacks;
-        this.aimedShotStacks = 0;
-      }
-    }
+  constructor(options: any) {
+    super(options);
+    this.active = this.selectedCombatant.hasTrait(SPELLS.STEADY_AIM.id);
+    this.addEventListener(Events.cast.by(SELECTED_PLAYER).spell(SPELLS.AIMED_SHOT), this.onAimedShot);
+    this.addEventListener(Events.cast.by(SELECTED_PLAYER).spell(SPELLS.STEADY_SHOT), this.onSteadyShot);
+    this.addEventListener(Events.applydebuff.by(SELECTED_PLAYER).spell(SPELLS.STEADY_AIM_DEBUFF), (event: ApplyDebuffEvent) => this.onDebuffChange(event));
+    this.addEventListener(Events.applydebuffstack.by(SELECTED_PLAYER).spell(SPELLS.STEADY_AIM_DEBUFF), (event: ApplyDebuffStackEvent) => this.onDebuffChange(event));
+    this.addEventListener(Events.removedebuff.by(SELECTED_PLAYER).spell(SPELLS.STEADY_AIM_DEBUFF), (event: RemoveDebuffEvent) => this.onDebuffChange(event));
   }
 
   get averageStacksPerAimed() {
     return this.utilised / this.aimedShots;
+  }
+
+  onAimedShot(event: CastEvent) {
+    this.aimedShots += 1;
+    if (this.aimedShotStacks > 0 && event.timestamp + MS_BUFFER > this.removeDebuffTimestamp) {
+      this.utilised += this.aimedShotStacks;
+      this.aimedShotStacks = 0;
+    }
+  }
+
+  onSteadyShot() {
+    this.maxPossible += 1;
+    if (this._stacks === STEADY_AIM_MAX_STACKS) {
+      this.wasted += 1;
+    }
+  }
+
+  onDebuffChange(event: ApplyDebuffEvent | ApplyDebuffStackEvent | RemoveDebuffEvent) {
+    if (event.type === EventType.RemoveDebuff) {
+      this.removeDebuffTimestamp = event.timestamp;
+      this.aimedShotStacks = this._stacks;
+    } else {
+      this.applications += 1;
+    }
+    this._stacks = currentStacks(event);
   }
 
   statistic() {

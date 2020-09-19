@@ -21,7 +21,7 @@ declare module 'react-vis' {
   export type RVTouchEventHandler = TouchEventHandler<HTMLElement>;
   export type RVWheelEventHandler = WheelEventHandler<HTMLElement>;
 
-  export type RVItemEventHandler  = (item: any, index: number, event: MouseEvent<HTMLElement>) => void;
+  export type RVItemEventHandler = (item: any, index: number, event: MouseEvent<HTMLElement>) => void;
 
   export type RVValueEventHandler<T extends AbstractSeriesPoint> = (datapoint: T, event: MouseEvent<HTMLElement>) => void;
 
@@ -282,6 +282,7 @@ declare module 'react-vis' {
 
   export interface LineSeriesProps extends AbstractSeriesProps<LineSeriesPoint> {
     strokeStyle?: 'dashed' | 'solid'; //default: 'solid'
+    strokeWidth?: number;
     curve?: string | Function; //default: null
     getNull?: RVGetNull<LineSeriesPoint>;
   }

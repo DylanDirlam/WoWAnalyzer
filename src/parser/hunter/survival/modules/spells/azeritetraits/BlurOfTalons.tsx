@@ -1,14 +1,16 @@
 import React from 'react';
-import Analyzer from 'parser/core/Analyzer';
+import Analyzer, { SELECTED_PLAYER } from 'parser/core/Analyzer';
 import SPELLS from 'common/SPELLS';
 import { calculateAzeriteEffects } from 'common/stats';
 import { formatDuration, formatNumber, formatPercentage } from 'common/format';
 import StatTracker from 'parser/shared/modules/StatTracker';
 import BoringSpellValueText from 'interface/statistics/components/BoringSpellValueText';
 import Agility from 'interface/icons/Agility';
-import { ApplyBuffEvent, ApplyBuffStackEvent, EventType, FightEndEvent, RemoveBuffEvent } from 'parser/core/Events';
+import Events, { ApplyBuffEvent, ApplyBuffStackEvent, EventType, FightEndEvent, RemoveBuffEvent } from 'parser/core/Events';
 import Statistic from 'interface/statistics/Statistic';
 import STATISTIC_CATEGORY from 'interface/others/STATISTIC_CATEGORY';
+import { currentStacks } from 'parser/shared/modules/helpers/Stacks';
+import { MAX_BLUR_OF_TALONS_STACKS } from 'parser/hunter/survival/constants';
 
 const blurOfTalonsStats = (traits: number[]) => Object.values(traits).reduce((obj, rank) => {
   const [agility] = calculateAzeriteEffects(SPELLS.BLUR_OF_TALONS.id, rank);
@@ -25,8 +27,6 @@ const blurOfTalonsStats = (traits: number[]) => Object.values(traits).reduce((ob
  * https://www.warcraftlogs.com/reports/NTvPJdrFgYchAX1R#fight=6&type=auras&source=27&ability=277969
  */
 
-const MAX_BLUR_STACKS = 5;
-
 class BlurOfTalons extends Analyzer {
   static dependencies = {
     statTracker: StatTracker,
@@ -36,7 +36,6 @@ class BlurOfTalons extends Analyzer {
   blurOfTalonStacks: Array<Array<number>> = [];
   lastBlurStack: number = 0;
   lastBlurUpdate: number = this.owner.fight.start_time;
-  currentStacks: number = 0;
 
   protected statTracker!: StatTracker;
 
@@ -48,11 +47,15 @@ class BlurOfTalons extends Analyzer {
     }
     const { agility } = blurOfTalonsStats(this.selectedCombatant.traitsBySpellId[SPELLS.BLUR_OF_TALONS.id]);
     this.agility = agility;
-    this.blurOfTalonStacks = Array.from({ length: MAX_BLUR_STACKS + 1 }, x => []);
+    this.blurOfTalonStacks = Array.from({ length: MAX_BLUR_OF_TALONS_STACKS + 1 }, x => []);
 
     options.statTracker.add(SPELLS.BLUR_OF_TALONS_BUFF.id, {
       agility: this.agility,
     });
+    this.addEventListener(Events.applybuff.by(SELECTED_PLAYER).spell(SPELLS.BLUR_OF_TALONS_BUFF), (event: ApplyBuffEvent) => this.handleStacks(event));
+    this.addEventListener(Events.applybuffstack.by(SELECTED_PLAYER).spell(SPELLS.BLUR_OF_TALONS_BUFF), (event: ApplyBuffStackEvent) => this.handleStacks(event));
+    this.addEventListener(Events.removebuff.by(SELECTED_PLAYER).spell(SPELLS.BLUR_OF_TALONS_BUFF), (event: RemoveBuffEvent) => this.handleStacks(event));
+    this.addEventListener(Events.fightend, (event: FightEndEvent) => this.handleStacks(event));
   }
 
   get blurOfTalonsTimesByStacks() {
@@ -70,47 +73,13 @@ class BlurOfTalons extends Analyzer {
     return avgAgi;
   }
 
-  handleStacks(event: RemoveBuffEvent | ApplyBuffEvent | ApplyBuffStackEvent | FightEndEvent, stack: number = 0) {
-    if (event.type === EventType.RemoveBuff) {
-      this.currentStacks = 0;
-    } else if (event.type === EventType.ApplyBuff) {
-      this.currentStacks = 1;
-    } else if (event.type === EventType.ApplyBuffStack) {
-      this.currentStacks = event.stack;
-    } else if (event.type === EventType.FightEnd) {
-      this.currentStacks = stack;
-    }
+  handleStacks(event: RemoveBuffEvent | ApplyBuffEvent | ApplyBuffStackEvent | FightEndEvent) {
     this.blurOfTalonStacks[this.lastBlurStack].push(event.timestamp - this.lastBlurUpdate);
+    if (event.type === EventType.FightEnd) {
+      return;
+    }
     this.lastBlurUpdate = event.timestamp;
-    this.lastBlurStack = this.currentStacks;
-  }
-
-  on_byPlayer_applybuff(event: ApplyBuffEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.BLUR_OF_TALONS_BUFF.id) {
-      return;
-    }
-    this.handleStacks(event);
-  }
-
-  on_byPlayer_applybuffstack(event: ApplyBuffStackEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.BLUR_OF_TALONS_BUFF.id) {
-      return;
-    }
-    this.handleStacks(event);
-  }
-
-  on_byPlayer_removebuff(event: RemoveBuffEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.BLUR_OF_TALONS_BUFF.id) {
-      return;
-    }
-    this.handleStacks(event);
-  }
-
-  on_fightend(event: FightEndEvent) {
-    this.handleStacks(event, this.lastBlurStack);
+    this.lastBlurStack = currentStacks(event);
   }
 
   statistic() {

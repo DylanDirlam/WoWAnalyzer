@@ -1,16 +1,22 @@
 import Analyzer from 'parser/core/Analyzer';
 
 import SPELLS from 'common/SPELLS';
-import { CastEvent } from 'parser/core/Events';
+import Statistic from 'interface/statistics/Statistic';
+import STATISTIC_ORDER from 'interface/others/STATISTIC_ORDER';
+import STATISTIC_CATEGORY from 'interface/others/STATISTIC_CATEGORY';
+import React from 'react';
+import BoringSpellValueText from 'interface/statistics/components/BoringSpellValueText';
+import HasteIcon from 'interface/icons/Haste';
+import { formatPercentage } from 'common/format';
+import { STEADY_FOCUS_HASTE_PERCENT } from 'parser/hunter/marksmanship/constants';
 
 /**
- * Using Steady Shot reduces the cast time of Steady Shot by 20%, stacking up to 2 times.  Using any other shot removes this effect. *
- * Example log: https://www.warcraftlogs.com/reports/ChbVRqzQ8Z6najGB#fight=3&type=auras&source=3
+ * Using Steady Shot twice in a row increases your Haste by 7% for 15 sec.
+ *
+ * Example log:
+ *
  */
 
-const MAX_STACKS = 2;
-
-//TODO: Add a statistic to this module
 class SteadyFocus extends Analyzer {
 
   constructor(options: any) {
@@ -18,23 +24,29 @@ class SteadyFocus extends Analyzer {
     this.active = this.selectedCombatant.hasTalent(SPELLS.STEADY_FOCUS_TALENT.id);
   }
 
-  stacks = 0;
-
-  get steadyFocusStacks() {
-    return this.stacks;
+  get uptime() {
+    return this.selectedCombatant.getBuffUptime(SPELLS.STEADY_FOCUS_BUFF.id) / this.owner.fightDuration;
   }
 
-  on_byPlayer_cast(event: CastEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.STEADY_SHOT.id) {
-      this.stacks = 0;
-      return;
-    }
-    if (this.stacks < MAX_STACKS) {
-      this.stacks += 1;
-    }
+  get avgHaste() {
+    return this.uptime * STEADY_FOCUS_HASTE_PERCENT;
   }
 
+  statistic() {
+    return (
+      <Statistic
+        position={STATISTIC_ORDER.OPTIONAL()}
+        size="flexible"
+        category={STATISTIC_CATEGORY.TALENTS}
+      >
+        <BoringSpellValueText spell={SPELLS.STEADY_FOCUS_TALENT}>
+          <>
+            <HasteIcon /> {formatPercentage(this.avgHaste)}% <small>average Haste gained</small>
+          </>
+        </BoringSpellValueText>
+      </Statistic>
+    );
+  }
 }
 
 export default SteadyFocus;

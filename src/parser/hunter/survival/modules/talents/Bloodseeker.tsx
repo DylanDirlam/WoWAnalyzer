@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Analyzer from 'parser/core/Analyzer';
+import Analyzer, { SELECTED_PLAYER, SELECTED_PLAYER_PET } from 'parser/core/Analyzer';
 import SPELLS from 'common/SPELLS';
 import { BLOODSEEKER_ATTACK_SPEED_GAIN } from 'parser/hunter/survival/constants';
 import { formatPercentage } from 'common/format';
@@ -9,7 +9,8 @@ import Statistic from 'interface/statistics/Statistic';
 import STATISTIC_CATEGORY from 'interface/others/STATISTIC_CATEGORY';
 import STATISTIC_ORDER from 'interface/others/STATISTIC_ORDER';
 import BoringSpellValueText from 'interface/statistics/components/BoringSpellValueText';
-import { CastEvent, DamageEvent } from 'parser/core/Events';
+import Events, { CastEvent, DamageEvent } from 'parser/core/Events';
+import { MS_BUFFER } from 'parser/hunter/shared/constants';
 
 /**
  * Kill Command causes the target to bleed for X damage over 8 sec.
@@ -18,8 +19,6 @@ import { CastEvent, DamageEvent } from 'parser/core/Events';
  * Example log:
  * https://www.warcraftlogs.com/reports/6GjD12YkQCnJqPTz#fight=25&type=auras&translate=true&source=19&ability=260249
  */
-
-const MS_BUFFER = 100;
 
 class Bloodseeker extends Analyzer {
 
@@ -30,24 +29,8 @@ class Bloodseeker extends Analyzer {
   constructor(options: any) {
     super(options);
     this.active = this.selectedCombatant.hasTalent(SPELLS.BLOODSEEKER_TALENT.id);
-  }
-
-  on_byPlayerPet_damage(event: DamageEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.KILL_COMMAND_DAMAGE_SV.id) {
-      return;
-    }
-    if (event.timestamp > (this.kcCastTimestamp + MS_BUFFER)) {
-      this.damage += event.amount + (event.absorbed || 0);
-    }
-  }
-
-  on_byPlayer_cast(event: CastEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.KILL_COMMAND_CAST_SV.id) {
-      return;
-    }
-    this.kcCastTimestamp = event.timestamp;
+    this.addEventListener(Events.damage.by(SELECTED_PLAYER_PET).spell(SPELLS.KILL_COMMAND_DAMAGE_SV), this.onPetDamage);
+    this.addEventListener(Events.cast.by(SELECTED_PLAYER).spell(SPELLS.KILL_COMMAND_CAST_SV), this.onCast);
   }
 
   get uptime() {
@@ -57,6 +40,16 @@ class Bloodseeker extends Analyzer {
   get averageAttackSpeedGain() {
     this.averageStacks = this.selectedCombatant.getStackWeightedBuffUptime(SPELLS.BLOODSEEKER_BUFF.id) / this.owner.fightDuration;
     return this.averageStacks * BLOODSEEKER_ATTACK_SPEED_GAIN;
+  }
+
+  onPetDamage(event: DamageEvent) {
+    if (event.timestamp > (this.kcCastTimestamp + MS_BUFFER)) {
+      this.damage += event.amount + (event.absorbed || 0);
+    }
+  }
+
+  onCast(event: CastEvent) {
+    this.kcCastTimestamp = event.timestamp;
   }
 
   statistic() {

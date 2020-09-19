@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Analyzer from 'parser/core/Analyzer';
+import Analyzer, { SELECTED_PLAYER } from 'parser/core/Analyzer';
 
 import SPELLS from 'common/SPELLS';
 import ItemDamageDone from 'interface/ItemDamageDone';
@@ -11,7 +11,8 @@ import Statistic from 'interface/statistics/Statistic';
 import STATISTIC_CATEGORY from 'interface/others/STATISTIC_CATEGORY';
 import STATISTIC_ORDER from 'interface/others/STATISTIC_ORDER';
 import BoringSpellValueText from 'interface/statistics/components/BoringSpellValueText';
-import { CastEvent, DamageEvent } from 'parser/core/Events';
+import Events, { DamageEvent } from 'parser/core/Events';
+import { BARRAGE_HITS_PER_CAST } from 'parser/hunter/shared/constants';
 
 /**
  * Rapidly fires a spray of shots for 3 sec, dealing an average of (80% * 10)
@@ -20,8 +21,6 @@ import { CastEvent, DamageEvent } from 'parser/core/Events';
  * Example log:
  * https://www.warcraftlogs.com/reports/wPdQLfFnhTVYRyJm#fight=12&type=damage-done&source=640&ability=120361
  */
-
-const BARRAGE_HITS_PER_CAST = 10;
 
 class Barrage extends Analyzer {
 
@@ -35,6 +34,9 @@ class Barrage extends Analyzer {
   constructor(options: any) {
     super(options);
     this.active = this.selectedCombatant.hasTalent(SPELLS.BARRAGE_TALENT.id);
+    this.addEventListener(Events.cast.by(SELECTED_PLAYER).spell(SPELLS.BARRAGE_TALENT), this.onCast);
+    this.addEventListener(Events.damage.by(SELECTED_PLAYER).spell(SPELLS.BARRAGE_DAMAGE), this.onDamage);
+    this.addEventListener(Events.fightend, this.calculateAverageHits);
   }
 
   get currentCast() {
@@ -45,20 +47,24 @@ class Barrage extends Analyzer {
     return this.casts[this.casts.length - 1];
   }
 
-  on_byPlayer_cast(event: CastEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.BARRAGE_TALENT.id) {
-      return;
-    }
+  get barrageInefficientCastsThreshold() {
+    return {
+      actual: this.inefficientCasts,
+      isGreaterThan: {
+        minor: 0,
+        average: 0,
+        major: 1,
+      },
+      style: 'number',
+    };
+  }
+
+  onCast() {
     this.casts.push({ hits: 0, averageHits: 0 });
     this.uniqueTargets = [];
   }
 
-  on_byPlayer_damage(event: DamageEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.BARRAGE_DAMAGE.id) {
-      return;
-    }
+  onDamage(event: DamageEvent) {
     const damageTarget = encodeTargetString(event.targetID, event.targetInstance);
     if (!this.uniqueTargets.includes(damageTarget)) {
       this.uniqueTargetsHit += 1;
@@ -72,25 +78,13 @@ class Barrage extends Analyzer {
     this.damage += damage;
   }
 
-  on_fightend() {
+  calculateAverageHits() {
     this.casts.forEach((cast: { averageHits: number, hits: number }) => {
       cast.averageHits = cast.hits / BARRAGE_HITS_PER_CAST;
       if (cast.averageHits < 1) {
         this.inefficientCasts += 1;
       }
     });
-  }
-
-  get barrageInefficientCastsThreshold() {
-    return {
-      actual: this.inefficientCasts,
-      isGreaterThan: {
-        minor: 0,
-        average: 0,
-        major: 1,
-      },
-      style: 'number',
-    };
   }
 
   suggestions(when: any) {

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Analyzer from 'parser/core/Analyzer';
+import Analyzer, { SELECTED_PLAYER, SELECTED_PLAYER_PET } from 'parser/core/Analyzer';
 
 import SPELLS from 'common/SPELLS';
 import { formatNumber, formatPercentage } from 'common/format';
@@ -11,7 +11,8 @@ import ItemDamageDone from 'interface/ItemDamageDone';
 import Statistic from 'interface/statistics/Statistic';
 import BoringSpellValueText from 'interface/statistics/components/BoringSpellValueText';
 import UptimeIcon from 'interface/icons/Uptime';
-import { CastEvent, DamageEvent } from 'parser/core/Events';
+import Events, { DamageEvent } from 'parser/core/Events';
+import { COORDINATED_ASSAULT_DMG_MOD } from 'parser/hunter/survival/constants';
 
 /**
  * You and your pet attack as one, increasing all damage you both deal by 20% for 20 sec.
@@ -21,17 +22,21 @@ import { CastEvent, DamageEvent } from 'parser/core/Events';
  * https://www.warcraftlogs.com/reports/dHcVrvbMX39xNAC8#fight=3&type=auras&source=66&ability=266779
  */
 
-const CA_DMG_MODIFIER = 0.2;
-
 class CoordinatedAssault extends Analyzer {
   static dependencies = {
     spellUsable: SpellUsable,
   };
-  casts = 0;
+
   playerDamage = 0;
   petDamage = 0;
 
   protected spellUsable!: SpellUsable;
+
+  constructor(options: any) {
+    super(options);
+    this.addEventListener(Events.damage.by(SELECTED_PLAYER), this.onPlayerDamage);
+    this.addEventListener(Events.damage.by(SELECTED_PLAYER_PET), this.onPetDamage);
+  }
 
   get totalDamage() {
     return this.playerDamage + this.petDamage;
@@ -41,41 +46,30 @@ class CoordinatedAssault extends Analyzer {
     return this.selectedCombatant.getBuffUptime(SPELLS.COORDINATED_ASSAULT.id) / this.owner.fightDuration;
   }
 
-  on_byPlayerPet_damage(event: DamageEvent) {
+  onPetDamage(event: DamageEvent) {
     if (!this.selectedCombatant.hasBuff(SPELLS.COORDINATED_ASSAULT.id)) {
       return;
     }
-    this.petDamage += calculateEffectiveDamage(event, CA_DMG_MODIFIER);
+    this.petDamage += calculateEffectiveDamage(event, COORDINATED_ASSAULT_DMG_MOD);
   }
 
-  on_byPlayer_cast(event: CastEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.COORDINATED_ASSAULT.id) {
-      this.casts += 1;
-    }
-  }
-
-  on_byPlayer_damage(event: DamageEvent) {
+  onPlayerDamage(event: DamageEvent) {
     if (!this.selectedCombatant.hasBuff(SPELLS.COORDINATED_ASSAULT.id)) {
       return;
     }
-    if (this.casts === 0) {
-      this.casts += 1;
-      this.spellUsable.beginCooldown(SPELLS.COORDINATED_ASSAULT.id, {
-        timestamp: this.owner.fight.start_time,
-      });
-    }
-    this.playerDamage += calculateEffectiveDamage(event, CA_DMG_MODIFIER);
+    this.playerDamage += calculateEffectiveDamage(event, COORDINATED_ASSAULT_DMG_MOD);
+
   }
 
   statistic() {
     return (
       <Statistic
-        position={STATISTIC_ORDER.OPTIONAL(17)}
+        position={STATISTIC_ORDER.OPTIONAL(4)}
         size="flexible"
         tooltip={(
           <>
-            Over the course of the encounter you had Coordinated Assault up for a total of {(this.selectedCombatant.getBuffUptime(SPELLS.COORDINATED_ASSAULT.id) / 1000).toFixed(1)} seconds. <br />
+            Over the course of the encounter you had Coordinated Assault up for a total of {(this.selectedCombatant.getBuffUptime(SPELLS.COORDINATED_ASSAULT.id) / 1000).toFixed(1)} seconds.
+            <br />
             Total damage breakdown:
             <ul>
               <li>Player damage: {formatPercentage(this.owner.getPercentageOfTotalDamageDone(this.playerDamage))}% / {formatNumber(this.playerDamage / (this.owner.fightDuration / 1000))} DPS</li>
@@ -86,7 +80,8 @@ class CoordinatedAssault extends Analyzer {
       >
         <BoringSpellValueText spell={SPELLS.COORDINATED_ASSAULT}>
           <>
-            <ItemDamageDone amount={this.totalDamage} /> <br />
+            <ItemDamageDone amount={this.totalDamage} />
+            <br />
             <UptimeIcon /> {formatPercentage(this.percentUptime)}% <small>uptime</small>
           </>
         </BoringSpellValueText>

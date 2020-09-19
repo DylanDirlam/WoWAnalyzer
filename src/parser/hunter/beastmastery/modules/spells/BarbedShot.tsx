@@ -1,38 +1,37 @@
 import React from 'react';
 
-import Analyzer from 'parser/core/Analyzer';
-import SPELLS from 'common/SPELLS/index';
+import Analyzer, { SELECTED_PLAYER, SELECTED_PLAYER_PET } from 'parser/core/Analyzer';
+import SPELLS from 'common/SPELLS';
 import SpellLink from 'common/SpellLink';
 import STATISTIC_ORDER from 'interface/others/STATISTIC_ORDER';
 import { formatDuration, formatPercentage } from 'common/format';
 import Statistic from 'interface/statistics/Statistic';
 import BoringSpellValueText from 'interface/statistics/components/BoringSpellValueText';
 import UptimeIcon from 'interface/icons/Uptime';
-import { ApplyBuffEvent, ApplyBuffStackEvent, EventType, FightEndEvent, RemoveBuffEvent } from 'parser/core/Events';
-
+import Events, { ApplyBuffEvent, ApplyBuffStackEvent, EventType, FightEndEvent, RemoveBuffEvent } from 'parser/core/Events';
+import { currentStacks } from 'parser/shared/modules/helpers/Stacks';
+import { MAX_FRENZY_STACKS } from '../../constants';
 
 /**
- * Fire a shot that tears through your enemy, causing them to bleed for [(10%
- * of Attack power) * 8 / 2] damage over 8 sec. Sends your pet into a frenzy,
- * increasing attack speed by 30% for 8 sec, stacking up to 3 times.
+ * Fire a shot that tears through your enemy, causing them to bleed for X damage over 8 sec. Sends your pet into a frenzy, increasing attack speed by 30% for 8 sec, stacking up to 3 times.
  *
  * Example log:
  * https://www.warcraftlogs.com/reports/39yhq8VLFrm7J4wR#fight=17&type=casts&source=8&ability=-217200
  */
-
-//max stacks your pet can have of the Frenzy buff
-const MAX_FRENZY_STACKS: number = 3;
 
 class BarbedShot extends Analyzer {
 
   barbedShotStacks: Array<Array<number>> = [];
   lastBarbedShotStack: number = 0;
   lastBarbedShotUpdate: number = this.owner.fight.start_time;
-  currentStacks: number = 0;
 
   constructor(options: any) {
     super(options);
     this.barbedShotStacks = Array.from({ length: MAX_FRENZY_STACKS + 1 }, x => []);
+    this.addEventListener(Events.applybuff.by(SELECTED_PLAYER).spell(SPELLS.BARBED_SHOT_PET_BUFF), (event: ApplyBuffEvent) => this.handleStacks(event));
+    this.addEventListener(Events.applybuffstack.by(SELECTED_PLAYER).spell(SPELLS.BARBED_SHOT_PET_BUFF), (event: ApplyBuffStackEvent) => this.handleStacks(event));
+    this.addEventListener(Events.removebuff.to(SELECTED_PLAYER_PET).spell(SPELLS.BARBED_SHOT_PET_BUFF), (event: RemoveBuffEvent) => this.handleStacks(event));
+    this.addEventListener(Events.fightend, (event: FightEndEvent) => this.handleStacks(event));
   }
 
   get barbedShotTimesByStacks() {
@@ -44,9 +43,12 @@ class BarbedShot extends Analyzer {
   }
 
   get percentUptimePet() {
-    //this removes the time spent without the pet having the frenzy buff
-    const petUptime = this.barbedShotStacks.slice(1).flat().reduce((totalUptime: number, stackUptime: number) => totalUptime + stackUptime, 0);
-    return petUptime / this.owner.fightDuration;
+    //This removes the time spent without the pet having the frenzy buff
+    const withoutNoBuff = this.barbedShotStacks.slice(1);
+    //Because .flat doesn't work in Microsoft Edge (non-chromium versions), we use this alternate option that is equivalent
+    const alternativeFlatten = withoutNoBuff.reduce((acc, val) => acc.concat(val), []);
+    //After flattening the array, we can reduce it normally.
+    return alternativeFlatten.reduce((totalUptime: number, stackUptime: number) => totalUptime + stackUptime, 0) / this.owner.fightDuration;
   }
 
   get percentPlayerUptime() {
@@ -91,19 +93,12 @@ class BarbedShot extends Analyzer {
   }
 
   handleStacks(event: RemoveBuffEvent | ApplyBuffEvent | ApplyBuffStackEvent | FightEndEvent) {
-    if (event.type === EventType.RemoveBuff) {
-      this.currentStacks = 0;
-    } else if (event.type === EventType.ApplyBuff) {
-      this.currentStacks = 1;
-    } else if (event.type === EventType.ApplyBuffStack) {
-      this.currentStacks = event.stack;
-    } else if (event.type === EventType.FightEnd) {
-      this.currentStacks = this.lastBarbedShotStack;
-    }
-
     this.barbedShotStacks[this.lastBarbedShotStack].push(event.timestamp - this.lastBarbedShotUpdate);
+    if (event.type === EventType.FightEnd) {
+      return;
+    }
     this.lastBarbedShotUpdate = event.timestamp;
-    this.lastBarbedShotStack = this.currentStacks;
+    this.lastBarbedShotStack = currentStacks(event);
   }
 
   getAverageBarbedShotStacks() {
@@ -114,53 +109,25 @@ class BarbedShot extends Analyzer {
     return avgStacks;
   }
 
-  on_toPlayerPet_removebuff(event: RemoveBuffEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.BARBED_SHOT_PET_BUFF.id) {
-      return;
-    }
-    this.handleStacks(event);
-  }
-
-  on_byPlayer_applybuff(event: ApplyBuffEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.BARBED_SHOT_PET_BUFF.id) {
-      return;
-    }
-    this.handleStacks(event);
-  }
-
-  on_byPlayer_applybuffstack(event: ApplyBuffStackEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.BARBED_SHOT_PET_BUFF.id) {
-      return;
-    }
-    this.handleStacks(event);
-  }
-
-  on_fightend(event: FightEndEvent) {
-    this.handleStacks(event);
-  }
-
   suggestions(when: any) {
     when(this.frenzyUptimeThreshold).addSuggestion((suggest: any, actual: any, recommended: any) => {
-        return suggest(<>Your pet has a general low uptime of the buff from <SpellLink id={SPELLS.BARBED_SHOT.id} />, you should never be sitting on 2 stacks of this spell, if you've chosen this talent, it's your most important spell to continously be casting. </>)
-          .icon(SPELLS.BARBED_SHOT.icon)
-          .actual(`Your pet had the buff from Barbed Shot for ${formatPercentage(actual)}% of the fight`)
-          .recommended(`${formatPercentage(recommended)}% is recommended`);
-      });
+      return suggest(<>Your pet has a general low uptime of the buff from <SpellLink id={SPELLS.BARBED_SHOT.id} />, you should never be sitting on 2 stacks of this spell, if you've chosen this talent, it's your most important spell to continously be casting. </>)
+        .icon(SPELLS.BARBED_SHOT.icon)
+        .actual(`Your pet had the buff from Barbed Shot for ${formatPercentage(actual)}% of the fight`)
+        .recommended(`${formatPercentage(recommended)}% is recommended`);
+    });
     when(this.frenzy3StackThreshold).addSuggestion((suggest: any, actual: any, recommended: any) => {
-        return suggest(<>Your pet has a general low uptime of the 3 stacked buff from <SpellLink id={SPELLS.BARBED_SHOT.id} />. It's important to try and maintain the buff at 3 stacks for as long as possible, this is done by spacing out your casts, but at the same time never letting them cap on charges. </>)
-          .icon(SPELLS.BARBED_SHOT.icon)
-          .actual(`Your pet had 3 stacks of the buff from Barbed Shot for ${formatPercentage(actual)}% of the fight`)
-          .recommended(`${formatPercentage(recommended)}% is recommended`);
-      });
+      return suggest(<>Your pet has a general low uptime of the 3 stacked buff from <SpellLink id={SPELLS.BARBED_SHOT.id} />. It's important to try and maintain the buff at 3 stacks for as long as possible, this is done by spacing out your casts, but at the same time never letting them cap on charges. </>)
+        .icon(SPELLS.BARBED_SHOT.icon)
+        .actual(`Your pet had 3 stacks of the buff from Barbed Shot for ${formatPercentage(actual)}% of the fight`)
+        .recommended(`${formatPercentage(recommended)}% is recommended`);
+    });
   }
 
   statistic() {
     return (
       <Statistic
-        position={STATISTIC_ORDER.OPTIONAL(15)}
+        position={STATISTIC_ORDER.OPTIONAL(1)}
         size="flexible"
         tooltip={(
           <>

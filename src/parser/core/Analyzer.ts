@@ -1,6 +1,6 @@
 import React from 'react';
 
-import EventSubscriber from './EventSubscriber';
+import EventSubscriber, { EventListener } from './EventSubscriber';
 import EventFilter, {
   SELECTED_PLAYER,
   SELECTED_PLAYER_PET,
@@ -69,6 +69,8 @@ function addLegacyEventListenerSupport(object: Analyzer) {
   object.hasLegacyEventListener = hasLegacyEventListener;
 }
 
+export type When = (actual: object | any) => SuggestionAssertion;
+
 class Analyzer extends EventSubscriber {
   hasLegacyEventListener = false;
 
@@ -82,9 +84,9 @@ class Analyzer extends EventSubscriber {
     super(options);
     addLegacyEventListenerSupport(this);
   }
-  addEventListener<T extends Event>(
-    eventFilter: T['type'] | EventFilter<T['type']>,
-    listener: (event: T) => void,
+  addEventListener<ET extends string, E extends Event<ET>>(
+    eventFilter: ET | EventFilter<ET>,
+    listener: EventListener<ET, E>,
   ) {
     if (this.hasLegacyEventListener) {
       throw new Error(
@@ -101,8 +103,10 @@ class Analyzer extends EventSubscriber {
   /**
    * @deprecated Set the `position` property on the Statistic component instead.
    */
-  statisticOrder = undefined;
-  suggestions(when: (actual: object | any) => SuggestionAssertion) {}
+  statisticOrder?: number = undefined;
+
+  suggestions(when: When) {}
+
   /**
    * @deprecated Return a `Panel` from the statistic method instead.
    */

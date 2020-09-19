@@ -3,33 +3,15 @@ import SPELLS from 'common/SPELLS';
 import Statistic from 'interface/statistics/Statistic';
 import UptimeIcon from 'interface/icons/Uptime';
 import BoringSpellValueText from 'interface/statistics/components/BoringSpellValueText';
-import STATISTIC_ORDER from 'interface/others/STATISTIC_ORDER';
+import STATISTIC_CATEGORY from 'interface/others/STATISTIC_CATEGORY';
 import Analyzer from 'parser/core/Analyzer';
 import { SELECTED_PLAYER, SELECTED_PLAYER_PET } from 'parser/core/EventFilter';
 import calculateEffectiveDamage from 'parser/core/calculateEffectiveDamage';
 
 import Events, { DamageEvent } from 'parser/core/Events';
 import { formatNumber, formatPercentage } from 'common/format';
+import { BONE_CHILLING_SPELLS, BONE_CHILLING_BONUS_PER_STACK } from '../../constants';
 
-const WHITELIST = [
-  SPELLS.ICICLE_DAMAGE,
-  SPELLS.ICE_LANCE_DAMAGE,
-  SPELLS.BLIZZARD_DAMAGE,
-  SPELLS.FLURRY_DAMAGE,
-  SPELLS.FROSTBOLT_DAMAGE,
-  SPELLS.FROZEN_ORB_DAMAGE,
-  SPELLS.COMET_STORM_DAMAGE,
-  SPELLS.GLACIAL_SPIKE_DAMAGE,
-  SPELLS.FROST_NOVA,
-  SPELLS.EBONBOLT_DAMAGE,
-  SPELLS.GLACIAL_ASSAULT_DAMAGE,
-  SPELLS.CONE_OF_COLD,
-  SPELLS.RAY_OF_FROST_TALENT,
-  SPELLS.ICE_NOVA_TALENT,
-  SPELLS.WATERBOLT,
-];
-
-const MOD_PER_STACK = 0.005;
 class BoneChilling extends Analyzer {
 
   totalDamage = 0;
@@ -38,7 +20,7 @@ class BoneChilling extends Analyzer {
     super(options);
     this.active = this.selectedCombatant.hasTalent(SPELLS.BONE_CHILLING_TALENT.id);
     if (this.active) {
-      this.addEventListener(Events.damage.by(SELECTED_PLAYER | SELECTED_PLAYER_PET).spell(WHITELIST), this.onAffectedDamage);
+      this.addEventListener(Events.damage.by(SELECTED_PLAYER | SELECTED_PLAYER_PET).spell(BONE_CHILLING_SPELLS), this.onAffectedDamage);
     }
   }
 
@@ -47,7 +29,7 @@ class BoneChilling extends Analyzer {
     if (!buffInfo) {
       return;
     }
-    const mod = buffInfo.stacks * MOD_PER_STACK;
+    const mod = buffInfo.stacks * BONE_CHILLING_BONUS_PER_STACK;
     const increase = calculateEffectiveDamage(event, mod);
     this.totalDamage += increase;
   }
@@ -59,7 +41,7 @@ class BoneChilling extends Analyzer {
   statistic() {
     return (
       <Statistic
-        position={STATISTIC_ORDER.CORE(90)}
+        category={STATISTIC_CATEGORY.TALENTS}
         size="flexible"
         tooltip={`Total damage increase: ${formatNumber(this.totalDamage)}`}
       >

@@ -9,6 +9,7 @@ class CooldownThroughputTracker extends CoreCooldownThroughputTracker {
     ...CoreCooldownThroughputTracker.cooldownSpells,
     {
       spell: SPELLS.COMBUSTION,
+      startBufferMS: 4000,
       summary: [
         BUILT_IN_SUMMARY_TYPES.DAMAGE,
       ],
@@ -23,7 +24,7 @@ class CooldownThroughputTracker extends CoreCooldownThroughputTracker {
 
   static castCooldowns = [
     {
-      spell: SPELLS.MIRROR_IMAGE_TALENT,
+      spell: SPELLS.MIRROR_IMAGE,
       duration: 40,
       summary: [
         BUILT_IN_SUMMARY_TYPES.DAMAGE,

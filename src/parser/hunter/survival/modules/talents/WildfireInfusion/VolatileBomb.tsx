@@ -1,11 +1,11 @@
 import React from 'react';
 
-import Analyzer from 'parser/core/Analyzer';
+import Analyzer, { SELECTED_PLAYER } from 'parser/core/Analyzer';
 import SPELLS from 'common/SPELLS';
 import { encodeTargetString } from 'parser/shared/modules/EnemyInstances';
 import Enemies from 'parser/shared/modules/Enemies';
 import StatTracker from 'parser/shared/modules/StatTracker';
-import { SERPENT_STING_SV_BASE_DURATION } from 'parser/hunter/survival/constants';
+import { SERPENT_STING_SV_BASE_DURATION, SV_SERPENT_STING_COST } from 'parser/hunter/survival/constants';
 import ItemDamageDone from 'interface/ItemDamageDone';
 import { formatDuration } from 'common/format';
 import SpellLink from 'common/SpellLink';
@@ -13,7 +13,7 @@ import Statistic from 'interface/statistics/Statistic';
 import STATISTIC_CATEGORY from 'interface/others/STATISTIC_CATEGORY';
 import STATISTIC_ORDER from 'interface/others/STATISTIC_ORDER';
 import BoringSpellValueText from 'interface/statistics/components/BoringSpellValueText';
-import { ApplyDebuffEvent, CastEvent, DamageEvent, RefreshDebuffEvent, RemoveDebuffEvent } from 'parser/core/Events';
+import Events, { ApplyDebuffEvent, DamageEvent, RefreshDebuffEvent, RemoveDebuffEvent } from 'parser/core/Events';
 
 /**
  * Lace your Wildfire Bomb with extra reagents, randomly giving it one of the following enhancements each time you throw it:
@@ -25,25 +25,18 @@ import { ApplyDebuffEvent, CastEvent, DamageEvent, RefreshDebuffEvent, RemoveDeb
  * https://www.warcraftlogs.com/reports/ZRALzNbMpqka1fTB#fight=17&type=summary&source=329
  */
 
-const SERPENT_STING_FOCUS_COST = 20;
-
 class VolatileBomb extends Analyzer {
   static dependencies = {
     enemies: Enemies,
     statTracker: StatTracker,
   };
-
-  protected enemies!: Enemies;
-  protected statTracker!: StatTracker;
-
   damage = 0;
   casts = 0;
   extendedSerpentStings = 0;
   extendedInMs = 0;
   focusSaved = 0;
   missedSerpentResets = 0;
-
-  activeSerpentStings: {[key: string]: {targetName: string, cast: number, expectedEnd: number, extendStart: number, extendExpectedEnd: number}} = {
+  activeSerpentStings: { [key: string]: { targetName: string, cast: number, expectedEnd: number, extendStart: number, extendExpectedEnd: number } } = {
     /*
     [encodedTargetString]: {
         targetName: name,
@@ -54,10 +47,30 @@ class VolatileBomb extends Analyzer {
       },
      */
   };
+  protected enemies!: Enemies;
+  protected statTracker!: StatTracker;
 
   constructor(options: any) {
     super(options);
     this.active = this.selectedCombatant.hasTalent(SPELLS.WILDFIRE_INFUSION_TALENT.id);
+    this.addEventListener(Events.applydebuff.by(SELECTED_PLAYER).spell(SPELLS.SERPENT_STING_SV), (event: ApplyDebuffEvent) => this._serpentApplication(event));
+    this.addEventListener(Events.refreshdebuff.by(SELECTED_PLAYER).spell(SPELLS.SERPENT_STING_SV), (event: RefreshDebuffEvent) => this._serpentApplication(event));
+    this.addEventListener(Events.removedebuff.by(SELECTED_PLAYER).spell(SPELLS.SERPENT_STING_SV), this.onDebuffRemoval);
+    this.addEventListener(Events.applydebuff.by(SELECTED_PLAYER).spell(SPELLS.VOLATILE_BOMB_WFI_DOT), this._maybeSerpentStingExtend);
+    this.addEventListener(Events.cast.by(SELECTED_PLAYER).spell(SPELLS.VOLATILE_BOMB_WFI), this.onBombCast);
+    this.addEventListener(Events.damage.by(SELECTED_PLAYER).spell([SPELLS.VOLATILE_BOMB_WFI_DOT, SPELLS.VOLATILE_BOMB_WFI_IMPACT]), this.onBombDamage);
+  }
+
+  get missedResetsThresholds() {
+    return {
+      actual: this.missedSerpentResets,
+      isGreaterThan: {
+        minor: 1,
+        average: 2,
+        major: 3,
+      },
+      style: 'number',
+    };
   }
 
   _serpentApplication(event: ApplyDebuffEvent | RefreshDebuffEvent) {
@@ -87,71 +100,24 @@ class VolatileBomb extends Analyzer {
       this.activeSerpentStings[target].extendExpectedEnd = event.timestamp + (this.activeSerpentStings[target].expectedEnd - this.activeSerpentStings[target].cast);
 
       this.extendedInMs += this.activeSerpentStings[target].extendExpectedEnd - this.activeSerpentStings[target].expectedEnd;
-      this.focusSaved += SERPENT_STING_FOCUS_COST;
+      this.focusSaved += SV_SERPENT_STING_COST;
       this.extendedSerpentStings += 1;
     } else {
       this.missedSerpentResets += 1;
     }
   }
 
-  on_byPlayer_applydebuff(event: ApplyDebuffEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.VOLATILE_BOMB_WFI_DOT.id && spellId !== SPELLS.SERPENT_STING_SV.id) {
-      return;
-    }
-    if (spellId === SPELLS.SERPENT_STING_SV.id) {
-      this._serpentApplication(event);
-    }
-    if (spellId === SPELLS.VOLATILE_BOMB_WFI_DOT.id) {
-      this._maybeSerpentStingExtend(event);
-    }
-  }
-
-  on_byPlayer_refreshdebuff(event: RefreshDebuffEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.VOLATILE_BOMB_WFI_DOT.id && spellId !== SPELLS.SERPENT_STING_SV.id) {
-      return;
-    }
-    if (spellId === SPELLS.SERPENT_STING_SV.id) {
-      this._serpentApplication(event);
-    }
-  }
-
-  on_byPlayer_removedebuff(event: RemoveDebuffEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.SERPENT_STING_SV.id) {
-      return;
-    }
+  onDebuffRemoval(event: RemoveDebuffEvent) {
     const encoded = encodeTargetString(event.targetID, event.targetInstance);
     delete this.activeSerpentStings[encoded];
   }
 
-  on_byPlayer_damage(event: DamageEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.VOLATILE_BOMB_WFI_DOT.id && spellId !== SPELLS.VOLATILE_BOMB_WFI_IMPACT.id) {
-      return;
-    }
+  onBombDamage(event: DamageEvent) {
     this.damage += event.amount + (event.absorbed || 0);
   }
 
-  on_byPlayer_cast(event:CastEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.VOLATILE_BOMB_WFI.id) {
-      return;
-    }
+  onBombCast() {
     this.casts += 1;
-  }
-
-  get missedResetsThresholds() {
-    return {
-      actual: this.missedSerpentResets,
-      isGreaterThan: {
-        minor: 1,
-        average: 2,
-        major: 3,
-      },
-      style: 'number',
-    };
   }
 
   statistic() {

@@ -1,90 +1,87 @@
 import React from 'react';
 
-import Analyzer from 'parser/core/Analyzer';
-import SPELLS from 'common/SPELLS/hunter';
+import Analyzer, { SELECTED_PLAYER } from 'parser/core/Analyzer';
+import SPELLS from 'common/SPELLS';
 import STATISTIC_ORDER from 'interface/others/STATISTIC_ORDER';
 import calculateEffectiveDamage from 'parser/core/calculateEffectiveDamage';
 import ItemDamageDone from 'interface/ItemDamageDone';
 import Statistic from 'interface/statistics/Statistic';
 import BoringSpellValueText from 'interface/statistics/components/BoringSpellValueText';
-import { ApplyBuffEvent, ApplyBuffStackEvent, CastEvent, DamageEvent, RemoveBuffEvent, RemoveBuffStackEvent } from 'parser/core/Events';
+import Events, { CastEvent, DamageEvent } from 'parser/core/Events';
+import { ARCANE_SHOT_MAX_TRAVEL_TIME, PRECISE_SHOTS_ASSUMED_PROCS, PRECISE_SHOTS_MODIFIER } from 'parser/hunter/marksmanship/constants';
 
 /**
- * Aimed Shot causes your next 1-2 Arcane Shots or Multi-Shots to deal 100% more damage.
+ * Aimed Shot causes your next 1-2 Arcane Shots, Chimaera Shots or Multi-Shots to deal 100% more damage.
  *
  * Example log:
  * https://www.warcraftlogs.com/reports/9Ljy6fh1TtCDHXVB#fight=2&type=auras&source=25&ability=260242
  */
 
-const ASSUMED_PROCS = 2; //Logs give no indication whether we gain 1 or 2 stacks - we assume 2 and work from there.
-const PRECISE_SHOTS_MODIFIER = 0.75;
-const MAX_TRAVEL_TIME = 500;
-
 class PreciseShots extends Analyzer {
 
   damage = 0;
   buffsActive = 0;
-  buffsGained = 0;
+  buffsSpent = 0;
   minOverwrittenProcs = 0;
   maxOverwrittenProcs = 0;
   buffedShotInFlight: number | null = null;
 
-  on_byPlayer_applybuff(event: ApplyBuffEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.PRECISE_SHOTS.id) {
-      return;
-    }
-    this.buffsActive = ASSUMED_PROCS;
+  constructor(options: any) {
+    super(options);
+    this.addEventListener(Events.applybuff.by(SELECTED_PLAYER).spell(SPELLS.PRECISE_SHOTS), this.onPreciseShotsApplication);
+    this.addEventListener(Events.removebuff.by(SELECTED_PLAYER).spell(SPELLS.PRECISE_SHOTS), this.onPreciseShotsRemoval);
+    this.addEventListener(Events.removebuffstack.by(SELECTED_PLAYER).spell(SPELLS.PRECISE_SHOTS), this.onPreciseShotsStackRemoval);
+    this.addEventListener(Events.applybuffstack.by(SELECTED_PLAYER).spell(SPELLS.PRECISE_SHOTS), this.onPreciseShotsStackApplication);
+    this.addEventListener(Events.cast.by(SELECTED_PLAYER).spell([SPELLS.ARCANE_SHOT, SPELLS.MULTISHOT_MM, SPELLS.CHIMAERA_SHOT_MM_TALENT]), this.onPreciseCast);
+    this.addEventListener(Events.damage.by(SELECTED_PLAYER), this.checkForBuff);
+    this.addEventListener(Events.damage.by(SELECTED_PLAYER).spell([SPELLS.ARCANE_SHOT, SPELLS.MULTISHOT_MM, SPELLS.CHIMAERA_SHOT_FROST_DAMAGE, SPELLS.CHIMAERA_SHOT_NATURE_DAMAGE]), this.onPreciseDamage);
   }
 
-  on_byPlayer_removebuff(event: RemoveBuffEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.PRECISE_SHOTS.id) {
-      return;
-    }
-    this.buffsGained += 1;
+  onPreciseShotsApplication() {
+    this.buffsActive = PRECISE_SHOTS_ASSUMED_PROCS;
+  }
+
+  onPreciseShotsRemoval() {
+    this.buffsSpent += 1;
     this.buffsActive = 0;
   }
 
-  on_byPlayer_applybuffstack(event: ApplyBuffStackEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.PRECISE_SHOTS.id) {
-      return;
-    }
-    this.minOverwrittenProcs += 1;
-    this.maxOverwrittenProcs += 2;
-    this.buffsActive = ASSUMED_PROCS;
-  }
-
-  on_byPlayer_removebuffstack(event: RemoveBuffStackEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.PRECISE_SHOTS.id) {
-      return;
-    }
-    this.buffsGained += 1;
+  onPreciseShotsStackRemoval() {
+    this.buffsSpent += 1;
     this.buffsActive -= 1;
   }
 
-  on_byPlayer_cast(event: CastEvent) {
-    const spellId = event.ability.guid;
-    if (!this.selectedCombatant.hasBuff(SPELLS.PRECISE_SHOTS.id) || (spellId !== SPELLS.ARCANE_SHOT.id && spellId !== SPELLS.MULTISHOT_MM.id)) {
+  onPreciseShotsStackApplication() {
+    this.minOverwrittenProcs += 1;
+    this.maxOverwrittenProcs += 2;
+    this.buffsActive = PRECISE_SHOTS_ASSUMED_PROCS;
+  }
+
+  onPreciseCast(event: CastEvent) {
+    if (!this.selectedCombatant.hasBuff(SPELLS.PRECISE_SHOTS.id)) {
       return;
     }
     this.buffedShotInFlight = event.timestamp;
   }
 
-  on_byPlayer_damage(event: DamageEvent) {
-    const spellId = event.ability.guid;
-    if (this.buffedShotInFlight && this.buffedShotInFlight > event.timestamp + MAX_TRAVEL_TIME) {
-      this.buffedShotInFlight = null;
-    }
-    if (spellId !== SPELLS.ARCANE_SHOT.id && spellId !== SPELLS.MULTISHOT_MM.id) {
+  onPreciseDamage(event: DamageEvent) {
+    this.checkForBuff(event);
+    if (!this.buffedShotInFlight) {
       return;
     }
-    if (this.buffedShotInFlight && this.buffedShotInFlight < event.timestamp + MAX_TRAVEL_TIME) {
+    if (this.buffedShotInFlight < event.timestamp + ARCANE_SHOT_MAX_TRAVEL_TIME) {
       this.damage += calculateEffectiveDamage(event, PRECISE_SHOTS_MODIFIER);
     }
-    if (spellId === SPELLS.ARCANE_SHOT.id) {
+    if (event.ability.guid === SPELLS.ARCANE_SHOT.id) {
+      this.buffedShotInFlight = null;
+    }
+  }
+
+  checkForBuff(event: DamageEvent) {
+    if (!this.buffedShotInFlight) {
+      return;
+    }
+    if (this.buffedShotInFlight > event.timestamp + ARCANE_SHOT_MAX_TRAVEL_TIME) {
       this.buffedShotInFlight = null;
     }
   }
@@ -92,7 +89,7 @@ class PreciseShots extends Analyzer {
   statistic() {
     return (
       <Statistic
-        position={STATISTIC_ORDER.OPTIONAL(17)}
+        position={STATISTIC_ORDER.OPTIONAL(2)}
         size="flexible"
         tooltip={(
           <>
@@ -103,7 +100,7 @@ class PreciseShots extends Analyzer {
         <BoringSpellValueText spell={SPELLS.PRECISE_SHOTS}>
           <>
             <ItemDamageDone amount={this.damage} /><br />
-            {this.buffsGained} <small>buffs used</small>
+            {this.buffsSpent} <small>buffs used</small>
           </>
         </BoringSpellValueText>
       </Statistic>

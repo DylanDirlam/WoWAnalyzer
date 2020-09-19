@@ -1,19 +1,16 @@
 import React from 'react';
-import Analyzer from 'parser/core/Analyzer';
+import Analyzer, { SELECTED_PLAYER } from 'parser/core/Analyzer';
 import SPELLS from 'common/SPELLS';
-import { CastEvent, DamageEvent } from 'parser/core/Events';
+import Events, { CastEvent, DamageEvent } from 'parser/core/Events';
 import SPECS from 'game/SPECS';
 import SpellUsable from 'parser/shared/modules/SpellUsable';
 import Statistic from 'interface/statistics/Statistic';
 import BoringSpellValueText from 'interface/statistics/components/BoringSpellValueText';
 import ItemDamageDone from 'interface/ItemDamageDone';
-import { formatDuration, formatPercentage} from 'common/format';
+import { formatDuration, formatPercentage } from 'common/format';
 import SpellLink from 'common/SpellLink';
 import STATISTIC_CATEGORY from 'interface/others/STATISTIC_CATEGORY';
-
-
-const MULTI_SHOTS = [SPELLS.MULTISHOT_BM.id, SPELLS.MULTISHOT_MM.id];
-const COOLDOWN_REDUCTION_MS = 1000;
+import { MULTI_SHOTS_LIST, ONE_SECOND_IN_MS } from 'parser/hunter/shared/constants';
 
 /**
  * Multi-Shots that damage more than 2 targets fire an additional wave of bullets, dealing 1817 damage and reducing the cooldown of your Aspects by 1 sec.
@@ -25,21 +22,6 @@ class RapidReload extends Analyzer {
   static dependencies = {
     spellUsable: SpellUsable,
   };
-
-  protected spellUsable!: SpellUsable;
-
-  constructor(options: any) {
-    super(options);
-    this.active = this.selectedCombatant.hasTrait(SPELLS.RAPID_RELOAD.id);
-    if (this.active) {
-      if (this.selectedCombatant.spec === SPECS.BEAST_MASTERY_HUNTER) {
-        this._aspects[SPELLS.ASPECT_OF_THE_WILD.id] = {
-          effectiveCdr: 0,
-          wastedCdr: 0,
-        };
-      }
-    }
-  }
 
   _aspects: { [key: number]: { effectiveCdr: number; wastedCdr: number } } = {
     [SPELLS.ASPECT_OF_THE_CHEETAH.id]: {
@@ -56,37 +38,25 @@ class RapidReload extends Analyzer {
   castTimestamp: number = 0;
   multiShotsNoRR: number = 0;
   damage: number = 0;
+  multishotSpell: number = SPELLS.MULTISHOT_MM.id;
 
-  on_byPlayer_cast(event: CastEvent) {
-    const spellId = event.ability.guid;
-    if (!MULTI_SHOTS.includes(spellId)) {
-      return;
-    }
-    this.casts += 1;
-    this.castTimestamp = event.timestamp;
-    if (this.currentCastHits === 0) {
-      this.multiShotsNoRR += 1;
-    }
-    this.currentCastHits = 0;
-  }
+  protected spellUsable!: SpellUsable;
 
-  on_byPlayer_damage(event: DamageEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.RAPID_RELOAD_DAMAGE.id) {
-      return;
-    }
-    this.damage += event.amount + (event.absorbed || 0);
-    this.currentCastHits += 1;
-    Object.keys(this._aspects).forEach(spell => {
-      const spellId = parseInt(spell);
-      if (this.spellUsable.isOnCooldown(spellId)) {
-        const reductionMs = this.spellUsable.reduceCooldown(spellId, COOLDOWN_REDUCTION_MS);
-        this._aspects[spellId].effectiveCdr += reductionMs;
-        this._aspects[spellId].wastedCdr += COOLDOWN_REDUCTION_MS - reductionMs;
-      } else {
-        this._aspects[spellId].wastedCdr += COOLDOWN_REDUCTION_MS;
+  constructor(options: any) {
+    super(options);
+    this.active = this.selectedCombatant.hasTrait(SPELLS.RAPID_RELOAD.id);
+    if (this.active) {
+      if (this.selectedCombatant.spec === SPECS.BEAST_MASTERY_HUNTER) {
+        this._aspects[SPELLS.ASPECT_OF_THE_WILD.id] = {
+          effectiveCdr: 0,
+          wastedCdr: 0,
+        };
+        this.multishotSpell = SPELLS.MULTISHOT_BM.id;
       }
-    });
+    }
+    this.addEventListener(Events.cast.by(SELECTED_PLAYER).spell([...MULTI_SHOTS_LIST]), this.onCast);
+    this.addEventListener(Events.damage.by(SELECTED_PLAYER).spell(SPELLS.RAPID_RELOAD_DAMAGE), this.onDamage);
+
   }
 
   get multiShotsWithoutRRProcs() {
@@ -113,17 +83,41 @@ class RapidReload extends Analyzer {
     };
   }
 
+  onCast(event: CastEvent) {
+    this.casts += 1;
+    this.castTimestamp = event.timestamp;
+    if (this.currentCastHits === 0) {
+      this.multiShotsNoRR += 1;
+    }
+    this.currentCastHits = 0;
+  }
+
+  onDamage(event: DamageEvent) {
+    this.damage += event.amount + (event.absorbed || 0);
+    this.currentCastHits += 1;
+    Object.keys(this._aspects).forEach(spell => {
+      const spellId = parseInt(spell);
+      if (this.spellUsable.isOnCooldown(spellId)) {
+        const reductionMs = this.spellUsable.reduceCooldown(spellId, ONE_SECOND_IN_MS);
+        this._aspects[spellId].effectiveCdr += reductionMs;
+        this._aspects[spellId].wastedCdr += ONE_SECOND_IN_MS - reductionMs;
+      } else {
+        this._aspects[spellId].wastedCdr += ONE_SECOND_IN_MS;
+      }
+    });
+  }
+
   suggestions(when: any) {
     when(this.multiShotsWithoutRRProcs).addSuggestion((
       suggest: any, actual: any, recommended: any) => {
-      return suggest(<>When using <SpellLink id={SPELLS.RAPID_RELOAD.id} />, remember to try to hit 3 or more targets every time you cast <SpellLink id={SPELLS.MULTISHOT_BM.id} />.</>)
+      return suggest(<><SpellLink id={SPELLS.RAPID_RELOAD.id} /> only has an effect on 3+ targets, if an encounter doesn't have enough scenarios where you can reliably hit 3 targets with <SpellLink id={this.multishotSpell} />, you might want to consider a different azerite trait.</>)
         .icon(SPELLS.RAPID_RELOAD.icon)
         .actual(`${actual} ${actual === 1 ? 'cast' : 'casts'} without a Rapid Reload proc`)
         .recommended(`${recommended} is recommended`);
     });
     when(this.multiShotCasts).addSuggestion((
       suggest: any) => {
-      return suggest(<>When using <SpellLink id={SPELLS.RAPID_RELOAD.id} /> it is important to remember to cast <SpellLink id={SPELLS.MULTISHOT_BM.id} /> in order to gain value from the azerite trait - however you should never cast <SpellLink id={SPELLS.MULTISHOT_BM.id} /> on single-target regardless. </>)
+      return suggest(<>When using <SpellLink id={SPELLS.RAPID_RELOAD.id} /> it is important to remember to cast <SpellLink id={this.multishotSpell} /> in order to gain value from the azerite trait - however you should never cast <SpellLink id={this.multishotSpell} /> on single-target regardless. </>)
         .icon(SPELLS.RAPID_RELOAD.icon)
         .actual('You cast Multi-Shot 0 times')
         .recommended('>0 is recommended');

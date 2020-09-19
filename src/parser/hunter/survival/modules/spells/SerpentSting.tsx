@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Analyzer from 'parser/core/Analyzer';
+import Analyzer, { SELECTED_PLAYER } from 'parser/core/Analyzer';
 
 import SPELLS from 'common/SPELLS';
 import { formatNumber, formatPercentage } from 'common/format';
@@ -13,7 +13,8 @@ import { SERPENT_STING_SV_BASE_DURATION, SERPENT_STING_SV_PANDEMIC } from 'parse
 import Statistic from 'interface/statistics/Statistic';
 import BoringSpellValueText from 'interface/statistics/components/BoringSpellValueText';
 import UptimeIcon from 'interface/icons/Uptime';
-import { ApplyDebuffEvent, CastEvent, DamageEvent, RefreshDebuffEvent, RemoveDebuffEvent } from 'parser/core/Events';
+import Events, { ApplyDebuffEvent, CastEvent, DamageEvent, RefreshDebuffEvent, RemoveDebuffEvent } from 'parser/core/Events';
+import { encodeTargetString } from 'parser/shared/modules/EnemyInstances';
 
 /**
  * Fire a shot that poisons your target, causing them to take (15% of Attack power) Nature damage instantly and an additional (60% of Attack power) Nature damage over 12/(1+haste) sec.
@@ -28,16 +29,22 @@ class SerpentSting extends Analyzer {
     statTracker: StatTracker,
   };
 
-  serpentStingTargets: { targetID: number, targetInstance: number, timestamp: number, serpentStingDuration: number }[] = [];
-  badRefresh: number = 0;
-  timesRefreshed: number = 0;
-  casts: number = 0;
-  bonusDamage: number = 0;
-  accumulatedTimeBetweenRefresh: number = 0;
-  accumulatedPercentRemainingOnRefresh: number = 0;
+  //Used to handle talents
   hasVV: boolean = false;
   hasBoP: boolean = false;
-  uptimeRequired: number = 0.95;
+
+  //Used for handling when parsing
+  serpentStingTargets: { timestamp: number, serpentStingDuration: number }[] = [];
+  vipersVenomBuffUp: boolean = false;
+
+  //Used for statistics
+  casts: number = 0;
+  bonusDamage: number = 0;
+  timesRefreshed: number = 0;
+
+  //Used for suggestions
+  nonPandemicRefresh: number = 0;
+  nonVVBoPRefresh: number = 0;
 
   protected enemies!: Enemies;
   protected statTracker!: StatTracker;
@@ -46,23 +53,21 @@ class SerpentSting extends Analyzer {
     super(options);
     this.hasBoP = this.selectedCombatant.hasTalent(SPELLS.BIRDS_OF_PREY_TALENT.id);
     this.hasVV = this.selectedCombatant.hasTalent(SPELLS.VIPERS_VENOM_TALENT.id);
-  }
 
-  get averageTimeBetweenRefresh() {
-    return (this.accumulatedTimeBetweenRefresh / this.timesRefreshed / 1000) || 0;
-  }
-
-  get averagePercentRemainingOnRefresh() {
-    return (this.accumulatedPercentRemainingOnRefresh / this.timesRefreshed) || 0;
+    this.addEventListener(Events.cast.by(SELECTED_PLAYER).spell(SPELLS.SERPENT_STING_SV), this.onCast);
+    this.addEventListener(Events.damage.by(SELECTED_PLAYER).spell(SPELLS.SERPENT_STING_SV), this.onDamage);
+    this.addEventListener(Events.applydebuff.by(SELECTED_PLAYER).spell(SPELLS.SERPENT_STING_SV), this.onApplyDebuff);
+    this.addEventListener(Events.removedebuff.by(SELECTED_PLAYER).spell(SPELLS.SERPENT_STING_SV), this.onRemoveDebuff);
+    this.addEventListener(Events.refreshdebuff.by(SELECTED_PLAYER).spell(SPELLS.SERPENT_STING_SV), this.onRefreshDebuff);
   }
 
   get uptimePercentage() {
     return this.enemies.getBuffUptime(SPELLS.SERPENT_STING_SV.id) / this.owner.fightDuration;
   }
 
-  get refreshingThreshold() {
+  get nonPandemicThreshold() {
     return {
-      actual: this.badRefresh,
+      actual: this.nonPandemicRefresh,
       isGreaterThan: {
         minor: 1,
         average: 3,
@@ -72,37 +77,63 @@ class SerpentSting extends Analyzer {
     };
   }
 
-  get uptimeThreshold() {
-    if (this.hasBoP && !this.hasVV) {
+  get nonVVBoPRefreshThreshold() {
+    return {
+      actual: this.nonVVBoPRefresh,
+      isGreaterThan: {
+        minor: 1,
+        average: 3,
+        major: 5,
+      },
+      style: 'number',
+    };
+  }
+
+  get uptimeThresholdBoP() {
+    if (this.hasVV) {
+      return {
+        actual: this.uptimePercentage,
+        isLessThan: {
+          minor: 0.6,
+          average: 0.55,
+          major: 0.5,
+        },
+        style: 'percentage',
+      };
+    } else {
       return {
         actual: this.uptimePercentage,
         isGreaterThan: {
-          minor: 0.35,
-          average: 0.425,
-          major: 0.50,
+          minor: 0.3,
+          average: 0.35,
+          major: 0.4,
         },
         style: 'percentage',
       };
     }
-    if (this.hasBoP && this.hasVV) {
-      this.uptimeRequired -= 0.3;
-    }
+  }
+
+  get uptimeThresholdNonBoP() {
     return {
       actual: this.uptimePercentage,
       isLessThan: {
-        minor: this.uptimeRequired,
-        average: this.uptimeRequired - 0.05,
-        major: this.uptimeRequired - 0.1,
+        minor: 0.95,
+        average: 0.9,
+        major: 0.85,
       },
       style: 'percentage',
     };
   }
 
-  on_byPlayer_cast(event: CastEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.SERPENT_STING_SV.id) {
-      return;
-    }
+  get serpentStingDuringCA() {
+    return this.hasBoP && this.selectedCombatant.hasBuff(SPELLS.COORDINATED_ASSAULT.id) && (!this.hasVV || !this.vipersVenomBuffUp);
+  }
+
+  get hastedSerpentStingDuration() {
+    return SERPENT_STING_SV_BASE_DURATION / (1 + this.statTracker.currentHastePercentage);
+  }
+
+  onCast(event: CastEvent) {
     this.casts += 1;
 
     if (event.meta === undefined) {
@@ -114,110 +145,89 @@ class SerpentSting extends Analyzer {
       };
     }
     if (this.selectedCombatant.hasBuff(SPELLS.VIPERS_VENOM_BUFF.id)) {
-      this.hasVV = true;
+      this.vipersVenomBuffUp = true;
       event.meta.isEnhancedCast = true;
       event.meta.enhancedCastReason = 'Viper\'s Venom buff consumed';
     }
-    event.meta.isInefficientCast = this.serpentStingDuringCA();
-    event.meta.inefficientCastReason = 'Serpent String cast during Coordinated Assault with Birds of Prey talent used.';
+    if (this.serpentStingDuringCA) {
+      event.meta.isInefficientCast = true;
+      event.meta.inefficientCastReason = 'Serpent String cast during Coordinated Assault with Birds of Prey talent used.';
+    }
   }
 
-  on_byPlayer_damage(event: DamageEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.SERPENT_STING_SV.id) {
-      return;
-    }
+  onDamage(event: DamageEvent) {
     this.bonusDamage += event.amount + (event.absorbed || 0);
   }
 
-  on_byPlayer_applydebuff(event: ApplyDebuffEvent) {
-    const spellId = event.ability.guid;
+  onApplyDebuff(event: ApplyDebuffEvent) {
     let targetInstance = event.targetInstance;
-    if (spellId !== SPELLS.SERPENT_STING_SV.id) {
-      return;
-    }
     if (targetInstance === undefined) {
       targetInstance = 1;
     }
-    const hastedSerpentStingDuration = SERPENT_STING_SV_BASE_DURATION / (1 + this.statTracker.currentHastePercentage);
-    const serpentStingTarget = { targetID: event.targetID, targetInstance: targetInstance, timestamp: event.timestamp, serpentStingDuration: hastedSerpentStingDuration };
-    this.serpentStingTargets.push(serpentStingTarget);
-
-    this.hasVV = false;
-  }
-
-  on_byPlayer_removedebuff(event: RemoveDebuffEvent) {
-    const spellId = event.ability.guid;
-    if (spellId !== SPELLS.SERPENT_STING_SV.id) {
-      return;
-    }
-    for (let i = 0; i < this.serpentStingTargets.length; i++) {
-      if (event.timestamp - this.serpentStingTargets[i].timestamp > this.serpentStingTargets[i].serpentStingDuration) {
-        this.serpentStingTargets.splice(i, 1);
-      }
+    const serpentStingTarget: any = encodeTargetString(event.targetID, targetInstance);
+    this.serpentStingTargets[serpentStingTarget] = { timestamp: event.timestamp, serpentStingDuration: this.hastedSerpentStingDuration };
+    if (this.vipersVenomBuffUp) {
+      this.vipersVenomBuffUp = false;
     }
   }
 
-  on_byPlayer_refreshdebuff(event: RefreshDebuffEvent) {
-    const spellId = event.ability.guid;
+  onRemoveDebuff(event: RemoveDebuffEvent) {
     let targetInstance = event.targetInstance;
-    if (spellId !== SPELLS.SERPENT_STING_SV.id) {
-      return;
+    if (targetInstance === undefined) {
+      targetInstance = 1;
     }
-    for (let i = 0; i < this.serpentStingTargets.length; i++) {
-      if (event.timestamp - this.serpentStingTargets[i].timestamp > this.serpentStingTargets[i].serpentStingDuration) {
-        this.serpentStingTargets.splice(i, 1);
-      }
+    const serpentStingTarget: any = encodeTargetString(event.targetID, targetInstance);
+    this.serpentStingTargets.splice(serpentStingTarget, 1);
+  }
+
+  onRefreshDebuff(event: RefreshDebuffEvent) {
+    let targetInstance = event.targetInstance;
+    if (targetInstance === undefined) {
+      targetInstance = 1;
     }
-    if (this.serpentStingTargets.length === 0) {
-      return;
-    }
+    const serpentStingTarget: any = encodeTargetString(event.targetID, targetInstance);
     this.timesRefreshed += 1;
-    if (targetInstance === undefined) {
-      targetInstance = 1;
+
+    const timeRemaining = this.serpentStingTargets[serpentStingTarget].serpentStingDuration - (event.timestamp - this.serpentStingTargets[serpentStingTarget].timestamp);
+    if (timeRemaining > (this.hastedSerpentStingDuration * SERPENT_STING_SV_PANDEMIC)) {
+      this.nonPandemicRefresh += 1;
+    } else {
+      const pandemicSerpentStingDuration = Math.min(this.hastedSerpentStingDuration * SERPENT_STING_SV_PANDEMIC, timeRemaining) + this.hastedSerpentStingDuration;
+      this.serpentStingTargets[serpentStingTarget].timestamp = event.timestamp;
+      this.serpentStingTargets[serpentStingTarget].serpentStingDuration = pandemicSerpentStingDuration;
     }
-    const hastedSerpentStingDuration = SERPENT_STING_SV_BASE_DURATION / (1 + this.statTracker.currentHastePercentage);
-    const serpentStingTarget = { targetID: event.targetID, targetInstance: targetInstance, timestamp: event.timestamp };
-    for (let i = 0; i <= this.serpentStingTargets.length - 1; i++) {
-      if (this.serpentStingTargets[i].targetID === serpentStingTarget.targetID && this.serpentStingTargets[i].targetInstance === serpentStingTarget.targetInstance) {
-        const timeRemaining = this.serpentStingTargets[i].serpentStingDuration - (event.timestamp - this.serpentStingTargets[i].timestamp);
-        if (timeRemaining > (hastedSerpentStingDuration * SERPENT_STING_SV_PANDEMIC) && !this.hasVV) {
-          this.badRefresh += 1;
-        }
-        const pandemicSerpentStingDuration = Math.min(hastedSerpentStingDuration * SERPENT_STING_SV_PANDEMIC, timeRemaining) + hastedSerpentStingDuration;
-        if (!this.hasVV) {
-          this.accumulatedTimeBetweenRefresh += this.serpentStingTargets[i].serpentStingDuration - timeRemaining;
-          this.accumulatedPercentRemainingOnRefresh += timeRemaining / this.serpentStingTargets[i].serpentStingDuration;
-        }
-        this.serpentStingTargets[i].timestamp = event.timestamp;
-        this.serpentStingTargets[i].serpentStingDuration = pandemicSerpentStingDuration;
-        this.hasVV = false;
+    if (this.hasBoP && this.selectedCombatant.hasBuff(SPELLS.COORDINATED_ASSAULT.id)) {
+      if (this.vipersVenomBuffUp) {
+        this.vipersVenomBuffUp = false;
+      } else {
+        this.nonVVBoPRefresh += 1;
       }
     }
-  }
-
-  serpentStingDuringCA() {
-    return this.hasBoP && this.selectedCombatant.hasBuff(SPELLS.COORDINATED_ASSAULT.id) && !this.hasVV;
   }
 
   suggestions(when: any) {
-    if (this.selectedCombatant.hasTalent(SPELLS.BIRDS_OF_PREY_TALENT.id) && !this.hasVV) {
-      when(this.uptimeThreshold).addSuggestion((suggest: any, actual: any, recommended: any) => {
-        return suggest(<>With <SpellLink id={SPELLS.BIRDS_OF_PREY_TALENT.id} /> talented and without <SpellLink id={SPELLS.VIPERS_VENOM_TALENT.id} /> talented, you don't want to cast <SpellLink id={SPELLS.SERPENT_STING_SV.id} /> during <SpellLink id={SPELLS.COORDINATED_ASSAULT.id} /> at all, which is a majority of the fight, as thus a low uptime of <SpellLink id={SPELLS.SERPENT_STING_SV.id} /> is better than a high uptime. </>)
+    if (this.hasBoP) {
+      const suggestionText = this.hasVV ?
+        <> You should make sure to keep up <SpellLink id={SPELLS.SERPENT_STING_SV.id} /> by using it within the pandemic windows during <SpellLink id={SPELLS.COORDINATED_ASSAULT.id} />, so long as you have a <SpellLink id={SPELLS.VIPERS_VENOM_TALENT.id} /> proc. </> :
+        <>With <SpellLink id={SPELLS.BIRDS_OF_PREY_TALENT.id} /> talented and without <SpellLink id={SPELLS.VIPERS_VENOM_TALENT.id} /> talented, you don't want to cast <SpellLink id={SPELLS.SERPENT_STING_SV.id} /> during <SpellLink id={SPELLS.COORDINATED_ASSAULT.id} /> at all, which is a majority of the fight, therefore a low uptime of <SpellLink id={SPELLS.SERPENT_STING_SV.id} /> is better than a high uptime. </>;
+
+      when(this.uptimeThresholdBoP).addSuggestion((suggest: any, actual: any, recommended: any) => {
+        return suggest(suggestionText)
           .icon(SPELLS.SERPENT_STING_SV.icon)
           .actual(`${formatPercentage(actual)}% Serpent Sting uptime`)
           .recommended(`<${formatPercentage(recommended)}% is recommended`);
       });
     } else {
-      when(this.uptimeThreshold).addSuggestion((suggest: any, actual: any, recommended: any) => {
-        return suggest(<>Remember to maintain the <SpellLink id={SPELLS.SERPENT_STING_SV.id} /> on enemies, but don't refresh the debuff unless it has less than {formatPercentage(SERPENT_STING_SV_PANDEMIC)}% duration remaining{this.hasVV ? <>, or you have a <SpellLink id={SPELLS.VIPERS_VENOM_TALENT.id} /> buff</> : ''}. During <SpellLink id={SPELLS.COORDINATED_ASSAULT.id} />, you shouldn't be refreshing <SpellLink id={SPELLS.SERPENT_STING_SV.id} /> at all{this.hasVV ? <> unless there's less than 50% remaining of the debuff and you have <SpellLink id={SPELLS.VIPERS_VENOM_BUFF.id} /> active</> : ''}.</>)
+      when(this.uptimeThresholdNonBoP).addSuggestion((suggest: any, actual: any, recommended: any) => {
+        return suggest(<>Remember to maintain the <SpellLink id={SPELLS.SERPENT_STING_SV.id} /> on enemies, but don't refresh the debuff unless it has less than {formatPercentage(SERPENT_STING_SV_PANDEMIC, 0)}% duration remaining.</>)
           .icon(SPELLS.SERPENT_STING_SV.icon)
           .actual(`${formatPercentage(actual)}% Serpent Sting uptime`)
           .recommended(`>${formatPercentage(recommended)}% is recommended`);
       });
     }
-    when(this.refreshingThreshold).addSuggestion((suggest: any, actual: any, recommended: any) => {
-      return suggest(<>It is not recommended to refresh <SpellLink id={SPELLS.SERPENT_STING_SV.id} /> earlier than when there is less than {formatPercentage(SERPENT_STING_SV_PANDEMIC)}% of the debuffs duration remaining{this.hasVV ? <> unless you get a <SpellLink id={SPELLS.VIPERS_VENOM_TALENT.id} /> proc.</> : ''}. </>)
+
+    when(this.nonPandemicThreshold).addSuggestion((suggest: any, actual: any, recommended: any) => {
+      return suggest(<>It is not recommended to refresh <SpellLink id={SPELLS.SERPENT_STING_SV.id} /> earlier than when there is less than {formatPercentage(SERPENT_STING_SV_PANDEMIC, 0)}% of the duration remaining. </>)
         .icon(SPELLS.SERPENT_STING_SV.icon)
         .actual(`${actual} Serpent Sting cast(s) were cast too early`)
         .recommended(`<${recommended} is recommended`);
@@ -227,17 +237,19 @@ class SerpentSting extends Analyzer {
   statistic() {
     return (
       <Statistic
-        position={STATISTIC_ORDER.OPTIONAL(19)}
+        position={STATISTIC_ORDER.OPTIONAL(3)}
         size="flexible"
         tooltip={(
           <>
             <ul>
               <li>You cast Serpent Sting a total of {this.casts} times.</li>
               <li>You refreshed the debuff {this.timesRefreshed} times.</li>
+              {this.nonVVBoPRefresh + this.nonPandemicRefresh > 0 &&
               <ul>
-                <li>When you did refresh (without Viper's Venom up), it happened on average with {formatPercentage(this.averagePercentRemainingOnRefresh)}% or {this.averageTimeBetweenRefresh.toFixed(1)} seconds remaining on the debuff.</li>
-                <li>You had {this.badRefresh} bad refreshes. This means refreshes with more than {formatPercentage(SERPENT_STING_SV_PANDEMIC)}% of the current debuff remaining and no Viper's Venom buff active.</li>
-              </ul>
+                {this.nonPandemicRefresh > 0 && <li>You had {this.nonPandemicRefresh} refreshes outside of the pandemic window. This means refreshes with more than {formatPercentage(SERPENT_STING_SV_PANDEMIC, 0)}% of the current debuff remaining and no Viper's Venom buff active.</li>}
+                {this.hasBoP && this.hasVV && this.nonVVBoPRefresh > 0 && <li>During Coordinated Assault, you should only refresh Serpent Sting when there is less than {formatPercentage(SERPENT_STING_SV_PANDEMIC, 0)}% remaining on Serpent Sting AND you have a Viper's Venom proc. You refreshed it incorrectly {this.nonVVBoPRefresh} times.</li>}
+                {this.hasBoP && !this.hasVV && this.nonVVBoPRefresh > 0 && <li>Because you're using Birds of Prey, but not using Viper's Venom, you should never refresh Serpent Sting during Coordinated Assault buff. You did this {this.nonVVBoPRefresh} times.</li>}
+              </ul>}
               <li>Serpent Sting dealt a total of {formatNumber(this.bonusDamage / this.owner.fightDuration * 1000)} DPS or {formatPercentage(this.owner.getPercentageOfTotalDamageDone(this.bonusDamage))}% of your total damage.</li>
             </ul>
           </>

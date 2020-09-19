@@ -10,8 +10,7 @@ import AbilityTracker from 'parser/shared/modules/AbilityTracker';
 import Analyzer, { SELECTED_PLAYER } from 'parser/core/Analyzer';
 import Events, { CastEvent, DamageEvent, ChangeBuffStackEvent } from 'parser/core/Events';
 import { SHATTER_DEBUFFS } from '../../constants';
-
-const CAST_BUFFER_MS = 100;
+import { CAST_BUFFER } from '../../constants';
 
 class IceLance extends Analyzer {
   static dependencies = {
@@ -32,8 +31,6 @@ class IceLance extends Analyzer {
 
   constructor(options: any) {
     super(options);
-    this.active = this.owner.build === undefined;
-
     this.addEventListener(Events.cast.by(SELECTED_PLAYER).spell(SPELLS.ICE_LANCE), this.onCast);
     this.addEventListener(Events.damage.by(SELECTED_PLAYER).spell(SPELLS.ICE_LANCE_DAMAGE), this.onDamage);
     this.addEventListener(Events.changebuffstack.by(SELECTED_PLAYER).spell(SPELLS.FINGERS_OF_FROST), this.onFingersStackChange);
@@ -66,7 +63,7 @@ class IceLance extends Analyzer {
     const stackChange = event.stacksGained;
     if (stackChange > 0) {
       this.totalFingersProcs += stackChange;
-    } else if (this.iceLanceCastTimestamp && this.iceLanceCastTimestamp + CAST_BUFFER_MS > event.timestamp) {
+    } else if (this.iceLanceCastTimestamp && this.iceLanceCastTimestamp + CAST_BUFFER > event.timestamp) {
       // just cast ice lance, so this stack removal probably a proc used
     } else if (event.newStacks === 0) {
       this.expiredFingersProcs += (-stackChange); // stacks zero out, must be expiration
