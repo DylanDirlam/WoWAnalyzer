@@ -67,6 +67,7 @@ const Footer = props => (
                     <li>Plus by Galaxicon</li>
                     <li>duration by Bohdan Burmich</li>
                     <li>link by arjuazka</li>
+                    <li>Orb Circle by Martin</li>
                   </ul>
                 </>
               )}
