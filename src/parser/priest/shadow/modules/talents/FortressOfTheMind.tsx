@@ -10,7 +10,7 @@ import ItemDamageDone from 'interface/ItemDamageDone';
 import { formatNumber } from 'common/format';
 import Insanity from 'interface/icons/Insanity'
 
-import { FORTRESS_OF_THE_MIND_INCREASE } from '../../constants';
+import { FORTRESS_OF_THE_MIND_DAMAGE_INCREASE, FORTRESS_OF_THE_MIND_INSANITY_INCREASE } from '../../constants';
 
 const FORTRESS_ABILITIES = [
   SPELLS.MIND_FLAY,
@@ -31,11 +31,11 @@ class FortressOfTheMind extends Analyzer {
 
   onDamage(event: DamageEvent) {
     const raw = event.amount + (event.absorbed || 0);
-    this.damage += raw - (raw / FORTRESS_OF_THE_MIND_INCREASE);
+    this.damage += raw - (raw / FORTRESS_OF_THE_MIND_DAMAGE_INCREASE);
   }
 
   onEnergize(event: EnergizeEvent) {
-    this.insanity += event.resourceChange - (event.resourceChange / FORTRESS_OF_THE_MIND_INCREASE);
+    this.insanity += event.resourceChange - (event.resourceChange / FORTRESS_OF_THE_MIND_INSANITY_INCREASE);
   }
 
   statistic() {
