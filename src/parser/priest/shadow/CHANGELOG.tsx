@@ -6,6 +6,7 @@ import SpellLink from 'common/SpellLink';
 import { change, date } from 'common/changelog';
 
 export default [
+  change(date(2020, 10, 20), <>Added <SpellLink id={SPELLS.UNFURLING_DARKNESS_TALENT.id} /> and <SpellLink id={SPELLS.FORTRESS_OF_THE_MIND_TALENT.id} /> modules.</>, [Adoraci]),
   change(date(2020, 10, 18), <>Converted legacy listeners to new event filters</>, Zeboot),
   change(date(2020, 10, 17), <>Updated for Shadowlands Pre-Patch.</>, [Adoraci]),
   change(date(2020, 9, 21), <>Removed Azerite Traits and Added Event Listeners, Centralized Constants, and Integration Tests. </>, [Sharrq]),
