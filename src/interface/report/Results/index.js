@@ -21,7 +21,6 @@ import ReadableListing from 'interface/ReadableListing';
 import Contributor from 'interface/ContributorButton';
 import WarcraftLogsIcon from 'interface/icons/WarcraftLogs';
 import WipefestIcon from 'interface/icons/Wipefest';
-import { i18n } from 'interface/RootLocalizationProvider';
 import LoadingBar from 'interface/layout/NavigationBar/LoadingBar';
 import Panel from 'interface/others/Panel';
 import ErrorBoundary from 'interface/common/ErrorBoundary';
@@ -75,7 +74,10 @@ class Results extends React.PureComponent {
       fight: PropTypes.shape({
         boss: PropTypes.any,
         difficulty: PropTypes.any,
+        // use fight interface when converting to TS
+        // eslint-disable-next-line @typescript-eslint/camelcase
         start_time: PropTypes.any,
+        // eslint-disable-next-line @typescript-eslint/camelcase
         end_time: PropTypes.any,
       }),
       generateResults: PropTypes.func.isRequired,
@@ -100,8 +102,12 @@ class Results extends React.PureComponent {
     }).isRequired,
     fight: PropTypes.shape({
       id: PropTypes.number.isRequired,
+      // use fight interface when converting to TS
+      // eslint-disable-next-line @typescript-eslint/camelcase
       start_time: PropTypes.number.isRequired,
+      // eslint-disable-next-line @typescript-eslint/camelcase
       end_time: PropTypes.number.isRequired,
+      // eslint-disable-next-line @typescript-eslint/camelcase
       offset_time: PropTypes.number.isRequired,
       boss: PropTypes.number.isRequired,
       phase: PropTypes.string,
@@ -241,6 +247,7 @@ class Results extends React.PureComponent {
               difficulty={parser.fight.difficulty}
               spec={parser.selectedCombatant._combatantInfo.specID}
               duration={parser.fight.end_time - parser.fight.start_time}
+              combatant={parser.selectedCombatant}
             />
           </div>
         );
@@ -418,20 +425,6 @@ class Results extends React.PureComponent {
         {parser && parser.disabledModules && (
           <DegradedExperience disabledModules={parser.disabledModules} />
         )}
-        <div className="container">
-            <Warning style={{ marginBottom: 30 }}>
-              In an effort to focus on Shadowlands and Castle Nathria, we will be removing support
-              for Azerite, Essences, Corruption, and other BFA items with the launch of Prepatch. As
-              a result, analysis of Prepatch encounters may be inaccurate. If you would like to
-              follow your spec's Shadowlands development or provide suggestions/feedback,{' '}
-              <a
-                href="
-https://github.com/WoWAnalyzer/WoWAnalyzer/issues?q=is%3Aopen+is%3Aissue+label%3AShadowlands"
-              >
-                Click Here
-              </a>
-            </Warning>
-          </div>
         {boss && boss.fight.resultsWarning && (
           <div className="container">
             <Warning style={{ marginBottom: 30 }}>{boss.fight.resultsWarning}</Warning>
@@ -443,18 +436,22 @@ https://github.com/WoWAnalyzer/WoWAnalyzer/issues?q=is%3Aopen+is%3Aissue+label%3
         {timeFilter && (
           <div className="container">
             <Warning style={{ marginBottom: 30 }}>
-              These results are filtered to the selected time period. Time filtered results are
-              under development and may not be entirely accurate. <br /> Please report any issues
-              you may find on our GitHub or Discord.
+              <Trans id="interface.report.results.warning.timeFilter">
+                These results are filtered to the selected time period. Time filtered results are
+                under development and may not be entirely accurate. <br /> Please report any issues
+                you may find on our GitHub or Discord.
+              </Trans>
             </Warning>
           </div>
         )}
         {build && (
           <div className="container">
             <Warning style={{ marginBottom: 30 }}>
-              These results are analyzed under build different from the standard build. While this
-              will make some modules more accurate, some may also not provide the information you
-              expect them to. <br /> Please report any issues you may find on our GitHub or Discord.
+              <Trans id="interface.report.results.warning.build">
+                These results are analyzed under build different from the standard build. While this
+                will make some modules more accurate, some may also not provide the information you
+                expect them to. <br /> Please report any issues you may find on our GitHub or Discord.
+              </Trans>
             </Warning>
           </div>
         )}
@@ -463,9 +460,9 @@ https://github.com/WoWAnalyzer/WoWAnalyzer/issues?q=is%3Aopen+is%3Aissue+label%3
         <div className="container" style={{ marginTop: 40 }}>
           <div className="row">
             <div className="col-md-8">
-              <small>Provided by</small>
+              <small><Trans id="interface.report.results.providedBy">Provided by</Trans></small>
               <div style={{ fontSize: 16 }}>
-                <Trans>
+                <Trans id="interface.report.results.providedByDetails">
                   {config.spec.specName} {config.spec.className} analysis has been provided by{' '}
                   {contributorinfo}. They love hearing what you think, so please let them know!{' '}
                   <Link to={makeTabUrl('about')}>More information about this spec's analyzer.</Link>
@@ -473,9 +470,12 @@ https://github.com/WoWAnalyzer/WoWAnalyzer/issues?q=is%3Aopen+is%3Aissue+label%3
               </div>
             </div>
             <div className="col-md-3">
-              <small>View on</small>
+              <small><Trans id="interface.report.results.viewOn">View on</Trans></small>
               <br />
-              <Tooltip content={i18n._(t`Opens in a new tab. View the original report.`)}>
+              <Tooltip content={t({
+                id: "interface.report.results.tooltip.newTab.originalReport",
+                message: `Opens in a new tab. View the original report.`
+              })}>
                 <a
                   href={makeWclUrl(report.code, {
                     fight: fight.id,
@@ -492,9 +492,10 @@ https://github.com/WoWAnalyzer/WoWAnalyzer/issues?q=is%3Aopen+is%3Aissue+label%3
               </Tooltip>
               <br />
               <Tooltip
-                content={i18n._(
-                  t`Opens in a new tab. View insights and timelines for raid encounters.`,
-                )}
+                content={t({
+                  id: "interface.report.results.tooltip.newTab.insightsAndTimelines",
+                  message: `Opens in a new tab. View insights and timelines for raid encounters.`
+                })}
               >
                 <a
                   href={`https://www.wipefest.net/report/${report.code}/fight/${fight.id}`}
@@ -508,7 +509,7 @@ https://github.com/WoWAnalyzer/WoWAnalyzer/issues?q=is%3Aopen+is%3Aissue+label%3
               </Tooltip>
             </div>
             <div className="col-md-1">
-              <Tooltip content={<Trans>Scroll back to the top.</Trans>}>
+              <Tooltip content={<Trans id="interface.report.results.tooltip.backToTop">Scroll back to the top.</Trans>}>
                 <ScrollToTop />
               </Tooltip>
             </div>

@@ -57,7 +57,7 @@ class Checklist extends BaseChecklist {
           bloodPlague: this.bloodplagueUptime.uptimeSuggestionThresholds,
           markOfBlood: this.markOfBloodUptime.uptimeSuggestionThresholds,
           boneShield: this.boneShield.uptimeSuggestionThresholds,
-          ossuary: this.ossuary.uptimeSuggestionThresholds,
+          ossuary: this.ossuary.efficiencySuggestionThresholds,
         }}
       />
     );

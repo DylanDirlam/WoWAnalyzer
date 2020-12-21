@@ -17,7 +17,6 @@ import MetaBuffUptime from './modules/spells/MetaBuffUptime';
 
 // Talents
 import Momentum from './modules/talents/Momentum';
-import Nemesis from './modules/talents/Nemesis';
 import Felblade from './modules/talents/Felblade';
 import DemonicAppetite from './modules/talents/DemonicAppetite';
 import BlindFury from './modules/talents/BlindFury';
@@ -36,13 +35,6 @@ import Demonic from './modules/talents/Demonic';
 //Resources
 import FuryDetails from './modules/resourcetracker/FuryDetails';
 import FuryTracker from './modules/resourcetracker/FuryTracker';
-
-// Azerite Traits
-import FuriousGaze from './modules/spells/azeritetraits/FuriousGaze';
-import EyesofRage from './modules/spells/azeritetraits/EyesofRage';
-import ChaoticTransformation from './modules/spells/azeritetraits/ChaoticTransformation';
-import RevolvingBlades from './modules/spells/azeritetraits/RevolvingBlades';
-import ThirstingBlades from './modules/spells/azeritetraits/ThirstingBlades';
 
 class CombatLogParser extends CoreCombatLogParser {
   static specModules = {
@@ -74,20 +66,12 @@ class CombatLogParser extends CoreCombatLogParser {
     felBarrage: FelBarrage,
     felMastery: FelMastery,
     momentum: Momentum,
-    nemesis: Nemesis,
     netherwalk: Netherwalk,
     felEruption: FelEruption,
     masterOfTheGlaives: MasterOfTheGlaives,
     darkSlash: DarkSlash,
     cycleOfHatred: CycleOfHatred,
     demonic: Demonic,
-
-    // Azerite Traits
-    furiousGaze: FuriousGaze,
-    eyesofRage: EyesofRage,
-    chaoticTransformation: ChaoticTransformation,
-    revolvingBlades: RevolvingBlades,
-    thirstingBlades: ThirstingBlades,
 
     //Resources
     furyTracker: FuryTracker,

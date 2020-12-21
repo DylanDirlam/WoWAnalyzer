@@ -4,8 +4,7 @@
  * You can access these entries like other entries in the spells files by importing `common/SPELLS` and using the assigned property on the SPELLS object. Please try to avoid abbreviating properties.
  */
 
-import { SpellList } from "./Spell";
-const spells: SpellList = {
+const spells = {
   // Defensive general spells
   FEINT: {
     id: 1966,
@@ -157,6 +156,11 @@ const spells: SpellList = {
     id: 196819,
     name: 'Eviscerate',
     icon: 'ability_rogue_eviscerate',
+  },
+  BLACK_POWDER: {
+    id: 319175,
+    name: 'Black Powder',
+    icon: 'spell_priest_divinestar_shadow',
   },
   // Offensive cooldown
   SHADOW_BLADES: {
@@ -509,7 +513,7 @@ const spells: SpellList = {
     icon: 'ability_rogue_restlessblades',
   },
   FIND_WEAKNESS: {
-    id: 316219,
+    id: 316220,
     name: 'Find Weakness',
     icon: 'ability_rogue_findweakness',
   },
@@ -535,5 +539,6 @@ const spells: SpellList = {
     name: 'Opportunity',
     icon: 'ability_rogue_pistolshot',
   },
-};
+} as const;
+
 export default spells;

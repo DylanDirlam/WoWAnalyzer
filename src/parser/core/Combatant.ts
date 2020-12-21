@@ -2,34 +2,17 @@ import SPECS from 'game/SPECS';
 import RACES from 'game/RACES';
 import TALENT_ROWS from 'game/TALENT_ROWS';
 import GEAR_SLOTS from 'game/GEAR_SLOTS';
-import traitIdMap from 'common/TraitIdMap';
+import { Enchant } from 'common/ITEMS/Item';
 import SPELLS from 'common/SPELLS';
 import { findByBossId } from 'raids';
 import CombatLogParser, { Player } from 'parser/core/CombatLogParser';
-import {
-  Buff,
-  CombatantInfoEvent,
-  EventType,
-  Item,
-  Trait,
-  Soulbind,
-  Conduit,
-  Covenant,
-} from 'parser/core/Events';
+import { Buff, CombatantInfoEvent, Conduit, EventType, Item, SoulbindTrait } from 'parser/core/Events';
 
 import Entity from './Entity';
 
 export interface CombatantInfo extends CombatantInfoEvent {
   name: string;
 }
-
-type Essence = {
-  icon: string;
-  isMajor: boolean;
-  rank: number;
-  spellID: number;
-  traitID: number;
-};
 
 type Spell = {
   id: number;
@@ -95,6 +78,17 @@ class Combatant extends Entity {
     const playerInfo = parser.players.find(
       (player: Player) => player.id === combatantInfo.sourceID,
     );
+
+    //TODO - verify if this is ever fixed on WCL side
+    if (!combatantInfo.soulbindTraits) {
+      combatantInfo.soulbindTraits = combatantInfo.artifact;
+    }
+    if (!combatantInfo.conduits) {
+      combatantInfo.conduits = combatantInfo.heartOfAzeroth;
+    }
+    delete combatantInfo.artifact;
+    delete combatantInfo.heartOfAzeroth;
+
     this._combatantInfo = {
       // In super rare cases `playerInfo` can be undefined, not taking this
       // into account would cause the log to be unparsable
@@ -103,13 +97,13 @@ class Combatant extends Entity {
     };
 
     this._parseTalents(combatantInfo.talents);
-    this._parseTraits(combatantInfo.artifact);
-    this._parseEssences(combatantInfo.heartOfAzeroth);
-    this._parseCovenant(combatantInfo.covenant);
-    this._parseSoulbind(combatantInfo.soulbind);
-    this._parseConduits(combatantInfo.conduits);
     this._parseGear(combatantInfo.gear);
     this._parsePrepullBuffs(combatantInfo.auras);
+    this._parseCovenant(combatantInfo.covenantID);
+    this._parseSoulbind(combatantInfo.soulbindID);
+    this._parseSoulbindTraits(combatantInfo.soulbindTraits);
+    this._parseConduits(combatantInfo.conduits);
+
   }
 
   // region Talents
@@ -132,21 +126,27 @@ class Combatant extends Entity {
   get lv15Talent() {
     return this._getTalent(TALENT_ROWS.LV15);
   }
+
   get lv25Talent() {
     return this._getTalent(TALENT_ROWS.LV25);
   }
+
   get lv30Talent() {
     return this._getTalent(TALENT_ROWS.LV30);
   }
+
   get lv35Talent() {
     return this._getTalent(TALENT_ROWS.LV35);
   }
+
   get lv40Talent() {
     return this._getTalent(TALENT_ROWS.LV40);
   }
+
   get lv45Talent() {
     return this._getTalent(TALENT_ROWS.LV45);
   }
+
   get lv50Talent() {
     return this._getTalent(TALENT_ROWS.LV50);
   }
@@ -166,105 +166,97 @@ class Combatant extends Entity {
 
   // endregion
 
-  // region Traits
-  traitsBySpellId: { [key: number]: number[] } = {};
-
-  _parseTraits(traits: Trait[]) {
-    traits.forEach(({ traitID, rank }) => {
-      const spellId = traitIdMap[traitID];
-      if (spellId === undefined) {
-        return;
-      }
-      if (!this.traitsBySpellId[spellId]) {
-        this.traitsBySpellId[spellId] = [];
-      }
-      this.traitsBySpellId[spellId].push(rank);
-    });
-  }
-
-  hasTrait(spellId: number) {
-    return Boolean(this.traitsBySpellId[spellId]);
-  }
-
-  traitRanks(spellId: number) {
-    return this.traitsBySpellId[spellId];
-  }
-
-  // endregion
-
-  // region Essences
-  essencesByTraitID: { [key: number]: Essence } = {};
-
-  _parseEssences(essences: Essence[]) {
-    if (essences === undefined) {
-      return;
+  hasWeaponEnchant(enchant: Enchant) {
+    if (this.mainHand && this.mainHand.permanentEnchant === enchant.effectId) {
+      return true;
     }
-    essences.forEach((essence: Essence) => {
-      if (this.essencesByTraitID[essence.traitID]) {
-        essence.isMajor = true;
-      }
-      this.essencesByTraitID[essence.traitID] = essence;
-      //essence = {icon:string, isMajor:bool, rank:int, slot:int, spellID:int,
-      // traitID:int}
-    });
-  }
 
-  hasEssence(traitId: number) {
-    return Boolean(this.essencesByTraitID[traitId]);
-  }
+    if (this.offHand && this.offHand.permanentEnchant === enchant.effectId) {
+      return true;
+    }
 
-  hasMajor(traitId: number) {
-    return this.essencesByTraitID[traitId] && this.essencesByTraitID[traitId].isMajor;
+    return false;
   }
-
-  essenceRank(traitId: number) {
-    return this.essencesByTraitID[traitId] && this.essencesByTraitID[traitId].rank;
-  }
-
-  // endregion
 
   //region Shadowlands Systems
 
-  //region Covenants TODO Verify if this isn't simply a number passed as covenantID
-  covenantsByCovenantID: { [key: number]: Covenant } = {};
+  //region Covenants
+  covenantsByCovenantID: { [key: number]: CombatantInfo['covenantID'] } = {};
 
-  _parseCovenant(covenant: Covenant) {
-    if (!covenant) {
+  _parseCovenant(covenantID: CombatantInfo['covenantID']) {
+    if (!covenantID) {
       return;
     }
-    this.covenantsByCovenantID[covenant.id] = covenant;
+    this.covenantsByCovenantID[covenantID] = covenantID;
   }
 
-  hasCovenant(covenantId: number) {
-    return Boolean(this.covenantsByCovenantID[covenantId]);
+  hasCovenant(covenantID: CombatantInfo['covenantID']) {
+    return Boolean(this.covenantsByCovenantID[covenantID]);
   }
 
   //endregion
 
-  //region Soulbinds TODO Verify if this isn't simply a number passed as soulbindID
-  soulbindsBySoulbindID: { [key: number]: Soulbind } = {};
+  //region Soulbinds
+  soulbindsBySoulbindID: { [key: number]: CombatantInfo['soulbindID'] } = {};
 
-  _parseSoulbind(soulbind: Soulbind) {
-    if (!soulbind) {
+  _parseSoulbind(soulbindID: CombatantInfo['soulbindID']) {
+    if (!soulbindID) {
       return;
     }
-    this.soulbindsBySoulbindID[soulbind.id] = soulbind;
+    this.soulbindsBySoulbindID[soulbindID] = soulbindID;
   }
 
-  hasSoulbind(soulbindId: number) {
-    return Boolean(this.soulbindsBySoulbindID[soulbindId]);
+  hasSoulbind(soulbindID: CombatantInfo['soulbindID']) {
+    return Boolean(this.soulbindsBySoulbindID[soulbindID]);
+  }
+
+  soulbindTraitsByID: { [key: number]: SoulbindTrait } = {};
+
+  _parseSoulbindTraits(soulbindTraits: SoulbindTrait[] | undefined) {
+    if (soulbindTraits === undefined) {
+      return;
+    }
+    soulbindTraits.forEach((soulbindTrait: SoulbindTrait) => {
+      if (soulbindTrait.spellID !== 0) {
+        this.soulbindTraitsByID[soulbindTrait.spellID] = soulbindTrait;
+      }
+    });
+  }
+
+  hasSoulbindTrait(soulbindTraitID: number) {
+    return Boolean(this.soulbindTraitsByID[soulbindTraitID]);
   }
 
   //endregion
 
-  //region Conduits TODO Verify where these are parsed (is it still in heartOfAzeroth?) and how are they parsed
+  //region Conduits
   conduitsByConduitID: { [key: number]: Conduit } = {};
 
-  _parseConduits(conduits: Conduit[]) {
+  _parseConduits(conduits: Conduit[] | undefined) {
     if (!conduits) {
       return;
     }
+
+    const ilvlToRankMapping: { [key: number]: number } = {
+      145: 1,
+      158: 2,
+      171: 3,
+      184: 4,
+      200: 5,
+      213: 6,
+      226: 7,
+      239: 8,
+      252: 9,
+      265: 10,
+      278: 11,
+      291: 12,
+      304: 13,
+      317: 14,
+      330: 15,
+    };
+
     conduits.forEach((conduit: Conduit) => {
+      conduit.rank = ilvlToRankMapping[conduit.rank];
       this.conduitsByConduitID[conduit.spellID] = conduit;
     });
   }

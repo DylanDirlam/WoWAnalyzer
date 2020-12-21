@@ -4,8 +4,7 @@
  * You can access these entries like other entries in the spells files by importing `common/SPELLS` and using the assigned property on the SPELLS object. Please try to avoid abbreviating properties.
  */
 
-import { SpellList, PriestSpell } from "./Spell";
-const spells: SpellList<PriestSpell> = {
+const spells = {
   // Shared
   HOLY_NOVA: {
     id: 132157,
@@ -29,10 +28,10 @@ const spells: SpellList<PriestSpell> = {
     id: 32379,
     name: 'Shadow Word: Death',
     icon: 'spell_shadow_demonicfortitude',
-    manaCost: 800,
+    manaCost: 250,
   },
   POWER_INFUSION: {
-    id: 265314,
+    id: 10060,
     name: 'Power Infusion',
     icon: 'spell_holy_powerinfusion',
   },
@@ -58,7 +57,6 @@ const spells: SpellList<PriestSpell> = {
     name: 'Penance',
     icon: 'spell_holy_penance',
     manaCost: 800,
-    coefficient: 0.4,
   },
   PENANCE_HEAL: {
     // Penance on a friendly player
@@ -78,27 +76,23 @@ const spells: SpellList<PriestSpell> = {
     name: 'Power Word: Shield',
     icon: 'spell_holy_powerwordshield',
     manaCost: 1550,
-    atonementDuration: 15000,
   },
   SMITE: {
     id: 585,
     name: 'Smite',
     icon: 'spell_holy_holysmite',
-    manaCost: 200,
-    coefficient: 0.47,
+    manaCost: 100,
   },
   POWER_WORD_RADIANCE: {
     id: 194509,
     name: 'Power Word: Radiance',
     icon: 'spell_priest_power-word',
     manaCost: 3250,
-    atonementDuration: 9000,
   },
   SHADOW_MEND: {
     id: 186263,
     name: 'Shadow Mend',
     icon: 'spell_shadow_shadowmend',
-    atonementDuration: 15000,
     manaCost: 1750,
   },
   RAPTURE: {
@@ -348,7 +342,7 @@ const spells: SpellList<PriestSpell> = {
     id: 2060,
     name: 'Heal',
     icon: 'spell_holy_greaterheal',
-    manaCost: 1900,
+    manaCost: 1200,
   },
   CIRCLE_OF_HEALING_TALENT: {
     id: 204883,
@@ -360,7 +354,7 @@ const spells: SpellList<PriestSpell> = {
     id: 2061,
     name: 'Flash Heal',
     icon: 'spell_holy_flashheal',
-    manaCost: 3000,
+    manaCost: 1800,
   },
   PRAYER_OF_MENDING_CAST: {
     id: 33076,
@@ -488,6 +482,12 @@ const spells: SpellList<PriestSpell> = {
     id: 27827,
     name: 'Spirit of Redemption',
     icon: 'inv_enchant_essenceeternallarge',
+  },
+  // Items
+  DIVINE_IMAGE: {
+    id: 336401,
+    name: 'Divine Image',
+    icon: 'ability_priest_ascension',
   },
 
   // Shadow Spells
@@ -650,6 +650,6 @@ const spells: SpellList<PriestSpell> = {
     name: 'Shadow Crash',
     icon: 'spell_shadow_shadowfury',
   },
+} as const;
 
-};
 export default spells;

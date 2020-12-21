@@ -1,9 +1,8 @@
-
 import AbilityTracker from 'parser/shared/modules/AbilityTracker';
 import HealingDone from 'parser/shared/modules/throughput/HealingDone';
 import DamageDone from 'parser/shared/modules/throughput/DamageDone';
 import CastEfficiency from 'parser/shared/modules/CastEfficiency';
-import HealingEfficiencyTracker from 'parser/core/healingEfficiency/HealingEfficiencyTracker';
+import HealingEfficiencyTracker, { SpellInfoDetails } from 'parser/core/healingEfficiency/HealingEfficiencyTracker';
 import SPELLS from 'common/SPELLS/index';
 import ManaTracker from 'parser/core/healingEfficiency/ManaTracker';
 
@@ -16,8 +15,6 @@ import RenewingMist from 'parser/monk/mistweaver/modules/spells/RenewingMist';
 import Vivify from 'parser/monk/mistweaver/modules/spells/Vivify';
 import RefreshingJadeWind from 'parser/monk/mistweaver/modules/talents/RefreshingJadeWind';
 import ExpelHarm from 'parser/monk/mistweaver/modules/spells/ExpelHarm';
-import Spell from 'common/SPELLS/Spell';
-
 
 class MistweaverHealingEfficiencyTracker extends HealingEfficiencyTracker {
   static dependencies = {
@@ -141,6 +138,7 @@ class MistweaverHealingEfficiencyTracker extends HealingEfficiencyTracker {
     spellInfo.overhealingDone = this.healingDone.byAbility(SPELLS.GUST_OF_MISTS_CHIJI.id).overheal;
     return spellInfo;
   }
+
   getExpelHarmDetails(spellInfo: SpellInfoDetails) {
     spellInfo.healingDone = spellInfo.healingDone + this.expelHarm.gustsHealing + this.expelHarm.selfHealing + this.expelHarm.targetHealing;
     spellInfo.overhealingDone = spellInfo.overhealingDone + this.expelHarm.selfOverheal + this.expelHarm.targetOverheal;
@@ -150,16 +148,3 @@ class MistweaverHealingEfficiencyTracker extends HealingEfficiencyTracker {
 }
 
 export default MistweaverHealingEfficiencyTracker;
-
-interface SpellInfoDetails {
-  spell: Spell;
-  casts: number;
-  healingHits: number;
-  healingDone: number;
-  overhealingDone: number;
-  damageHits: number;
-  damageDone: number;
-  damageAbsorbed: number;
-  manaSpent: number;
-  manaGained: ManaTracker;
-}

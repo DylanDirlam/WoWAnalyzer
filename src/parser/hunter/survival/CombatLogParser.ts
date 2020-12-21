@@ -56,17 +56,6 @@ import HydrasBite from './modules/talents/HydrasBite';
 import FlankingStrike from './modules/talents/FlankingStrike';
 import TipOfTheSpear from './modules/talents/TipOfTheSpear';
 
-//Azerite Traits
-import WildernessSurvival from './modules/spells/azeritetraits/WildernessSurvival';
-import LatentPoison from './modules/spells/azeritetraits/LatentPoison';
-import BlurOfTalons from './modules/spells/azeritetraits/BlurOfTalons';
-import PrimevalIntuition from './modules/spells/azeritetraits/PrimevalIntuition';
-import DireConsequences from '../shared/modules/spells/azeritetraits/DireConsequences';
-import WildfireCluster from './modules/spells/azeritetraits/WildfireCluster';
-
-//Azerite Essences
-import MemoryOfLucidDreams from './modules/items/MemoryOfLucidDreams';
-
 //Covenants
 import ResonatingArrow from '../shared/modules/spells/covenants/kyrian/ResonatingArrow';
 import DeathChakrams from '../shared/modules/spells/covenants/necrolord/DeathChakrams';
@@ -84,8 +73,9 @@ import StingingStrike from './modules/spells/conduits/StingingStrike';
 import StrengthOfThePack from './modules/spells/conduits/StrengthOfThePack';
 
 //Legendaries
-import NessingwarysTrappingApparatus from '../shared/modules/items/NessingwarysTrappingApparatus';
+import NesingwarysTrappingApparatus from './modules/items/NesingwarysTrappingApparatus';
 import SoulforgeEmbers from '../shared/modules/items/SoulforgeEmbers';
+import WildfireCluster from './modules/items/WildfireCluster';
 
 class CombatLogParser extends CoreCombatLogParser {
   static specModules = {
@@ -142,17 +132,6 @@ class CombatLogParser extends CoreCombatLogParser {
     shrapnelBomb: ShrapnelBomb,
     volatileBomb: VolatileBomb,
 
-    //Azerite Traits
-    wildernessSurvival: WildernessSurvival,
-    latentPoison: LatentPoison,
-    blurOfTalons: BlurOfTalons,
-    primevalIntuition: PrimevalIntuition,
-    direConsequences: DireConsequences,
-    wildfireCluster: WildfireCluster,
-
-    //Azerite Essences
-    memoryOfLucidDreams: MemoryOfLucidDreams,
-
     //Covenants
     resonatingArrow: ResonatingArrow,
     deathChakrams: DeathChakrams,
@@ -169,9 +148,12 @@ class CombatLogParser extends CoreCombatLogParser {
     stingingStrike: StingingStrike,
     strengthOfThePack: StrengthOfThePack,
 
-    //Legendaries
-    nessingwarysTrappingApparatus: NessingwarysTrappingApparatus,
+    //Generic Legendaries
+    nesingwarysTrappingApparatus: NesingwarysTrappingApparatus,
     soulforgeEmbers: SoulforgeEmbers,
+
+    //Survival Legendaries
+    wildfireCluster: WildfireCluster,
 
     // Survival's throughput benefit isn't as big as for other classes
     arcaneTorrent: [ArcaneTorrent, { castEfficiency: 0.5 }] as const,

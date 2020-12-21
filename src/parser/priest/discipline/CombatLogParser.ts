@@ -2,7 +2,6 @@ import CoreCombatLogParser from 'parser/core/CombatLogParser';
 import LowHealthHealing from 'parser/shared/modules/features/LowHealthHealing';
 import ManaLevelChart from 'parser/shared/modules/resources/mana/ManaLevelChart';
 import ManaUsageChart from 'parser/shared/modules/resources/mana/ManaUsageChart';
-import LucidDreams from 'parser/shared/modules/spells/bfa/essences/LucidDreamsHealers';
 
 import AtonementSuccessiveDamageNormalizer from './normalizers/AtonementSuccessiveDamage';
 import ShadowfiendNormalizer from '../shared/normalizers/ShadowfiendNormalizer';
@@ -37,11 +36,12 @@ import DesperatePrayer from '../shared/modules/features/DesperatePrayer';
 import Contrition from './modules/spells/Contrition';
 import Grace from './modules/spells/Grace';
 import Schism from './modules/spells/Schism';
+import SinsOfTheMany from './modules/spells/SinsOfTheMany';
+
 import Mindgames from './modules/shadowlands/covenants/MindGames';
 import BoonOfTheAscended from './modules/shadowlands/covenants/BoonOfTheAscended';
 
-
-import SinsOfTheMany from './modules/spells/SinsOfTheMany';
+import ShiningRadiance from './modules/shadowlands/conduits/ShiningRadiance';
 
 import { ABILITIES_AFFECTED_BY_HEALING_INCREASES } from './constants';
 
@@ -94,12 +94,12 @@ class CombatLogParser extends CoreCombatLogParser {
     sinsOfTheMany: SinsOfTheMany,
     schism: Schism,
 
-    // Essences
-    lucidDreams: LucidDreams,
-
     // Covenants
     mindgames: Mindgames,
     boonOfTheAscended: BoonOfTheAscended,
+
+    // Conduits
+    shiningRadiance: ShiningRadiance,
   };
 }
 

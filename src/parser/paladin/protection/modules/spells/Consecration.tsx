@@ -7,10 +7,17 @@ import STATISTIC_ORDER from 'interface/others/STATISTIC_ORDER';
 import Events, { DamageEvent } from 'parser/core/Events';
 import { When, ThresholdStyle, NumberThreshold } from 'parser/core/ParseResults';
 import BoringSpellValue from 'interface/statistics/components/BoringSpellValue';
-import { i18n } from '@lingui/core';
+import { shouldIgnore } from 'parser/shared/modules/hit-tracking/utilities';
+import Enemies from 'parser/shared/modules/Enemies';
 import { t } from '@lingui/macro';
 
 class Consecration extends Analyzer {
+  static dependencies = {
+    enemies: Enemies,
+  };
+
+  protected enemies!: Enemies;
+
   _hitsTaken: number = 0;
   _hitsMitigated: number = 0;
 
@@ -20,6 +27,10 @@ class Consecration extends Analyzer {
   }
 
   onPlayerDamage(event: DamageEvent) {
+    if(shouldIgnore(this.enemies, event)) {
+      return;
+    }
+
     this._hitsTaken += 1;
     if(this.selectedCombatant.hasBuff(SPELLS.CONSECRATION_BUFF.id)) {
       this._hitsMitigated += 1;
@@ -46,7 +57,10 @@ class Consecration extends Analyzer {
     when(this.uptimeSuggestionThresholds)
         .addSuggestion((suggest, actual, recommended) => suggest('Your Consecration usage can be improved. Maintain it to reduce all incoming damage and refresh it during rotational downtime.')
             .icon(SPELLS.CONSECRATION_CAST.icon)
-            .actual(i18n._(t('paladin.protection.suggestions.consecration.hitsMitigated')`${formatPercentage(actual)}% of hits were mitigated by Consecration`))
+            .actual(t({
+      id: "paladin.protection.suggestions.consecration.hitsMitigated",
+      message: `${formatPercentage(actual)}% of hits were mitigated by Consecration`
+    }))
             .recommended(`>${formatPercentage(recommended)}% is recommended`));
   }
 

@@ -95,7 +95,7 @@ const BloodDeathKnightChecklist = ({ combatant, castEfficiency, thresholds }) =>
           thresholds={thresholds.boneShield}
         />
         <Requirement
-          name={<><SpellLink id={SPELLS.OSSUARY.id} /> Uptime</>}
+          name={<><SpellLink id={SPELLS.OSSUARY.id} /> Efficiency</>}
           thresholds={thresholds.ossuary}
         />
       </Rule>

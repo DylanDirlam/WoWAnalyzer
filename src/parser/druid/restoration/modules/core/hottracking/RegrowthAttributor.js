@@ -3,7 +3,7 @@ import Analyzer, { SELECTED_PLAYER } from 'parser/core/Analyzer';
 
 import Events from 'parser/core/Events';
 
-import HotTracker from './HotTracker';
+import HotTrackerRestoDruid from './HotTrackerRestoDruid';
 
 const BUFFER_MS = 150; // saw a few cases of taking close to 150ms from cast -> applybuff
 /*
@@ -12,9 +12,8 @@ const BUFFER_MS = 150; // saw a few cases of taking close to 150ms from cast -> 
  */
 class RegrowthAttributor extends Analyzer {
   static dependencies = {
-    hotTracker: HotTracker,
+    hotTracker: HotTrackerRestoDruid,
   };
-
 
   // cast tracking stuff
   lastRegrowthCastTimestamp;
@@ -25,7 +24,7 @@ class RegrowthAttributor extends Analyzer {
   totalNonCCRegrowthAbsorbs = 0;
   totalNonCCRegrowthHealingTicks = 0;
 
-  constructor(options){
+  constructor(options) {
     super(options);
     this.addEventListener(Events.cast.by(SELECTED_PLAYER).spell(SPELLS.REGROWTH), this.onCast);
     this.addEventListener(Events.heal.by(SELECTED_PLAYER).spell(SPELLS.REGROWTH), this.onHeal);
@@ -42,11 +41,11 @@ class RegrowthAttributor extends Analyzer {
   }
 
   onHeal(event) {
-    if(!this.selectedCombatant.hasBuff(SPELLS.CLEARCASTING_BUFF.id, event.timestamp, BUFFER_MS)) {
+    if (!this.selectedCombatant.hasBuff(SPELLS.CLEARCASTING_BUFF.id, event.timestamp, BUFFER_MS)) {
       this.totalNonCCRegrowthHealing += event.amount;
       this.totalNonCCRegrowthOverhealing += event.overheal || 0;
       this.totalNonCCRegrowthAbsorbs += event.absorbed || 0;
-      if(event.tick) {
+      if (event.tick) {
         this.totalNonCCRegrowthHealingTicks += 1;
       }
     }
@@ -56,7 +55,7 @@ class RegrowthAttributor extends Analyzer {
   _getRegrowthAttribution(event) {
     const spellId = event.ability.guid;
     const targetId = event.targetID;
-    if(!this.hotTracker.hots[targetId] || !this.hotTracker.hots[targetId][spellId]) {
+    if (!this.hotTracker.hots[targetId] || !this.hotTracker.hots[targetId][spellId]) {
       return;
     }
 

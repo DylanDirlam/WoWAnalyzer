@@ -1,8 +1,8 @@
 import React from 'react';
 
 import SPELLS from 'common/SPELLS';
-import Analyzer, { SELECTED_PLAYER, Options } from 'parser/core/Analyzer';
-import { When, ThresholdStyle } from 'parser/core/ParseResults';
+import Analyzer, { Options, SELECTED_PLAYER } from 'parser/core/Analyzer';
+import { ThresholdStyle, When } from 'parser/core/ParseResults';
 import SpellUsable from 'parser/shared/modules/SpellUsable';
 import { formatNumber, formatPercentage } from 'common/format';
 import Statistic from 'interface/statistics/Statistic';
@@ -13,7 +13,6 @@ import Events, { DamageEvent } from 'parser/core/Events';
 import { CTS_CDR_MS } from 'parser/hunter/marksmanship/constants';
 import { MS_BUFFER } from 'parser/hunter/shared/constants';
 import SpellLink from 'common/SpellLink';
-import { i18n } from '@lingui/core';
 import { t } from '@lingui/macro';
 
 /**
@@ -40,6 +39,22 @@ class CallingTheShots extends Analyzer {
     this.addEventListener(Events.damage.by(SELECTED_PLAYER).spell([SPELLS.ARCANE_SHOT, SPELLS.MULTISHOT_MM, SPELLS.CHIMAERA_SHOT_MM_NATURE_DAMAGE, SPELLS.CHIMAERA_SHOT_MM_FROST_DAMAGE]), this.onCTSPotentialProc);
   }
 
+  get callingTheShotsEfficacy() {
+    return this.effectiveTrueshotReductionMs / (this.effectiveTrueshotReductionMs + this.wastedTrueshotReductionMs);
+  }
+
+  get callingTheShotsEfficacyThresholds() {
+    return {
+      actual: this.callingTheShotsEfficacy,
+      isLessThan: {
+        minor: 0.975,
+        average: 0.95,
+        major: 0.9,
+      },
+      style: ThresholdStyle.PERCENTAGE,
+    };
+  }
+
   onCTSPotentialProc(event: DamageEvent) {
     if (event.timestamp > this.reductionTimestamp + MS_BUFFER) {
       if (this.spellUsable.isOnCooldown(SPELLS.TRUESHOT.id)) {
@@ -57,30 +72,17 @@ class CallingTheShots extends Analyzer {
     this.reductionTimestamp = event.timestamp;
   }
 
-  get callingTheShotsEfficacy() {
-    return this.effectiveTrueshotReductionMs / (this.effectiveTrueshotReductionMs + this.wastedTrueshotReductionMs);
-  }
-
-  get callingTheShotsEfficacyThresholds() {
-    return {
-      actual: this.callingTheShotsEfficacy,
-      isLessThan: {
-        minor: 0.975,
-        average: 0.95,
-        major: 0.9,
-      },
-      style: ThresholdStyle.PERCENTAGE,
-    };
-  }
-
   suggestions(when: When) {
     when(this.callingTheShotsEfficacyThresholds).addSuggestion((suggest, actual, recommended) => suggest(
-        <>
-          When talented into <SpellLink id={SPELLS.CALLING_THE_SHOTS_TALENT.id} />, it is important to maximize its potential by not casting {this.selectedCombatant.hasTalent(SPELLS.CHIMAERA_SHOT_MM_TALENT.id) ? <SpellLink id={SPELLS.CHIMAERA_SHOT_MM_TALENT.id} /> : <SpellLink id={SPELLS.ARCANE_SHOT.id} />} or <SpellLink id={SPELLS.MULTISHOT_MM.id} /> while <SpellLink id={SPELLS.TRUESHOT.id} /> isn't on cooldown.
-        </>)
-        .icon(SPELLS.CALLING_THE_SHOTS_TALENT.icon)
-        .actual(i18n._(t('hunter.marksmanship.suggestions.callingTheShots.efficiency')`You had ${formatPercentage(actual)}% effective cooldown reduction from Calling the Shots`))
-        .recommended(`>${formatPercentage(recommended)}% is recommended`));
+      <>
+        When talented into <SpellLink id={SPELLS.CALLING_THE_SHOTS_TALENT.id} />, it is important to maximize its potential by not casting {this.selectedCombatant.hasTalent(SPELLS.CHIMAERA_SHOT_MM_TALENT.id) ? <SpellLink id={SPELLS.CHIMAERA_SHOT_MM_TALENT.id} /> : <SpellLink id={SPELLS.ARCANE_SHOT.id} />} or <SpellLink id={SPELLS.MULTISHOT_MM.id} /> while <SpellLink id={SPELLS.TRUESHOT.id} /> isn't on cooldown.
+      </>)
+      .icon(SPELLS.CALLING_THE_SHOTS_TALENT.icon)
+      .actual(t({
+      id: "hunter.marksmanship.suggestions.callingTheShots.efficiency",
+      message: `You had ${formatPercentage(actual)}% effective cooldown reduction from Calling the Shots`
+    }))
+      .recommended(`>${formatPercentage(recommended)}% is recommended`));
   }
 
   statistic() {

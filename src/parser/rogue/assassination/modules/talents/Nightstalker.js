@@ -9,7 +9,6 @@ import { formatPercentage } from 'common/format';
 import calculateEffectiveDamage from 'parser/core/calculateEffectiveDamage';
 import { SELECTED_PLAYER } from 'parser/core/Analyzer';
 import Events from 'parser/core/Events';
-import { i18n } from '@lingui/core';
 import { t } from '@lingui/macro';
 
 import StealthCasts from './StealthCasts';
@@ -20,32 +19,6 @@ import RuptureSnapshot from '../features/RuptureSnapshot';
 const DAMAGE_BONUS = 0.5;
 
 class Nightstalker extends StealthCasts {
-  static dependencies = {
-    garroteSnapshot: GarroteSnapshot,
-    ruptureSnapshot: RuptureSnapshot,
-  };
-
-  bonusDamage = 0;
-
-  constructor(...args) {
-    super(...args);
-    this.active = this.selectedCombatant.hasTalent(SPELLS.NIGHTSTALKER_TALENT.id);
-    if (!this.active) {
-      return;
-    }
-    const allowedAbilities = ABILITIES_AFFECTED_BY_DAMAGE_INCREASES.filter(spell => !NIGHTSTALKER_BLACKLIST.includes(spell));
-    this.addEventListener(Events.damage.by(SELECTED_PLAYER).spell(allowedAbilities), this.addBonusDamageIfBuffed);
-  }
-
-  addBonusDamageIfBuffed(event) {
-    if (!this.selectedCombatant.hasBuff(SPELLS.STEALTH.id) &&
-      !this.selectedCombatant.hasBuff(SPELLS.STEALTH_BUFF.id) &&
-      !this.selectedCombatant.hasBuff(SPELLS.VANISH_BUFF.id)) {
-      return;
-    }
-    this.bonusDamage += calculateEffectiveDamage(event, DAMAGE_BONUS);
-  }
-
   get bonusDamageTotal() {
     return this.bonusDamage + this.garroteSnapshot.bonusDamage + this.ruptureSnapshot.bonusDamage;
   }
@@ -71,7 +44,7 @@ class Nightstalker extends StealthCasts {
 
     const RuptureOpener = this.stealthSequences[0].find(e => e.ability.guid === SPELLS.RUPTURE.id);
     const GarroteOpener = this.stealthSequences[0].find(e => e.ability.guid === SPELLS.GARROTE.id);
-    if(RuptureOpener || GarroteOpener) {
+    if (RuptureOpener || GarroteOpener) {
       return true;
     }
     return false;
@@ -105,13 +78,41 @@ class Nightstalker extends StealthCasts {
     };
   }
 
+  static dependencies = {
+    garroteSnapshot: GarroteSnapshot,
+    ruptureSnapshot: RuptureSnapshot,
+  };
+  bonusDamage = 0;
+
+  constructor(...args) {
+    super(...args);
+    this.active = this.selectedCombatant.hasTalent(SPELLS.NIGHTSTALKER_TALENT.id);
+    if (!this.active) {
+      return;
+    }
+    const allowedAbilities = ABILITIES_AFFECTED_BY_DAMAGE_INCREASES.filter(spell => !NIGHTSTALKER_BLACKLIST.includes(spell));
+    this.addEventListener(Events.damage.by(SELECTED_PLAYER).spell(allowedAbilities), this.addBonusDamageIfBuffed);
+  }
+
+  addBonusDamageIfBuffed(event) {
+    if (!this.selectedCombatant.hasBuff(SPELLS.STEALTH.id) &&
+      !this.selectedCombatant.hasBuff(SPELLS.STEALTH_BUFF.id) &&
+      !this.selectedCombatant.hasBuff(SPELLS.VANISH_BUFF.id)) {
+      return;
+    }
+    this.bonusDamage += calculateEffectiveDamage(event, DAMAGE_BONUS);
+  }
+
   suggestions(when) {
     when(this.suggestionThresholds).addSuggestion((suggest, actual, recommended) => suggest(<>Your failed to cast <SpellLink id={SPELLS.RUPTURE.id} /> after <SpellLink id={SPELLS.VANISH.id} /> {this.vanishCasts - this.vanishCastsSpentOnRupture} time(s). Make sure to prioritize spending your Vanish on snapshotting <SpellLink id={SPELLS.RUPTURE.id} /> when using <SpellLink id={SPELLS.NIGHTSTALKER_TALENT.id} />.</>)
-        .icon(SPELLS.GARROTE.icon)
-        .actual(i18n._(t('rogue.assassination.suggestions.nightstalker.snapshots')`${formatPercentage(actual)}% of Vanishes used to snapshot Rupture`))
-        .recommended(`>${formatPercentage(recommended)}% is recommended`));
+      .icon(SPELLS.GARROTE.icon)
+      .actual(t({
+      id: "rogue.assassination.suggestions.nightstalker.snapshots",
+      message: `${formatPercentage(actual)}% of Vanishes used to snapshot Rupture`
+    }))
+      .recommended(`>${formatPercentage(recommended)}% is recommended`));
     when(this.suggestionThresholdsOpener).isFalse().addSuggestion((suggest, actual, recommended) => suggest(<>You failed to snapshot a <SpellLink id={SPELLS.RUPTURE.id} /> or <SpellLink id={SPELLS.GARROTE.id} /> on pull from stealth. Make sure your first cast when using <SpellLink id={SPELLS.NIGHTSTALKER_TALENT.id} /> is a <SpellLink id={SPELLS.RUPTURE.id} /> or <SpellLink id={SPELLS.GARROTE.id} />.</>)
-        .icon(SPELLS.NIGHTSTALKER_TALENT.icon));
+      .icon(SPELLS.NIGHTSTALKER_TALENT.icon));
   }
 
   statistic() {

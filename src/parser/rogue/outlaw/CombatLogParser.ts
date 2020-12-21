@@ -39,6 +39,7 @@ import BladeFlurry from './modules/spells/BladeFlurry';
 import GuileCharm from './modules/spells/shadowlands/legendaries/GuileCharm';
 import GreenskinsWickers from './modules/spells/shadowlands/legendaries/GreenskinsWickers';
 import EssenceOfBloodfang from '../shared/shadowlands/legendaries/EssenceOfBloodfang';
+import InvigoratingShadowdust from '../shared/shadowlands/legendaries/InvigoratingShadowdust';
 
 class CombatLogParser extends CoreCombatLogParser {
   static specModules = {
@@ -67,6 +68,7 @@ class CombatLogParser extends CoreCombatLogParser {
     guileCharm: GuileCharm,
     greenskinsWickers: GreenskinsWickers,
     essenceOfBloodfang: EssenceOfBloodfang,
+    invigoratingShadowdust: InvigoratingShadowdust,
 
     //Casts
     dispatch: Dispatch,
@@ -89,11 +91,13 @@ class CombatLogParser extends CoreCombatLogParser {
     sepsis: Sepsis,
 
     // Outlaw's throughput benefit isn't as big as for other classes since we don't have a lot of free gcds to use
-    arcaneTorrent: [ArcaneTorrent, {
-      gcd: 1000,
-      castEfficiency: 0.5,
-      extraSuggestion: 'You should be using Arcane Torrent whenever you have a free GCD for it.',
-    }] as const,
+    arcaneTorrent: [
+      ArcaneTorrent, {
+        gcd: 1000,
+        castEfficiency: 0.5,
+        extraSuggestion: 'You should be using Arcane Torrent whenever you have a free GCD for it.',
+      },
+    ] as const,
   };
 }
 

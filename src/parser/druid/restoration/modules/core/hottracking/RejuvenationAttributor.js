@@ -3,7 +3,7 @@ import Analyzer, { SELECTED_PLAYER } from 'parser/core/Analyzer';
 
 import Events from 'parser/core/Events';
 
-import HotTracker from './HotTracker';
+import HotTrackerRestoDruid from './HotTrackerRestoDruid';
 
 const REJUV_SPELLS = [
   SPELLS.REJUVENATION,
@@ -18,7 +18,7 @@ const BUFFER_MS = 150; // saw a few cases of taking close to 150ms from cast -> 
  */
 class RejuvenationAttributor extends Analyzer {
   static dependencies = {
-    hotTracker: HotTracker,
+    hotTracker: HotTrackerRestoDruid,
   };
 
   // cast tracking stuff
@@ -53,7 +53,7 @@ class RejuvenationAttributor extends Analyzer {
   _getRejuvAttribution(event) {
     const spellId = event.ability.guid;
     const targetId = event.targetID;
-    if(!this.hotTracker.hots[targetId] || !this.hotTracker.hots[targetId][spellId]) {
+    if (!this.hotTracker.hots[targetId] || !this.hotTracker.hots[targetId][spellId]) {
       return;
     }
 

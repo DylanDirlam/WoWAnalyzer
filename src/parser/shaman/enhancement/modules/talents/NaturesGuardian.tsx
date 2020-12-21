@@ -1,7 +1,7 @@
 import React from 'react';
 
 import SPELLS from 'common/SPELLS/index';
-import Analyzer, { SELECTED_PLAYER, Options } from 'parser/core/Analyzer';
+import Analyzer, { Options, SELECTED_PLAYER } from 'parser/core/Analyzer';
 import Events, { HealEvent } from 'parser/core/Events';
 import BoringSpellValueText from 'interface/statistics/components/BoringSpellValueText';
 import Statistic from 'interface/statistics/Statistic';
@@ -22,10 +22,7 @@ class NaturesGuardian extends Analyzer {
   constructor(options: Options) {
     super(options);
 
-    if(!this.selectedCombatant.hasTalent(SPELLS.NATURES_GUARDIAN_TALENT.id)) {
-      this.active = false;
-      return;
-    }
+    this.active = this.selectedCombatant.hasTalent(SPELLS.NATURES_GUARDIAN_TALENT.id);
 
     this.addEventListener(
       Events.heal.by(SELECTED_PLAYER)

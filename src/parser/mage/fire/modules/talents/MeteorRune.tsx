@@ -7,10 +7,8 @@ import { When, ThresholdStyle } from 'parser/core/ParseResults';
 import Events, { CastEvent } from 'parser/core/Events';
 import AbilityTracker from 'parser/shared/modules/AbilityTracker';
 import EnemyInstances from 'parser/shared/modules/EnemyInstances';
-import { i18n } from '@lingui/core';
-import { t } from '@lingui/macro';
-
-import { RUNE_OF_POWER_DELAY } from '../../constants';
+import { MS_BUFFER_100 } from 'parser/mage/shared/constants';
+import { Trans } from '@lingui/macro';
 
 class MeteorRune extends Analyzer {
   static dependencies = {
@@ -40,7 +38,7 @@ class MeteorRune extends Analyzer {
   }
 
   onMeteor(event: CastEvent) {
-    if (!this.selectedCombatant.hasBuff(SPELLS.RUNE_OF_POWER_BUFF.id) && event.timestamp - this.lastRuneCast > RUNE_OF_POWER_DELAY) {
+    if (!this.selectedCombatant.hasBuff(SPELLS.RUNE_OF_POWER_BUFF.id) && event.timestamp - this.lastRuneCast > MS_BUFFER_100) {
       this.badMeteor += 1;
     }
   }
@@ -69,7 +67,7 @@ class MeteorRune extends Analyzer {
 		when(this.meteorUtilSuggestionThresholds)
 			.addSuggestion((suggest, actual, recommended) => suggest(<>You cast <SpellLink id={SPELLS.METEOR_TALENT.id} /> without <SpellLink id={SPELLS.RUNE_OF_POWER_TALENT.id} /> {this.badMeteor} times. In order to get the most out of <SpellLink id={SPELLS.METEOR_TALENT.id} /> you should always cast it while being buffed by <SpellLink id={SPELLS.RUNE_OF_POWER_TALENT.id} />.</>)
 					.icon(SPELLS.METEOR_TALENT.icon)
-					.actual(i18n._(t('mage.fire.suggestions.meteor.runeOfPower.utilization')`${formatPercentage(this.meteorUtilization)}% Utilization`))
+					.actual(<Trans id="mage.fire.suggestions.meteor.runeOfPower.utilization">{formatPercentage(this.meteorUtilization)}% Utilization`</Trans>)
 					.recommended(`<${formatPercentage(recommended)}% is recommended`));
 	}
 }

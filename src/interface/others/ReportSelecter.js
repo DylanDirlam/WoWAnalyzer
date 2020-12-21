@@ -5,7 +5,6 @@ import { push } from 'connected-react-router';
 import { Trans, t } from '@lingui/macro';
 
 import REGION_CODES from 'common/REGION_CODES';
-import { i18n } from 'interface/RootLocalizationProvider';
 import Tooltip from 'common/Tooltip';
 
 import './ReportSelecter.css';
@@ -116,7 +115,7 @@ class ReportSelecter extends React.PureComponent {
         <div className="report-selector">
           <Tooltip
             content={(
-              <Trans>
+              <Trans id="interface.others.reportSelecter.tooltip.supportedLinks">
                 Supported links:<br />
                 <ul>
                   <li>https://www.warcraftlogs.com/reports/&lt;report code&gt;</li>
@@ -137,7 +136,10 @@ class ReportSelecter extends React.PureComponent {
                 style={{ width: '100%', height: '100%' }}
                 ref={this.codeInput}
                 onChange={this.handleChange}
-                placeholder={i18n._(t`https://www.warcraftlogs.com/reports/<report code>`)}
+                placeholder={t({
+                  id: "interface.others.reportSelecter.placeholder",
+                  message: `https://www.warcraftlogs.com/reports/<report code>`
+                })}
                 autoCorrect="off"
                 autoCapitalize="off"
                 spellCheck="false"
@@ -146,7 +148,7 @@ class ReportSelecter extends React.PureComponent {
           </Tooltip>
 
           <button type="submit" className="btn btn-primary analyze">
-            <Trans>Analyze</Trans> <span className="glyphicon glyphicon-chevron-right" aria-hidden />
+            <Trans id="interface.others.reportSelecter.analyze">Analyze</Trans> <span className="glyphicon glyphicon-chevron-right" aria-hidden />
           </button>
         </div>
       </form>

@@ -4,8 +4,7 @@
  * You can access these entries like other entries in the spells files by importing `common/SPELLS` and using the assigned property on the SPELLS object. Please try to avoid abbreviating properties.
  */
 
-import { SpellList } from "./Spell";
-const spells: SpellList = {
+const spells = {
   // Paladin:
   CRUSADER_STRIKE: {
     id: 35395,
@@ -119,6 +118,11 @@ const spells: SpellList = {
     id: 10326,
     name: 'Turn Evil',
     icon: 'ability_paladin_turnevil',
+  },
+  SENSE_UNDEAD: {
+    id: 5502,
+    name: 'Sense Undead',
+    icon: 'spell_holy_senseundead',
   },
 
   // Holy Paladin:
@@ -360,19 +364,9 @@ const spells: SpellList = {
     name: 'Blade of Wrath',
     icon: 'ability_paladin_bladeofjusticeblue',
   },
-  GREATER_BLESSING_OF_KINGS: {
-    id: 203538,
-    name: 'Greater Blessing of Kings',
-    icon: 'spell_magic_greaterblessingofkings',
-  },
-  GREATER_BLESSING_OF_WISDOM: {
-    id: 203539,
-    name: 'Greater Blessing of Wisdom',
-    icon: 'spell_holy_greaterblessingofwisdom',
-  },
-  THE_FIRES_OF_JUSTICE_BUFF: {
+  FIRES_OF_JUSTICE_BUFF: {
     id: 209785,
-    name: 'The Fires of Justice',
+    name: 'Fires of Justice',
     icon: 'spell_holy_crusaderstrike',
   },
   ART_OF_WAR: {
@@ -391,7 +385,7 @@ const spells: SpellList = {
     icon: 'spell_holy_sealofblood',
   },
   EXECUTION_SENTENCE_DEBUFF: {
-    id: 267799,
+    id: 343257,
     name: 'Execution Sentence',
     icon: 'spell_paladin_executionsentence',
   },
@@ -404,6 +398,21 @@ const spells: SpellList = {
     id: 336872,
     name: 'Final Verdict',
     icon: 'spell_paladin_templarsverdict',
+  },
+  HAND_OF_HINDRANCE: {
+    id: 183218,
+    name: 'Hand of Hindrance',
+    icon: 'ability_paladin_handofhindrance',
+  },
+  SANCTIFIED_WRATH_DAMAGE: {
+    id: 326731,
+    name: 'Sanctified Wrath',
+    icon: 'ability_paladin_sanctifiedwrath',
+  },
+  EMPYREAN_POWER_TALENT_BUFF: {
+    id: 326733,
+    name: 'Empyrean Power',
+    icon: 'ability_paladin_sheathoflight',
   },
 
 	// Protection
@@ -516,6 +525,11 @@ const spells: SpellList = {
     name: 'Shining Light',
     icon: 'ability_paladin_lightoftheprotector',
   },
+  REDOUBT_BUFF: {
+    id: 280375,
+    name: 'Redoubt',
+    icon: 'ability_warrior_shieldguard',
+  },
   // the shining light buff does not have a proper tooltip. this one does. used in display
   SHINING_LIGHT_DESC: {
     id: 321136,
@@ -575,5 +589,6 @@ const spells: SpellList = {
     name: 'Divine Shield',
     icon: 'spell_holy_divineshield',
   },
-};
+} as const;
+
 export default spells;

@@ -4,8 +4,7 @@
  * You can access these entries like other entries in the spells files by importing `common/SPELLS` and using the assigned property on the SPELLS object. Please try to avoid abbreviating properties.
  */
 
-import { SpellList } from "./Spell";
-const spells: SpellList = {
+const spells = {
   // Blood:
 
   //Summons
@@ -135,6 +134,11 @@ const spells: SpellList = {
     name: 'Voracious',
     icon: 'ability_ironmaidens_whirlofblood',
   },
+  RELISH_IN_BLOOD: {
+    id: 317614,
+    name: 'Relish in Blood',
+    icon: 'ability_deathknight_roilingblood',
+  },
 
   // CC
   GOREFIENDS_GRASP: {
@@ -224,10 +228,10 @@ const spells: SpellList = {
     name: 'Chill Streak',
     icon: 'spell_frost_piercing-chill',
   },
-  FROSTWYRMS_FURY: { 
-    id: 279302, 
-    name: 'Frostwyrm\'s Fury', 
-    icon: 'achievement_boss_sindragosa' 
+  FROSTWYRMS_FURY: {
+    id: 279302,
+    name: 'Frostwyrm\'s Fury',
+    icon: 'achievement_boss_sindragosa'
   },
   // Buffs
   EMPOWER_RUNE_WEAPON: {
@@ -289,16 +293,22 @@ const spells: SpellList = {
     icon: 'inv_misc_rune_10',
   },
 
-  PESTILENT_PUSTULES: {
-    id: 220211,
-    name: 'Pestilent Pustules',
-    icon: 'spell_yorsahj_bloodboil_purpleoil',
+  OBLITERATION_RUNE_GAIN:{
+    id: 281327,
+    name: 'Obliteration',
+    icon: 'inv_axe_114',
   },
-  
+
   // Unholy:
   // Spells
   APOCALYPSE: {
     id: 275699,
+    name: 'Apocalypse',
+    icon: 'artifactability_unholydeathknight_deathsembrace',
+  },
+
+  APOCALYPSE_RUNE_GENERATION: {
+    id: 343758,
     name: 'Apocalypse',
     icon: 'artifactability_unholydeathknight_deathsembrace',
   },
@@ -351,6 +361,12 @@ const spells: SpellList = {
     icon: 'spell_shadow_rune',
   },
 
+  PESTILENT_PUSTULES: {
+    id: 220211,
+    name: 'Pestilent Pustules',
+    icon: 'spell_yorsahj_bloodboil_purpleoil',
+  },
+
   // scourge strike has one cast event but two damage events, the cast and physical
   // damage happen on id 55090, the shadow damage is on id 70890
   SCOURGE_STRIKE: {
@@ -377,21 +393,33 @@ const spells: SpellList = {
     icon: 'achievement_boss_svalasorrowgrave',
   },
 
+  EPIDEMIC: {
+    id: 207317,
+    name: 'Epidemic',
+    icon: 'spell_nature_nullifydisease'
+  },
+
+
   // Shared:
+  RUNEFORGING: {
+    id: 53428,
+    name: 'Runeforging',
+    icon: 'spell_deathknight_frozenruneweapon'
+  },
   //Rune of the Fallen Crusader Proc
   UNHOLY_STRENGTH_BUFF: {
-	  id: 53365,
-	  name: 'Unholy Strength',
-	  icon: 'spell_holy_blessingofstrength',
+    id: 53365,
+    name: 'Unholy Strength',
+    icon: 'spell_holy_blessingofstrength',
   },
 
   //Rune of Unending Thirst Proc
   RUNE_OF_UNENDING_THIRST_BUFF: {
-      id: 326984,
-      name: 'Rune of Unending Thirst',
-      icon: 'spell_nzinsanity_bloodthirst',
+    id: 326984,
+    name: 'Rune of Unending Thirst',
+    icon: 'spell_nzinsanity_bloodthirst',
   },
-  
+
   //Rune of Spellwarding
   RUNE_OF_SPELLWARDING_BUFF_SHIELD: {
     id: 326867,
@@ -404,6 +432,13 @@ const spells: SpellList = {
     id: 326808,
     name: 'Rune of Sanguination',
     icon: 'ability_argus_deathfog',
+  },
+
+  //Rune of Hysteria RP Buff
+  RUNE_OF_HYSTERIA_BUFF: {
+    id: 326918,
+    name: 'Rune of Hysteria',
+    icon: 'ability_deathknight_runicimpowerment',
   },
 
   ANTI_MAGIC_ZONE: {
@@ -573,4 +608,65 @@ const spells: SpellList = {
   },
 };
 
-export default spells;
+const runeforges = {
+  RUNE_OF_THE_FALLEN_CRUSADER: {
+    id: 53344,
+    name: 'Rune of the Fallen Crusader',
+    icon: 'spell_holy_retributionaura',
+    effectId: 3368,
+  },
+
+  RUNE_OF_RAZORICE: {
+    id: 53343,
+    name: ' Rune of Razorice',
+    icon: 'spell_frost_frostarmor',
+    effectId: 3370,
+  },
+
+  RUNE_OF_THE_STONESKIN_GARGOYLE: {
+    id: 62158,
+    name: 'Rune of the Stoneskin Gargoyle',
+    icon: 'inv_sword_130',
+    effectId: 3847,
+  },
+
+  RUNE_OF_HYSTERIA: {
+    id: 326911,
+    name: 'Rune of Hysteria',
+    icon: 'ability_deathknight_runicimpowerment',
+    effectId: 6243,
+  },
+
+  RUNE_OF_SANGUINATION: {
+    id: 326805,
+    name: 'Rune of Sanguination',
+    icon: 'ability_argus_deathfog',
+    effectId: 6241,
+  },
+
+  RUNE_OF_APOCALYPSE: {
+    id: 327082,
+    name: 'Rune of Apocalypse',
+    icon: 'spell_deathknight_thrash_ghoul',
+    effectId: 6245,
+  },
+
+  RUNE_OF_UNENDING_THIRST: {
+    id: 326977,
+    name: 'Rune of Unending Thirst',
+    icon: 'spell_nzinsanity_bloodthirst',
+    effectId: 6244,
+  },
+
+  RUNE_OF_SPELLWARDING: {
+    id: 326855,
+    name: 'Rune of Spellwarding',
+    icon: 'spell_fire_twilightfireward',
+    effectId: 6242,
+  },
+} as const;
+
+export default {
+  ...spells,
+  ...runeforges
+} as const;

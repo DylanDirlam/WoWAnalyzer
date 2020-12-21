@@ -1,5 +1,5 @@
 import React from 'react';
-import { Trans } from '@lingui/macro';
+import { Trans, t } from '@lingui/macro';
 
 import Warning from 'interface/Alert/Warning';
 
@@ -19,9 +19,15 @@ const ReportDurationWarning = ({ duration }: Props) => {
   return (
     <div className="container">
       <Warning style={{ marginBottom: 30 }}>
-        <h2><Trans>Report exceeds supported duration</Trans></h2>
-        <Trans>
-          The current report contains data collected over <strong>{formatNumber(durationInDays())} {durationInDays() > 1 ? 'days' : 'day'}</strong>.
+        <h2><Trans id="interface.report.reportDurationWarning.warning">Report exceeds supported duration</Trans></h2>
+        <Trans id="interface.report.reportDurationWarning.warningDetails">
+          The current report contains data collected over <strong>{formatNumber(durationInDays())} {durationInDays() > 1 ? t({
+          id: "interface.report.reportDurationWarning.warningDetails.days",
+          message: `days`
+        }) : t({
+          id: "interface.report.reportDurationWarning.warningDetails.day",
+          message: `day`
+        })}</strong>.
             This could lead to parsing issues with fights later in the report.
             We recommend that you split your logs before uploading them to warcraftlogs.com.
           </Trans>

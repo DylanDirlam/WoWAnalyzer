@@ -15,7 +15,7 @@ import SPELLS from 'common/SPELLS';
 // This only works with actual healing events; casts are not recognized.
 
 export default {
-  [SPELLS.HEALING_SURGE_RESTORATION.id]: {
+  [SPELLS.HEALING_SURGE.id]: {
     int: true,
     crit: true,
     hasteHpct: true,
@@ -124,40 +124,19 @@ export default {
     mastery: true,
     vers: true,
   },
-
-  // Azerite Traits
-  [SPELLS.OVERFLOWING_SHORES_HEAL.id]:{
+  [SPELLS.PRIMORDIAL_WAVE_HEAL.id]: {
+    int: true,
     crit: true,
+    hasteHpct: false, // static CD
     mastery: true,
     vers: true,
   },
-  [SPELLS.SWELLING_STREAM_HEAL.id]:{
-    crit: true,
+  [SPELLS.CHAIN_HARVEST_HEAL.id]: {
+    int: true,
+    crit: true, // going to need custom handling
+    hasteHpct: false, // static CD
     mastery: true,
     vers: true,
   },
-  [SPELLS.SURGING_TIDES_ABSORB.id]:{
-    vers: true,
-  },
-  [SPELLS.SPOUTING_SPIRITS_HEAL.id]:{
-    crit: true,
-    mastery: true,
-    vers: true,
-  },
-  [SPELLS.CONCENTRATED_MENDING_HEALING.id]: {
-    crit: true,
-    hasteHpm: true,
-    vers: true,
-  },
-  [SPELLS.SERENE_SPIRIT_HEAL.id]: {
-    crit: true,
-    mastery: true,
-    vers: true,
-  },
-  [SPELLS.PACK_SPIRIT_HEAL.id]: {
-    crit: true,
-    mastery: true,
-    hasteHpm: true,
-    vers: true,
-  },
+  // TODO add covenant abilities
 };

@@ -11,16 +11,16 @@ import UptimeIcon from 'interface/icons/Uptime';
 import SPECS from 'game/SPECS';
 
 import Analyzer, { Options, SELECTED_PLAYER } from 'parser/core/Analyzer';
-import Combatant from 'parser/core/Combatant';
 import Events, { HealEvent } from 'parser/core/Events';
 import { ThresholdStyle } from 'parser/core/ParseResults';
 import calculateEffectiveHealing from 'parser/core/calculateEffectiveHealing';
 import Combatants from 'parser/shared/modules/Combatants';
 import { Trans } from '@lingui/macro';
 
-import { HEALING_ABILITIES_AMPED_BY_EARTH_SHIELD } from '../constants';
+import { HEALING_ABILITIES_AMPED_BY_EARTH_SHIELD } from 'parser/shaman/shared/constants';
+import { EMBRACE_OF_EARTH_RANKS } from 'parser/shaman/restoration/constants';
 
-const EARTHSHIELD_HEALING_INCREASE = 0.20; // TODO add conduit
+export const EARTHSHIELD_HEALING_INCREASE = 0.20;
 
 class EarthShield extends Analyzer {
   static dependencies = {
@@ -31,6 +31,7 @@ class EarthShield extends Analyzer {
 
   healing = 0;
   buffHealing = 0;
+  earthShieldHealingIncrease = EARTHSHIELD_HEALING_INCREASE;
   category = STATISTIC_CATEGORY.TALENTS;
 
   constructor(options: Options) {
@@ -42,6 +43,11 @@ class EarthShield extends Analyzer {
       this.category = STATISTIC_CATEGORY.GENERAL;
     }
 
+    const conduitRank = this.selectedCombatant.conduitRankBySpellID(SPELLS.EMBRACE_OF_EARTH.id);
+    if (conduitRank) {
+      this.earthShieldHealingIncrease += EMBRACE_OF_EARTH_RANKS[conduitRank] / 100;
+    }
+
     // event listener for direct heals when taking damage with earth shield
     this.addEventListener(Events.heal.by(SELECTED_PLAYER).spell(SPELLS.EARTH_SHIELD_HEAL), this.onEarthShieldHeal);
 
@@ -51,7 +57,7 @@ class EarthShield extends Analyzer {
   }
 
   get uptime() {
-    return Object.values((this.combatants.players as Combatant[])).reduce((uptime: number, player: Combatant) => uptime + player.getBuffUptime(SPELLS.EARTH_SHIELD.id, this.owner.playerId), 0);
+    return Object.values((this.combatants.players)).reduce((uptime, player) => uptime + player.getBuffUptime(SPELLS.EARTH_SHIELD.id, this.owner.playerId), 0);
   }
 
   get uptimePercent() {
@@ -77,7 +83,7 @@ class EarthShield extends Analyzer {
   onEarthShieldAmpSpellHeal(event: HealEvent) {
     const combatant = this.combatants.getEntity(event);
     if (combatant && combatant.hasBuff(SPELLS.EARTH_SHIELD.id, event.timestamp)) {
-      this.buffHealing += calculateEffectiveHealing(event, EARTHSHIELD_HEALING_INCREASE);
+      this.buffHealing += calculateEffectiveHealing(event, this.earthShieldHealingIncrease);
     }
   }
 

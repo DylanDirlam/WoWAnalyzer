@@ -16,7 +16,7 @@ import StatisticListBoxItem from 'interface/others/StatisticListBoxItem';
 import { When } from 'parser/core/ParseResults';
 import { Trans } from '@lingui/macro';
 
-const RECOMMENDED_EFFICIENCY = 0.75;
+const RECOMMENDED_EFFICIENCY = 0.8;
 const MAGHAR_ORC_PET_HEALTH_INCREASE = 0.1;
 
 interface EarthenWallTotemInfo {
@@ -171,7 +171,7 @@ class EarthenWallTotem extends Analyzer {
                   <tr key={index}>
                     <th scope="row">{formatNth(index + 1)}</th>
                     <td>{formatDuration((cast.timestamp - this.owner.fight.start_time) / 1000) || 0}</td>
-                    <td style={castEfficiency < RECOMMENDED_EFFICIENCY ? { color: 'red', fontWeight: 'bold' } : { fontWeight: 'bold' }}>{formatPercentage(castEfficiency)} %</td>
+                    <td style={castEfficiency < RECOMMENDED_EFFICIENCY ? { color: 'red', fontWeight: 'bold' } : {}}>{formatPercentage(castEfficiency)} %</td>
                   </tr>
                 );
               })

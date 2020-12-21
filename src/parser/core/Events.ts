@@ -6,7 +6,6 @@ import React from 'react';
 
 import EventFilter from './EventFilter';
 
-
 export enum EventType {
   Heal = 'heal',
   HealAbsorbed = 'healabsorbed',
@@ -34,6 +33,7 @@ export enum EventType {
   Resurrect = 'resurrect',
   CombatantInfo = 'combatantinfo',
   Instakill = 'instakill',
+  AuraBroken = 'aurabroken',
 
   // Fabricated:
   Event = 'event', // everything
@@ -57,14 +57,14 @@ export enum EventType {
   Dispel = 'dispel',
   Time = 'time',
   Test = 'test',
-  SpendResource = "spendresource",
+  SpendResource = 'spendresource',
 
   // Monk
   AddStagger = 'addstagger',
   RemoveStagger = 'removestagger',
 
   // Priest
-  Atonement ='atonement',
+  Atonement = 'atonement',
   AtonementDamage = 'atonementDamageSource',
   AtonementApplied = 'atonement_applied',
   AtonementFaded = 'atonement_faded',
@@ -107,6 +107,7 @@ type MappedEventTypes = {
   [EventType.Death]: DeathEvent,
   [EventType.CombatantInfo]: CombatantInfoEvent,
   [EventType.Dispel]: DispelEvent,
+  [EventType.AuraBroken]: AuraBrokenEvent,
 
   // Fabricated:
   [EventType.FightEnd]: FightEndEvent,
@@ -145,7 +146,7 @@ export interface ClassResources {
 // TODO: Find a good place for this
 export enum Class {
   DemonHunter = 'DemonHunter',
-  DeathKnight = 'DeathKnight',
+  DeathKnight = 'Death Knight',
   Druid = 'Druid',
   Hunter = 'Hunter',
   Mage = 'Mage',
@@ -222,6 +223,14 @@ export interface BaseCastEvent<T extends string> extends Event<T> {
   absorb?: number;
   armor?: number;
   attackPower?: number;
+  channel?: {
+    type: EventType.BeginChannel;
+    timestamp: number;
+    ability: Ability;
+    sourceID: number;
+    isCancelled: boolean;
+    start: number;
+  };
   classResources?: Array<ClassResources & { cost: number }>;
   facing?: number;
   hitPoints?: number;
@@ -328,14 +337,14 @@ export interface AbsorbedEvent extends Event<EventType.Absorbed> {
 export interface DamageEvent extends Event<EventType.Damage> {
   source?: { name: 'Environment'; id: -1; guid: 0; type: 'NPC'; icon: 'NPC' };
   sourceID?: number;
-  sourceIsFriendly: true;
+  sourceIsFriendly: boolean;
   targetID: number;
   targetInstance: number;
-  targetIsFriendly: false;
+  targetIsFriendly: boolean;
   ability: Ability;
   hitType: number;
   amount: number;
-  absorbed: number;
+  absorbed?: number;
   resourceActor?: number;
   classResources?: ClassResources[];
   hitPoints?: number;
@@ -435,7 +444,7 @@ export interface ChangeBuffStackEvent extends BuffEvent<EventType.ChangeBuffStac
   };
 }
 
-export interface ChangeDebuffStackEvent extends Omit<ChangeBuffStackEvent, "type"> {
+export interface ChangeDebuffStackEvent extends Omit<ChangeBuffStackEvent, 'type'> {
   type: EventType.ChangeDebuffStack;
 }
 
@@ -501,6 +510,7 @@ export interface DrainEvent extends Event<EventType.Drain> {
   mapID: number;
   itemLevel: number;
 }
+
 export interface InterruptEvent extends Event<EventType.Interrupt> {
   ability: Ability;
   extraAbility: Ability;
@@ -518,6 +528,17 @@ export interface DeathEvent extends Event<EventType.Death> {
   targetID: number;
   targetIsFriendly: boolean;
   ability: Ability;
+}
+
+export interface AuraBrokenEvent extends Event<EventType.AuraBroken> {
+  ability: Ability;
+  extraAbility: Ability;
+  isBuff: boolean;
+  sourceID: number;
+  sourceIsFriendly: boolean;
+  targetID: number;
+  targetInstance: number;
+  targetIsFriendly: boolean;
 }
 
 export interface ResurrectEvent extends Event<EventType.Resurrect> {
@@ -629,9 +650,10 @@ export interface BasePhaseEvent<T extends string> extends Event<T> {
   phase: PhaseConfig;
   __fabricated: true;
 }
-export interface SpendResourceEvent extends Event<EventType.SpendResource>{
+
+export interface SpendResourceEvent extends Event<EventType.SpendResource> {
   sourceID: number;
-  targetID: number;
+  targetID?: number;
   resourceChange: number;
   resourceChangeType: number;
   ability: Ability;
@@ -649,8 +671,9 @@ export interface Item {
   quality: number;
   icon: string;
   itemLevel: number;
-  bonusIDs?: number[];
+  bonusIDs?: number | number[];
   permanentEnchant?: number;
+  temporaryEnchant?: number;
   gems?: Gem[];
 }
 
@@ -668,15 +691,6 @@ export interface Buff {
   name?: string;
 }
 
-export interface Trait {
-  traitID: number;
-  rank: number;
-  spellID: number;
-  icon: string;
-  slot: number;
-  isMajor: boolean;
-}
-
 export interface Covenant {
   name: string;
   description: string;
@@ -690,15 +704,22 @@ export interface Soulbind {
   garrisonTalentTreeId: number;
 }
 
+export interface SoulbindTrait {
+  traitID: number,
+  rank: number,
+  spellID: number,
+  icon: string,
+}
+
 export interface Conduit {
+  traitID: number;
   rank: number;
   spellID: number;
-  name: string; //TODO Verify this started showing up in logs as it currently is not there
-  soulbindConduitID: number; //TODO Verify if this is still called traitID as it is currently
   icon: string;
 }
 
 export interface CombatantInfoEvent extends Event<EventType.CombatantInfo> {
+  expansion: string;
   pin: string;
   sourceID: number;
   gear: Item[];
@@ -736,18 +757,12 @@ export interface CombatantInfoEvent extends Event<EventType.CombatantInfo> {
     Spell,
   ];
   pvpTalents: Spell[];
-  artifact: Array<{
-    traitID: number;
-    rank: number;
-    spellID: number;
-    icon: string;
-    slot: number;
-    isMajor: false;
-  }>;
-  heartOfAzeroth: Trait[];
-  covenant: Covenant, //TODO: Verify this is the structure in the combatlog
-  soulbind: Soulbind, //TODO: Verify this is the structure in the combatlog
-  conduits: Conduit[], //TODO: Verify this is the structure in the combatlog
+  covenantID: number,
+  soulbindID: number,
+  artifact?: SoulbindTrait[]; //WCL keeps Soulbind Abilities in the artifact field - we keep this temporarily before allocating to soulbindTraits
+  soulbindTraits?: SoulbindTrait[];
+  heartOfAzeroth?: Conduit[]; //WCL keeps class specific conduits in the heartOfAzeroth field - we keep this temporarily before allocating to conduits
+  conduits?: Conduit[];
   error?: any, //TODO: Verify, is this a bool? string?
 }
 
@@ -1005,7 +1020,7 @@ const Events = {
   },
   get test() {
     return new EventFilter(EventType.Test);
-  }
+  },
 };
 
 export default Events;

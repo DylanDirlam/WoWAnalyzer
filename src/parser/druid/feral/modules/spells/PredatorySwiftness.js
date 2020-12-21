@@ -1,13 +1,11 @@
 import React from 'react';
-import StatisticBox, { STATISTIC_ORDER } from 'interface/others/StatisticBox';
 import SPELLS from 'common/SPELLS';
-import SpellIcon from 'common/SpellIcon';
-import SpellLink from 'common/SpellLink';
+import STATISTIC_ORDER from 'interface/others/STATISTIC_ORDER';
+import BoringSpellValueText from 'interface/statistics/components/BoringSpellValueText';
+import Statistic from 'interface/statistics/Statistic';
 import { formatPercentage } from 'common/format';
 import Analyzer, { SELECTED_PLAYER } from 'parser/core/Analyzer';
 import Events from 'parser/core/Events';
-import { i18n } from '@lingui/core';
-import { t } from '@lingui/macro';
 
 const debug = false;
 
@@ -21,26 +19,30 @@ const POTENTIAL_SPENDERS = [
 
 /**
  * Using a finishing move has a 20% chance per combo point to give the buff "Predatory Swiftness"
- * which makes the next Regrowth or Entangling Roots instant cast and usable in cat form. Normally
- * this provides occasional extra utility. But with the Bloodtalons talent it becomes an important
- * part of the damage rotation.
+ * which makes the next Regrowth or Entangling Roots instant cast and usable in cat form.
  */
 class PredatorySwiftness extends Analyzer {
-  hasSwiftness = false;
+  get wasted() {
+    return this.expired + this.overwritten + this.remainAfterFight;
+  }
 
+  get wastedFraction() {
+    return this.wasted / this.generated;
+  }
+
+  hasSwiftness = false;
   generated = 0;
   used = 0;
   expired = 0;
   remainAfterFight = 0;
   overwritten = 0;
-
   /**
    * The combat log sometimes reports the player gaining Predatory Swiftness twice from a single finisher.
    * Avoid this by tracking time of last gain event.
    */
   timeLastGain = null;
 
-  constructor(options){
+  constructor(options) {
     super(options);
     this.addEventListener(Events.fightend, this.onFightend);
     this.addEventListener(Events.applybuff.to(SELECTED_PLAYER).spell(SPELLS.PREDATORY_SWIFTNESS), this.onApplyBuff);
@@ -83,7 +85,7 @@ class PredatorySwiftness extends Analyzer {
 
   onRemoveBuff(event) {
     if (!this.hasSwiftness || !this.expireTime ||
-        Math.abs(this.expireTime - event.timestamp) > EXPIRE_WINDOW) {
+      Math.abs(this.expireTime - event.timestamp) > EXPIRE_WINDOW) {
       return;
     }
     debug && console.log(`${this.owner.formatTimestamp(event.timestamp, 3)} Predatory Swiftness expired, unused`);
@@ -101,51 +103,13 @@ class PredatorySwiftness extends Analyzer {
     this.hasSwiftness = false;
     this.expireTime = null;
   }
-  
-  get wasted() {
-    return this.expired + this.overwritten + this.remainAfterFight;
-  }
-
-  get wastedFraction() {
-    return this.wasted / this.generated;
-  }
-
-  get suggestionThresholds() {
-    return {
-      actual: this.wastedFraction,
-      isGreaterThan: {
-        minor: 0,
-        average: 0.10,
-        major: 0.20,
-      },
-      style: 'percentage',
-    };
-  }
-
-  suggestions(when) {
-    if (!this.selectedCombatant.hasTalent(SPELLS.BLOODTALONS_TALENT.id)) {
-      // Predatory Swiftness is only important to damage rotation if the player has Bloodtalons
-      return;
-    }
-    when(this.suggestionThresholds).addSuggestion((suggest, actual, recommended) => suggest(
-        <>
-          You are not making use of all your chances to trigger <SpellLink id={SPELLS.BLOODTALONS_TALENT.id} /> through <SpellLink id={SPELLS.PREDATORY_SWIFTNESS.id} />. Try to use it to instant-cast <SpellLink id={SPELLS.REGROWTH.id} /> or <SpellLink id={SPELLS.ENTANGLING_ROOTS.id} /> before you generate another charge of the buff, and before it wears off.
-        </>,
-      )
-        .icon(SPELLS.PREDATORY_SWIFTNESS.icon)
-        .actual(i18n._(t('druid.feral.suggestions.predatorySwiftness.wasted')`${formatPercentage(actual)}% of Predatory Swiftness buffs wasted.`))
-        .recommended(`${recommended}% is recommended`));
-  }
 
   statistic() {
     return (
-      <StatisticBox
-        icon={<SpellIcon id={SPELLS.PREDATORY_SWIFTNESS.id} />}
-        value={`${formatPercentage(1 - this.wastedFraction)}%`}
-        label="Predatory Swiftness buffs used"
+      <Statistic
         tooltip={(
           <>
-            You used <strong>{this.used}</strong> out of <strong>{this.generated}</strong> Predatory Swiftness buffs to instant-cast Regrowth or Entangling Roots{this.selectedCombatant.hasTalent(SPELLS.BLOODTALONS_TALENT.id) ? ' and trigger the Bloodtalons buff' : ''}. <br />
+            You used <strong>{this.used}</strong> out of <strong>{this.generated}</strong> Predatory Swiftness buffs to instant-cast Regrowth or Entangling Roots. <br />
             <ul>
               <li>The buff was allowed to expire <strong>{this.expired}</strong> time{this.expired !== 1 ? 's' : ''}.</li>
               <li>You used another finisher while the buff was still active and overwrote it <strong>{this.overwritten}</strong> time{this.overwritten !== 1 ? 's' : ''}.</li>
@@ -153,8 +117,15 @@ class PredatorySwiftness extends Analyzer {
             </ul>
           </>
         )}
+        size="flexible"
         position={STATISTIC_ORDER.OPTIONAL(5)}
-      />
+      >
+        <BoringSpellValueText spell={SPELLS.PREDATORY_SWIFTNESS}>
+          <>
+            {formatPercentage(1 - this.wastedFraction)}% <small>buffs used</small>
+          </>
+        </BoringSpellValueText>
+      </Statistic>
     );
   }
 }

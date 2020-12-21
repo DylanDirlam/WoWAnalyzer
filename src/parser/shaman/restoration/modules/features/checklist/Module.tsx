@@ -6,11 +6,14 @@ import Combatants from 'parser/shared/modules/Combatants';
 import ManaValues from 'parser/shared/modules/ManaValues';
 import PreparationRuleAnalyzer from 'parser/shared/modules/features/Checklist/PreparationRuleAnalyzer';
 
-import AlwaysBeCasting from '../AlwaysBeCasting';
+import AlwaysBeCasting from 'parser/shaman/restoration/modules/features/AlwaysBeCasting';
+
 import ChainHeal from '../../spells/ChainHeal';
 import HealingRain from '../../spells/HealingRain';
+import EarthShield from '../../spells/EarthShield';
 import Wellspring from '../../talents/Wellspring';
 import EarthenWallTotem from '../../talents/EarthenWallTotem';
+import SurgeOfEarth from '../../talents/SurgeOfEarth';
 
 import Component from './Component';
 
@@ -23,8 +26,10 @@ class Checklist extends BaseChecklist {
     preparationRuleAnalyzer: PreparationRuleAnalyzer,
     chainHeal: ChainHeal,
     healingRain: HealingRain,
+    earthShield: EarthShield,
     wellspring: Wellspring,
     earthenWallTotem: EarthenWallTotem,
+    surgeOfEarth: SurgeOfEarth,
   };
 
   protected combatants!: Combatants;
@@ -34,8 +39,10 @@ class Checklist extends BaseChecklist {
   protected preparationRuleAnalyzer!: PreparationRuleAnalyzer;
   protected chainHeal!: ChainHeal;
   protected healingRain!: HealingRain;
+  protected earthShield!: EarthShield;
   protected wellspring!: Wellspring;
   protected earthenWallTotem!: EarthenWallTotem;
+  protected surgeOfEarth!: SurgeOfEarth;
 
   render() {
     return (
@@ -51,7 +58,10 @@ class Checklist extends BaseChecklist {
           healingRainTargetThreshold: this.healingRain.suggestionThreshold,
           wellspringTargetThreshold: this.wellspring.suggestionThreshold,
           ewtTargetThreshold: this.earthenWallTotem.suggestionThreshold,
+          soeTargetThreshold: this.surgeOfEarth.suggestionThreshold,
           manaLeft: this.manaValues.suggestionThresholds,
+          earthShieldPrepull: this.earthShield.suggestionThresholdsPrepull,
+          earthShieldUptime: this.earthShield.suggestionThresholds,
         }}
       />
     );

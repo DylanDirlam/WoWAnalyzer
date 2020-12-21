@@ -1,20 +1,17 @@
 import React from 'react';
 import Analyzer from 'parser/core/Analyzer';
 import Panel from 'interface/others/Panel';
-import StatisticBox, { STATISTIC_ORDER } from 'interface/others/StatisticBox';
-import { i18n } from '@lingui/core';
+import STATISTIC_ORDER from 'interface/others/STATISTIC_ORDER';
+import Statistic from 'interface/statistics/Statistic';
+import BoringResourceValue from 'interface/statistics/components/BoringResourceValue';
+import RESOURCE_TYPES from 'game/RESOURCE_TYPES';
+
 import { t } from '@lingui/macro';
 
 import ResourceBreakdown from './ComboPointBreakdown';
-import WastedPointsIcon from '../images/feralComboPointIcon.png';
 import ComboPointTracker from './ComboPointTracker';
 
-
 class ComboPointDetails extends Analyzer {
-  static dependencies = {
-    comboPointTracker: ComboPointTracker,
-  };
-
   get pointsWasted() {
     return this.comboPointTracker.wasted - this.comboPointTracker.unavoidableWaste;
   }
@@ -35,31 +32,42 @@ class ComboPointDetails extends Analyzer {
     };
   }
 
+  static dependencies = {
+    comboPointTracker: ComboPointTracker,
+  };
+
   suggestions(when) {
     when(this.wastingSuggestionThresholds).addSuggestion((suggest, actual, recommended) => suggest(
-        <>
-          You are wasting combo points. Avoid using generators once you reach the maximum.
-        </>,
-      )
-        .icon('creatureportrait_bubble')
-        .actual(i18n._(t('druid.feral.suggestions.comboPoints.wasted')`${actual.toFixed(1)} combo points wasted per minute`))
-        .recommended('zero waste is recommended'));
+      <>
+        You are wasting combo points. Avoid using generators once you reach the maximum.
+      </>,
+    )
+      .icon('creatureportrait_bubble')
+      .actual(t({
+      id: "druid.feral.suggestions.comboPoints.wasted",
+      message: `${actual.toFixed(1)} combo points wasted per minute`
+    }))
+      .recommended('zero waste is recommended'));
   }
 
   statistic() {
     return (
-      <StatisticBox
-        icon={(
-          <img
-            src={WastedPointsIcon}
-            alt="Wasted Combo Points"
-          />
-        )}
-        value={this.pointsWastedPerMinute.toFixed(2)}
-        label="Wasted Combo Points per minute"
-        tooltip={<>You wasted a total of <strong>{this.pointsWasted}</strong> combo points. This number does NOT include Primal Fury procs that happened on a point builder used at 4 CPs, because this waste can't be controlled.</>}
+      <Statistic
+        size="small"
+        tooltip={
+          <>
+            You wasted a total of <strong>{this.pointsWasted}</strong> combo points. <br />
+            This number does NOT include Primal Fury procs that happened on a point builder used at 4 CPs, because this waste can't be controlled.
+          </>
+        }
         position={STATISTIC_ORDER.CORE(6)}
-      />
+      >
+        <BoringResourceValue
+          resource={RESOURCE_TYPES.COMBO_POINTS}
+          value={`${this.pointsWastedPerMinute.toFixed(2)}`}
+          label="Wasted Combo Points per minute"
+        />
+      </Statistic>
     );
   }
 
@@ -76,7 +84,7 @@ class ComboPointDetails extends Analyzer {
         </Panel>
       ),
     };
- }
+  }
 }
 
 export default ComboPointDetails;

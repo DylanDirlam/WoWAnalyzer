@@ -6,27 +6,29 @@ import Statistic from 'interface/statistics/Statistic';
 import BoringSpellValueText from 'interface/statistics/components/BoringSpellValueText';
 import STATISTIC_ORDER from 'interface/others/STATISTIC_ORDER';
 import Analyzer, { SELECTED_PLAYER, Options } from 'parser/core/Analyzer';
-import Events from 'parser/core/Events';
+import EnemyInstances from 'parser/shared/modules/EnemyInstances';
+import Events, { CastEvent, ApplyBuffEvent, RemoveBuffEvent, RefreshBuffEvent } from 'parser/core/Events';
 import EventHistory from 'parser/shared/modules/EventHistory';
+import { MS_BUFFER_100 } from 'parser/mage/shared/constants';
 import { ThresholdStyle, When } from 'parser/core/ParseResults';
-import { i18n } from '@lingui/core';
-import { t } from '@lingui/macro';
-
-import { PROC_BUFFER } from '../../constants';
+import { Trans } from '@lingui/macro';
 
 const debug = false;
 
 class BrainFreeze extends Analyzer {
   static dependencies = {
+    enemies: EnemyInstances,
     eventHistory: EventHistory,
   };
   protected eventHistory!: EventHistory;
+  protected enemies!: EnemyInstances;
 
   usedProcs = 0;
   overwrittenProcs = 0;
   expiredProcs = 0;
   totalProcs = 0;
   flurryHardCast = 0;
+  flurryOverlapped = 0;
 
   // Tracks whether the last brain freeze generator to be cast was Ebonbolt or Frostbolt
   wasLastGeneratorEB = false;
@@ -39,18 +41,18 @@ class BrainFreeze extends Analyzer {
     this.addEventListener(Events.cast.by(SELECTED_PLAYER).spell(SPELLS.FLURRY), this.onFlurryCast);
   }
 
-  brainFreezeApplied() {
+  brainFreezeApplied(event: ApplyBuffEvent) {
     this.totalProcs += 1;
   }
 
-  brainFreezeRefreshed() {
+  brainFreezeRefreshed(event: RefreshBuffEvent) {
     this.totalProcs += 1;
     this.overwrittenProcs += 1;
     debug && this.debug("Brain Freeze overwritten");
   }
 
-  brainFreezeRemoved() {
-    const previousSpell = this.eventHistory.last(1, PROC_BUFFER, Events.cast.by(SELECTED_PLAYER).spell(SPELLS.FLURRY));
+  brainFreezeRemoved(event: RemoveBuffEvent) {
+    const previousSpell = this.eventHistory.last(1, MS_BUFFER_100, Events.cast.by(SELECTED_PLAYER).spell(SPELLS.FLURRY));
     if (previousSpell.length !== 0) {
       this.usedProcs += 1;
     } else {
@@ -59,9 +61,12 @@ class BrainFreeze extends Analyzer {
     }
   }
 
-  onFlurryCast() {
+  onFlurryCast(event: CastEvent) {
+    const enemy = this.enemies.getEntity(event);
     if (!this.selectedCombatant.hasBuff(SPELLS.BRAIN_FREEZE.id)) {
       this.flurryHardCast += 1;
+    } else if (enemy && enemy.hasBuff(SPELLS.WINTERS_CHILL.id)) {
+      this.flurryOverlapped += 1;
     }
   }
 
@@ -127,21 +132,37 @@ class BrainFreeze extends Analyzer {
     };
   }
 
+  get overlappedFlurryThresholds() {
+    return {
+      actual: this.flurryOverlapped,
+      isGreaterThan: {
+        average: 0,
+        major: 3,
+      },
+      style: ThresholdStyle.NUMBER,
+    }
+  }
+
   suggestions(when: When) {
     when(this.brainFreezeOverwritenThresholds)
-      .addSuggestion((suggest, actual, recommended) => suggest(<>You overwrite {formatPercentage(actual)}% of your <SpellLink id={SPELLS.BRAIN_FREEZE.id} /> procs. You should use your <SpellLink id={SPELLS.BRAIN_FREEZE.id} /> procs as soon as possible and avoid letting them expire or be overwritten whenever possible. There are not any situations where it would be advantageous to hold your <SpellLink id={SPELLS.BRAIN_FREEZE.id} />.</>)
+      .addSuggestion((suggest, actual, recommended) => suggest(<>You overwrote {formatPercentage(actual)}% of your <SpellLink id={SPELLS.BRAIN_FREEZE.id} /> procs. You should use your <SpellLink id={SPELLS.BRAIN_FREEZE.id} /> procs as soon as possible and avoid letting them expire or be overwritten whenever possible. There are not any situations where it would be advantageous to hold your <SpellLink id={SPELLS.BRAIN_FREEZE.id} />.</>)
           .icon(SPELLS.BRAIN_FREEZE.icon)
-          .actual(i18n._(t('mage.frost.suggestions.brainFreeze.overwritten')`${formatPercentage(actual)}% overwritten`))
+          .actual(<Trans id="mage.frost.suggestions.brainFreeze.overwritten">{formatPercentage(actual)}% overwritten</Trans>)
           .recommended(`Overwriting none is recommended`));
     when(this.brainFreezeExpiredThresholds)
       .addSuggestion((suggest, actual, recommended) => suggest(<>You allowed {formatPercentage(actual)}% of your <SpellLink id={SPELLS.BRAIN_FREEZE.id} /> procs to expire. Make sure you are using your procs as soon as possible to avoid this.</>)
           .icon(SPELLS.BRAIN_FREEZE.icon)
-          .actual(i18n._(t('mage.frost.suggestions.brainFreeze.expired')`${formatPercentage(actual)}% expired`))
+          .actual(<Trans id="mage.frost.suggestions.brainFreeze.expired">{formatPercentage(actual)}% expired</Trans>)
           .recommended(`Letting none expire is recommended`));
     when(this.flurryWithoutBrainFreezeThresholds)
       .addSuggestion((suggest, actual, recommended) => suggest(<>You cast <SpellLink id={SPELLS.FLURRY.id} /> without <SpellLink id={SPELLS.BRAIN_FREEZE.id} /> {actual} times. <SpellLink id={SPELLS.FLURRY.id} /> does not debuff the target with <SpellLink id={SPELLS.WINTERS_CHILL.id} /> unless you have a <SpellLink id={SPELLS.BRAIN_FREEZE.id} /> proc, so you should never cast <SpellLink id={SPELLS.FLURRY.id} /> unless you have <SpellLink id={SPELLS.BRAIN_FREEZE.id} />.</>)
           .icon(SPELLS.FLURRY.icon)
-          .actual(i18n._(t('mage.frost.suggestions.brainFreeze.casts')`${formatNumber(actual)} casts`))
+          .actual(<Trans id="mage.frost.suggestions.brainFreeze.casts">{formatNumber(actual)} casts</Trans>)
+          .recommended(`Casting none is recommended`));
+    when(this.overlappedFlurryThresholds)
+      .addSuggestion((suggest, actual, recommended) => suggest(<>You used a <SpellLink id={SPELLS.BRAIN_FREEZE.id} /> proc via casting <SpellLink id={SPELLS.FLURRY.id} /> while the target still had the <SpellLink id={SPELLS.WINTERS_CHILL.id} /> debuff on them {this.flurryOverlapped} times. Using <SpellLink id={SPELLS.BRAIN_FREEZE.id} /> applies 2 stacks of <SpellLink id={SPELLS.WINTERS_CHILL.id} /> to the target so you should always ensure you are spending both stacks before you use another <SpellLink id={SPELLS.BRAIN_FREEZE.id} /> proc.</>)
+          .icon(SPELLS.FLURRY.icon)
+          .actual(<Trans id="mage.frost.suggestions.brainFreeze.casts">{formatNumber(actual)} casts</Trans>)
           .recommended(`Casting none is recommended`));
   }
 

@@ -17,7 +17,6 @@ class Haste extends Analyzer {
     statTracker: StatTracker,
   };
 
-  /* eslint-disable no-useless-computed-key */
   static HASTE_BUFFS = {
 
     // HASTE RATING BUFFS ARE HANDLED BY THE STATTRACKER MODULE
@@ -32,20 +31,19 @@ class Haste extends Analyzer {
     [SPELLS.DARK_SOUL_MISERY_TALENT.id]: 0.3,
     [SPELLS.REVERSE_ENTROPY_BUFF.id]: 0.15,
     [SPELLS.ENRAGE.id]: 0.25, // Fury Warrior
-    [SPELLS.FROTHING_BERSERKER.id]: 0.05, // Fury Warrior
     [SPELLS.EMPOWER_RUNE_WEAPON.id]: 0.15, // Frost DK
-    [SPELLS.EVER_RISING_TIDE_CHARGING_BUFF.id]: 0.1, // Essence
-    [SPELLS.GUARDIAN_OF_AZEROTH_HASTE_BUFF.id]: {
-      hastePerStack: 0.02, //Essence
-    },
+    [SPELLS.EUPHORIA.id]: 0.2, //Buff from Thrill Seeker (Nadjia Soulbind Venthyr)
 
     //region Hunter Haste Buffs
     [SPELLS.DIRE_BEAST_BUFF.id]: DIRE_BEAST_HASTE_PERCENT,
     [SPELLS.STEADY_FOCUS_BUFF.id]: STEADY_FOCUS_HASTE_PERCENT,
     //endregion
 
-    // Boss abilities:
-    [SPELLS.OPULENCE_AMETHYST_OF_THE_SHADOW_KING.id]: 0.5, // Amethyst of the Shadow King by Opulence (BoD - BFA)
+    //region Paladin
+    [SPELLS.CRUSADE_TALENT.id]: {
+      hastePerStack: 0.03,
+    },
+    //endregion
   };
 
   get changehaste() {

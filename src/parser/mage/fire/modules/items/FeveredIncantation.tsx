@@ -14,9 +14,7 @@ import HIT_TYPES from 'game/HIT_TYPES';
 
 const DAMAGE_BONUS_PER_STACK = 0.02;
 
-class ControlledDestruction extends Analyzer {
-
-  conduitRank: number = 0;
+class FeveredIncantation extends Analyzer {
 
   bonusDamage = 0;
 
@@ -55,4 +53,4 @@ class ControlledDestruction extends Analyzer {
   }
 }
 
-export default ControlledDestruction;
+export default FeveredIncantation;

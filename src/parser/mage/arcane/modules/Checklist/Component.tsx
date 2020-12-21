@@ -33,7 +33,6 @@ const ArcaneMageChecklist = ({ combatant, castEfficiency, thresholds }: any) => 
         <AbilityRequirement spell={SPELLS.EVOCATION.id} />
         {combatant.hasTalent(SPELLS.SUPERNOVA_TALENT.id) && <AbilityRequirement spell={SPELLS.SUPERNOVA_TALENT.id} />}
         {combatant.hasTalent(SPELLS.ARCANE_ORB_TALENT.id) && <AbilityRequirement spell={SPELLS.ARCANE_ORB_TALENT.id} />}
-        {combatant.hasTalent(SPELLS.MIRROR_IMAGE.id) && <AbilityRequirement spell={SPELLS.MIRROR_IMAGE.id} />}
         {combatant.hasTalent(SPELLS.RUNE_OF_POWER_TALENT.id) && <AbilityRequirement spell={SPELLS.RUNE_OF_POWER_TALENT.id} />}
       </Rule>
       <Rule
@@ -51,7 +50,7 @@ const ArcaneMageChecklist = ({ combatant, castEfficiency, thresholds }: any) => 
         />
         <Requirement
           name="Arcane Power Pre-Cast Setup"
-          tooltip="In order to effectively utilize Arcane Power, there are certain things you need to ensure are setup before you cast Arcane Power. Making sure you have 4 Arcane Charges, You have more than 40% Mana (Unless you have the Overpowered Talent), and ensuring you cast Rune of Power immediately before Arcane Power (if you have Rune of Power talented) will all help make the most out of your burn phase."
+          tooltip="In order to effectively utilize Arcane Power, there are certain things you need to ensure are setup before you cast Arcane Power. Making sure you have 4 Arcane Charges, You have more than 40% Mana (Unless you have the Overpowered Talent), and ensuring you cast Touch of the Magi immediately before Arcane Power will all help make the most out of your burn phase."
           thresholds={thresholds.arcanePowerCooldown}
         />
 
@@ -62,9 +61,16 @@ const ArcaneMageChecklist = ({ combatant, castEfficiency, thresholds }: any) => 
       >
         {combatant.hasTalent(SPELLS.ARCANE_ORB_TALENT.id) && (
           <Requirement
-            name="Arcane Orb Avg. Hits Per Cast"
-            tooltip="Arcane Orb is primarily an AoE Spell, so you should only choose it on fights with multiple targets but you should still cast it on cooldown even if there is only one target available (unless there is about to be multiple targets). Therefore, on average, your Arcane Orb should hit more than 1 mob per cast."
-            thresholds={thresholds.arcaneOrbAverageHits}
+            name="Missed Arcane Orbs"
+            tooltip="Arcane Orb is a skillshot which means that it is important for you to aim it properly in order to get the most out of it. Therefore, on single target you should always ensure that the enemy gets hit by it, and if there are multiple enemies then you should do what you can to ensure all or most of them will get hit by the Orb as well."
+            thresholds={thresholds.arcaneOrbMissedOrbs}
+          />
+        )}
+        {combatant.hasTalent(SPELLS.ARCANE_ECHO_TALENT.id) && (
+          <Requirement
+            name="Bad Touch of the Magi Uses"
+            tooltip="Arcane Echo causes direct damage abilities, like Arcane Missiles, to pulse damage to up to 8 nearby targets. Because of this, you should be non-stop casting Arcane Missiles (whether you have Clearcasting procs or not), into any target with the Touch of the Magi debuff until that debuff is removed."
+            thresholds={thresholds.arcaneEchoLowUsage}
           />
         )}
         {combatant.hasTalent(SPELLS.RULE_OF_THREES_TALENT.id) && (

@@ -5,22 +5,19 @@ exports[`Elemental Shaman integration test: example log Aftershock matches the s
   className="col-lg-3 col-md-4 col-sm-6 col-xs-12"
 >
   <div
-    className="panel statistic standard statistic-box"
-    style={
-      Object {
-        "height": "auto",
-        "zIndex": 1,
-      }
-    }
+    category="TALENTS"
+    className="panel statistic flexible "
+    position={1000}
   >
     <div
       className="panel-body"
     >
       <div
-        className="pad"
+        className="pad boring-text "
       >
         <label>
           <a
+            className="spell-link-text"
             href="http://wowhead.com/spell=273221"
             rel="noopener noreferrer"
             target="_blank"
@@ -32,12 +29,23 @@ exports[`Elemental Shaman integration test: example log Aftershock matches the s
             />
           </a>
            
-          Maelstrom refunded
+          <a
+            className="spell-link-text"
+            href="http://wowhead.com/spell=273221"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Aftershock
+          </a>
         </label>
         <div
           className="value"
         >
           480
+           
+          Maelstrom
+           generated 
+          <small />
         </div>
       </div>
     </div>
@@ -71,12 +79,15 @@ exports[`Elemental Shaman integration test: example log AlwaysBeCasting matches 
             src="//render-us.worldofwarcraft.com/icons/56/spell_mage_altertime.jpg"
           />
            
-          Downtime
+          <trans
+            id="shared.alwaysBeCasting.statistic.label"
+            message="Downtime"
+          />
         </label>
         <div
           className="value"
         >
-          26.73 %
+          10.48 %
         </div>
         <div
           style={
@@ -95,7 +106,7 @@ exports[`Elemental Shaman integration test: example log AlwaysBeCasting matches 
               onTouchStart={[Function]}
               style={
                 Object {
-                  "width": "73.27453822659619%",
+                  "width": "89.52118328856126%",
                 }
               }
             >
@@ -145,10 +156,23 @@ Array [
   Object {
     "details": null,
     "icon": "spell_mage_altertime",
-    "importance": "major",
-    "issue": "Your downtime can be improved. Try to Always Be Casting (ABC), avoid delays between casting spells and cast instant spells when you have to move.",
+    "importance": "minor",
+    "issue": <React.Fragment>
+      Your downtime can be improved. If you need to move use 
+      <ForwardRef
+        id={188389}
+      />
+      , 
+      <ForwardRef
+        id={8042}
+      />
+       or 
+      <ForwardRef
+        id={196840}
+      />
+    </React.Fragment>,
     "stat": <React.Fragment>
-      26.73% downtime
+      10.48% downtime
        (
       &lt;5.00% is recommended
       )
@@ -178,6 +202,7 @@ exports[`Elemental Shaman integration test: example log AstralShift matches the 
       >
         <label>
           <a
+            className="spell-link-text"
             href="http://wowhead.com/spell=108271"
             rel="noopener noreferrer"
             target="_blank"
@@ -189,7 +214,10 @@ exports[`Elemental Shaman integration test: example log AstralShift matches the 
             />
           </a>
            
-          shaman.shared.damageReduced.label
+          <trans
+            id="shaman.shared.damageReduced.label"
+            message="Estimated damage reduced"
+          />
         </label>
         <div
           className="value"
@@ -305,7 +333,7 @@ Array [
     "importance": "minor",
     "issue": "7.02% of spells casts were cancelled. Some casts will likely need to be cancelled due to mechanics, but generally, it is rarely a DPS up to cancel a cast in favor of casting another spell.",
     "stat": <React.Fragment>
-      7.02% casts cancelled
+      {"id":"shaman.elemental.suggestions.castsCancelled","message":"{0}% casts cancelled","values":{"0":"7.02"}}
        (
       &lt;5.00% is recommended
       )
@@ -328,12 +356,10 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
         }
       }
     >
-      <a
-        href="#Abilities"
-        id="Abilities"
-      >
-        Abilities
-      </a>
+      <trans
+        id="common.abilities"
+        message="Abilities"
+      />
     </h1>
   </div>
   <div
@@ -360,7 +386,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
           <tr>
             <th>
               <b>
-                Rotational Spell
+                {"id":"core.abilities.spellCategories.rotational","message":"Rotational Spell"}
               </b>
             </th>
             <th
@@ -373,7 +399,10 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
                 onTouchStart={[Function]}
                 style={Object {}}
               >
-                shared.castEfficiency.cpm
+                <trans
+                  id="shared.castEfficiency.cpm"
+                  message="CPM"
+                />
               </dfn>
             </th>
             <th
@@ -386,7 +415,10 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
                 onTouchStart={[Function]}
                 style={Object {}}
               >
-                shared.castEfficiency.casts
+                <trans
+                  id="shared.castEfficiency.casts"
+                  message="Casts"
+                />
               </dfn>
             </th>
             <th
@@ -399,7 +431,10 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
                 onTouchStart={[Function]}
                 style={Object {}}
               >
-                shared.castEfficiency.timeOnCooldown
+                <trans
+                  id="shared.castEfficiency.timeOnCooldown"
+                  message="Time on Cooldown"
+                />
               </dfn>
             </th>
             <th />
@@ -413,6 +448,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=51505"
                 rel="noopener noreferrer"
                 style={
@@ -456,7 +492,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
               }
             >
               57
-              /89
+              /66
                
               casts
             </td>
@@ -475,7 +511,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
                   style={
                     Object {
                       "backgroundColor": "#70b570",
-                      "width": "63.51840529130346%",
+                      "width": "85.82147912087726%",
                     }
                   }
                 />
@@ -490,7 +526,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
                 }
               }
             >
-              63.52%
+              85.82%
             </td>
             <td
               style={
@@ -510,6 +546,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=188196"
                 rel="noopener noreferrer"
                 style={
@@ -595,6 +632,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=188389"
                 rel="noopener noreferrer"
                 style={
@@ -692,6 +730,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=196840"
                 rel="noopener noreferrer"
                 style={
@@ -777,6 +816,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=8042"
                 rel="noopener noreferrer"
                 style={
@@ -858,7 +898,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
           <tr>
             <th>
               <b>
-                Spell (AOE)
+                {"id":"core.abilities.spellCategories.rotationalAoe","message":"Spell (AOE)"}
               </b>
             </th>
             <th
@@ -871,7 +911,10 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
                 onTouchStart={[Function]}
                 style={Object {}}
               >
-                shared.castEfficiency.cpm
+                <trans
+                  id="shared.castEfficiency.cpm"
+                  message="CPM"
+                />
               </dfn>
             </th>
             <th
@@ -884,7 +927,10 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
                 onTouchStart={[Function]}
                 style={Object {}}
               >
-                shared.castEfficiency.casts
+                <trans
+                  id="shared.castEfficiency.casts"
+                  message="Casts"
+                />
               </dfn>
             </th>
             <th
@@ -897,7 +943,10 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
                 onTouchStart={[Function]}
                 style={Object {}}
               >
-                shared.castEfficiency.timeOnCooldown
+                <trans
+                  id="shared.castEfficiency.timeOnCooldown"
+                  message="Time on Cooldown"
+                />
               </dfn>
             </th>
             <th />
@@ -911,6 +960,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=188443"
                 rel="noopener noreferrer"
                 style={
@@ -996,6 +1046,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=114074"
                 rel="noopener noreferrer"
                 style={
@@ -1081,6 +1132,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=61882"
                 rel="noopener noreferrer"
                 style={
@@ -1162,7 +1214,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
           <tr>
             <th>
               <b>
-                Cooldown
+                {"id":"core.abilities.spellCategories.cooldowns","message":"Cooldown"}
               </b>
             </th>
             <th
@@ -1175,7 +1227,10 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
                 onTouchStart={[Function]}
                 style={Object {}}
               >
-                shared.castEfficiency.cpm
+                <trans
+                  id="shared.castEfficiency.cpm"
+                  message="CPM"
+                />
               </dfn>
             </th>
             <th
@@ -1188,7 +1243,10 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
                 onTouchStart={[Function]}
                 style={Object {}}
               >
-                shared.castEfficiency.casts
+                <trans
+                  id="shared.castEfficiency.casts"
+                  message="Casts"
+                />
               </dfn>
             </th>
             <th
@@ -1201,7 +1259,10 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
                 onTouchStart={[Function]}
                 style={Object {}}
               >
-                shared.castEfficiency.timeOnCooldown
+                <trans
+                  id="shared.castEfficiency.timeOnCooldown"
+                  message="Time on Cooldown"
+                />
               </dfn>
             </th>
             <th />
@@ -1215,6 +1276,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=198067"
                 rel="noopener noreferrer"
                 style={
@@ -1312,6 +1374,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=191634"
                 rel="noopener noreferrer"
                 style={
@@ -1399,7 +1462,10 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
                 }
               }
             >
-              shared.castEfficiency.canBeImproved
+              <trans
+                id="shared.castEfficiency.canBeImproved"
+                message="Can be improved."
+              />
             </td>
           </tr>
           <tr>
@@ -1411,6 +1477,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=210714"
                 rel="noopener noreferrer"
                 style={
@@ -1508,6 +1575,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=2825"
                 rel="noopener noreferrer"
                 style={
@@ -1593,6 +1661,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=32182"
                 rel="noopener noreferrer"
                 style={
@@ -1674,7 +1743,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
           <tr>
             <th>
               <b>
-                Defensive Cooldown
+                {"id":"core.abilities.spellCategories.defensive","message":"Defensive Cooldown"}
               </b>
             </th>
             <th
@@ -1687,7 +1756,10 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
                 onTouchStart={[Function]}
                 style={Object {}}
               >
-                shared.castEfficiency.cpm
+                <trans
+                  id="shared.castEfficiency.cpm"
+                  message="CPM"
+                />
               </dfn>
             </th>
             <th
@@ -1700,7 +1772,10 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
                 onTouchStart={[Function]}
                 style={Object {}}
               >
-                shared.castEfficiency.casts
+                <trans
+                  id="shared.castEfficiency.casts"
+                  message="Casts"
+                />
               </dfn>
             </th>
             <th
@@ -1713,7 +1788,10 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
                 onTouchStart={[Function]}
                 style={Object {}}
               >
-                shared.castEfficiency.timeOnCooldown
+                <trans
+                  id="shared.castEfficiency.timeOnCooldown"
+                  message="Time on Cooldown"
+                />
               </dfn>
             </th>
             <th />
@@ -1727,6 +1805,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=108271"
                 rel="noopener noreferrer"
                 style={
@@ -1820,7 +1899,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
           <tr>
             <th>
               <b>
-                Spell
+                {"id":"core.abilities.spellCategories.others","message":"Spell"}
               </b>
             </th>
             <th
@@ -1833,7 +1912,10 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
                 onTouchStart={[Function]}
                 style={Object {}}
               >
-                shared.castEfficiency.cpm
+                <trans
+                  id="shared.castEfficiency.cpm"
+                  message="CPM"
+                />
               </dfn>
             </th>
             <th
@@ -1846,7 +1928,10 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
                 onTouchStart={[Function]}
                 style={Object {}}
               >
-                shared.castEfficiency.casts
+                <trans
+                  id="shared.castEfficiency.casts"
+                  message="Casts"
+                />
               </dfn>
             </th>
             <th
@@ -1859,7 +1944,10 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
                 onTouchStart={[Function]}
                 style={Object {}}
               >
-                shared.castEfficiency.timeOnCooldown
+                <trans
+                  id="shared.castEfficiency.timeOnCooldown"
+                  message="Time on Cooldown"
+                />
               </dfn>
             </th>
             <th />
@@ -1873,6 +1961,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=21169"
                 rel="noopener noreferrer"
                 style={
@@ -1954,7 +2043,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
           <tr>
             <th>
               <b>
-                Utility
+                {"id":"core.abilities.spellCategories.utility","message":"Utility"}
               </b>
             </th>
             <th
@@ -1967,7 +2056,10 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
                 onTouchStart={[Function]}
                 style={Object {}}
               >
-                shared.castEfficiency.cpm
+                <trans
+                  id="shared.castEfficiency.cpm"
+                  message="CPM"
+                />
               </dfn>
             </th>
             <th
@@ -1980,7 +2072,10 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
                 onTouchStart={[Function]}
                 style={Object {}}
               >
-                shared.castEfficiency.casts
+                <trans
+                  id="shared.castEfficiency.casts"
+                  message="Casts"
+                />
               </dfn>
             </th>
             <th
@@ -1993,7 +2088,10 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
                 onTouchStart={[Function]}
                 style={Object {}}
               >
-                shared.castEfficiency.timeOnCooldown
+                <trans
+                  id="shared.castEfficiency.timeOnCooldown"
+                  message="Time on Cooldown"
+                />
               </dfn>
             </th>
             <th />
@@ -2007,6 +2105,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=192058"
                 rel="noopener noreferrer"
                 style={
@@ -2104,6 +2203,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=51490"
                 rel="noopener noreferrer"
                 style={
@@ -2201,6 +2301,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=8143"
                 rel="noopener noreferrer"
                 style={
@@ -2286,6 +2387,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=57994"
                 rel="noopener noreferrer"
                 style={
@@ -2379,7 +2481,7 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
           <tr>
             <th>
               <b>
-                Consumable
+                {"id":"core.abilities.spellCategories.consumable","message":"Consumable"}
               </b>
             </th>
             <th
@@ -2392,7 +2494,10 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
                 onTouchStart={[Function]}
                 style={Object {}}
               >
-                shared.castEfficiency.cpm
+                <trans
+                  id="shared.castEfficiency.cpm"
+                  message="CPM"
+                />
               </dfn>
             </th>
             <th
@@ -2405,7 +2510,10 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
                 onTouchStart={[Function]}
                 style={Object {}}
               >
-                shared.castEfficiency.casts
+                <trans
+                  id="shared.castEfficiency.casts"
+                  message="Casts"
+                />
               </dfn>
             </th>
             <th
@@ -2418,7 +2526,10 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
                 onTouchStart={[Function]}
                 style={Object {}}
               >
-                shared.castEfficiency.timeOnCooldown
+                <trans
+                  id="shared.castEfficiency.timeOnCooldown"
+                  message="Time on Cooldown"
+                />
               </dfn>
             </th>
             <th />
@@ -2432,104 +2543,8 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
               }
             >
               <a
-                href="http://wowhead.com/spell=6262"
-                rel="noopener noreferrer"
-                style={
-                  Object {
-                    "color": "#fff",
-                  }
-                }
-                target="_blank"
-              >
-                <img
-                  alt=""
-                  className="icon game "
-                  src="//render-us.worldofwarcraft.com/icons/56/warlock_healthstone.jpg"
-                  style={
-                    Object {
-                      "height": undefined,
-                      "marginTop": undefined,
-                    }
-                  }
-                />
-                 
-                Healthstone
-              </a>
-            </td>
-            <td
-              className="text-center"
-              style={
-                Object {
-                  "minWidth": 80,
-                }
-              }
-            >
-              0.22
-            </td>
-            <td
-              className="text-right"
-              style={
-                Object {
-                  "minWidth": 110,
-                }
-              }
-            >
-              1
-              /1
-               
-              casts
-            </td>
-            <td
-              style={
-                Object {
-                  "width": "20%",
-                }
-              }
-            >
-              <div
-                className="flex performance-bar-container"
-              >
-                <div
-                  className="flex-sub performance-bar"
-                  style={
-                    Object {
-                      "backgroundColor": "#70b570",
-                      "width": "100%",
-                    }
-                  }
-                />
-              </div>
-            </td>
-            <td
-              className="text-left"
-              style={
-                Object {
-                  "minWidth": 50,
-                  "paddingRight": 5,
-                }
-              }
-            >
-              100.00%
-            </td>
-            <td
-              style={
-                Object {
-                  "color": "orange",
-                  "width": "25%",
-                }
-              }
-            />
-          </tr>
-          <tr>
-            <td
-              style={
-                Object {
-                  "width": "35%",
-                }
-              }
-            >
-              <a
-                href="http://wowhead.com/spell=171267"
+                className="spell-link-text"
+                href="http://wowhead.com/spell=307192"
                 rel="noopener noreferrer"
                 style={
                   Object {
@@ -2626,7 +2641,8 @@ exports[`Elemental Shaman integration test: example log CastEfficiency matches t
               }
             >
               <a
-                href="http://wowhead.com/spell=171273"
+                className="spell-link-text"
+                href="http://wowhead.com/spell=307162"
                 rel="noopener noreferrer"
                 style={
                   Object {
@@ -2728,22 +2744,24 @@ Array [
     "icon": "ability_thunderking_lightningwhip",
     "importance": "regular",
     "issue": <React.Fragment>
-      <WithI18n
+      <Trans
         components={
-          Array [
-            <ForwardRef
+          Object {
+            "0": <ForwardRef
               id={191634}
             />,
-          ]
+          }
         }
-        id="Try to cast <0/> more often."
+        id="shared.modules.castEfficiency.suggest"
+        message="Try to cast <0/> more often."
       />
        
       
     </React.Fragment>,
     "stat": <React.Fragment>
-      <WithI18n
-        id="{0} out of {1} possible casts. You kept it on cooldown {2}% of the time."
+      <Trans
+        id="shared.modules.castEfficiency.actual"
+        message="{0} out of {1} possible casts. You kept it on cooldown {2}% of the time."
         values={
           Object {
             "0": 3,
@@ -2753,8 +2771,9 @@ Array [
         }
       />
        (
-      <WithI18n
-        id=">{0}% is recommended"
+      <Trans
+        id="shared.modules.castEfficiency.recommended"
+        message=">{0}% is recommended"
         values={
           Object {
             "0": "90",
@@ -2782,7 +2801,10 @@ exports[`Elemental Shaman integration test: example log DistanceMoved matches th
         className="pad"
       >
         <label>
-          shared.distanceMoved.statistic.label
+          <trans
+            id="shared.distanceMoved.statistic.label"
+            message="Distance moved"
+          />
         </label>
         <div
           className="value"
@@ -2861,10 +2883,10 @@ Array [
     "details": null,
     "icon": "inv_chest_mail_kultirasdungeon_c_01.jpg",
     "importance": "major",
-    "issue": <WithI18n
+    "issue": <Trans
       components={
-        Array [
-          <ItemLink
+        Object {
+          "0": <ItemLink
             details={
               Object {
                 "bonusIDs": Array [
@@ -2883,15 +2905,15 @@ Array [
             id={159362}
             quality={3}
           />,
-        ]
+        }
       }
-      defaults="Your <0>{slotName}</0> is missing an enchant. Apply a strong enchant to very easily increase your throughput slightly."
       id="shared.enchantChecker.suggestions.noEnchant.label"
+      message="Your <0>{slotName}</0> is missing an enchant. Apply a strong enchant to very easily increase your throughput slightly."
       values={
         Object {
-          "slotName": <WithI18n
-            defaults="Chest"
+          "slotName": <Trans
             id="common.slots.chest"
+            message="Chest"
           />,
         }
       }
@@ -2902,10 +2924,10 @@ Array [
     "details": null,
     "icon": "inv_bracer_mail_nazjatar_c_01.jpg",
     "importance": "major",
-    "issue": <WithI18n
+    "issue": <Trans
       components={
-        Array [
-          <ItemLink
+        Object {
+          "0": <ItemLink
             details={
               Object {
                 "bonusIDs": Array [
@@ -2932,15 +2954,15 @@ Array [
             id={170304}
             quality={4}
           />,
-        ]
+        }
       }
-      defaults="Your <0>{slotName}</0> is missing an enchant. Apply a strong enchant to very easily increase your throughput slightly."
       id="shared.enchantChecker.suggestions.noEnchant.label"
+      message="Your <0>{slotName}</0> is missing an enchant. Apply a strong enchant to very easily increase your throughput slightly."
       values={
         Object {
-          "slotName": <WithI18n
-            defaults="Bracers"
+          "slotName": <Trans
             id="common.slots.bracers"
+            message="Bracers"
           />,
         }
       }
@@ -2951,10 +2973,10 @@ Array [
     "details": null,
     "icon": "inv_jewelry_ring_44.jpg",
     "importance": "minor",
-    "issue": <WithI18n
+    "issue": <Trans
       components={
-        Array [
-          <ItemLink
+        Object {
+          "0": <ItemLink
             details={
               Object {
                 "bonusIDs": Array [
@@ -2981,15 +3003,15 @@ Array [
             id={165565}
             quality={4}
           />,
-        ]
+        }
       }
-      defaults="Your <0>{slotName}</0> has a cheap enchant. Apply a strong enchant to very easily increase your throughput slightly."
       id="shared.enchantChecker.suggestions.weakEnchant.label"
+      message="Your <0>{slotName}</0> has a cheap enchant. Apply a strong enchant to very easily increase your throughput slightly."
       values={
         Object {
-          "slotName": <WithI18n
-            defaults="Ring"
+          "slotName": <Trans
             id="common.slots.ring"
+            message="Ring"
           />,
         }
       }
@@ -3000,10 +3022,10 @@ Array [
     "details": null,
     "icon": "inv_ring_80_01c.jpg",
     "importance": "minor",
-    "issue": <WithI18n
+    "issue": <Trans
       components={
-        Array [
-          <ItemLink
+        Object {
+          "0": <ItemLink
             details={
               Object {
                 "bonusIDs": Array [
@@ -3031,15 +3053,15 @@ Array [
             id={168891}
             quality={4}
           />,
-        ]
+        }
       }
-      defaults="Your <0>{slotName}</0> has a cheap enchant. Apply a strong enchant to very easily increase your throughput slightly."
       id="shared.enchantChecker.suggestions.weakEnchant.label"
+      message="Your <0>{slotName}</0> has a cheap enchant. Apply a strong enchant to very easily increase your throughput slightly."
       values={
         Object {
-          "slotName": <WithI18n
-            defaults="Ring"
+          "slotName": <Trans
             id="common.slots.ring"
+            message="Ring"
           />,
         }
       }
@@ -3050,10 +3072,10 @@ Array [
     "details": null,
     "icon": "inv_cape_leather_zandalardungeon_c_01.jpg",
     "importance": "major",
-    "issue": <WithI18n
+    "issue": <Trans
       components={
-        Array [
-          <ItemLink
+        Object {
+          "0": <ItemLink
             details={
               Object {
                 "bonusIDs": Array [
@@ -3080,15 +3102,15 @@ Array [
             id={159292}
             quality={3}
           />,
-        ]
+        }
       }
-      defaults="Your <0>{slotName}</0> is missing an enchant. Apply a strong enchant to very easily increase your throughput slightly."
       id="shared.enchantChecker.suggestions.noEnchant.label"
+      message="Your <0>{slotName}</0> is missing an enchant. Apply a strong enchant to very easily increase your throughput slightly."
       values={
         Object {
-          "slotName": <WithI18n
-            defaults="Cloak"
+          "slotName": <Trans
             id="common.slots.cloak"
+            message="Cloak"
           />,
         }
       }
@@ -3099,10 +3121,10 @@ Array [
     "details": null,
     "icon": "inv_mace_1h_pandaraid_d_01.jpg",
     "importance": "minor",
-    "issue": <WithI18n
+    "issue": <Trans
       components={
-        Array [
-          <ItemLink
+        Object {
+          "0": <ItemLink
             details={
               Object {
                 "bonusIDs": Array [
@@ -3122,15 +3144,15 @@ Array [
             id={158369}
             quality={3}
           />,
-        ]
+        }
       }
-      defaults="Your <0>{slotName}</0> has a cheap enchant. Apply a strong enchant to very easily increase your throughput slightly."
       id="shared.enchantChecker.suggestions.weakEnchant.label"
+      message="Your <0>{slotName}</0> has a cheap enchant. Apply a strong enchant to very easily increase your throughput slightly."
       values={
         Object {
-          "slotName": <WithI18n
-            defaults="Weapon"
+          "slotName": <Trans
             id="common.slots.weapon"
+            message="Weapon"
           />,
         }
       }
@@ -3140,113 +3162,23 @@ Array [
 ]
 `;
 
-exports[`Elemental Shaman integration test: example log EssenceOfTheFocusingIris matches the statistic snapshot 1`] = `
-<div
-  category="ITEMS"
-  className="col-lg-3 col-md-4 col-sm-6 col-xs-12"
-  style={
-    Object {
-      "padding": 0,
-    }
-  }
->
-  <div
-    className="col-md-12"
-  >
-    <div
-      category="ITEMS"
-      className="panel statistic standard "
-      position={1000}
-    >
-      <div
-        className="panel-body"
-      >
-        <div
-          className="pad"
-        >
-          <label>
-            <a
-              href="http://wowhead.com/spell=299337"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <img
-                alt=""
-                className="icon game "
-                src="//render-us.worldofwarcraft.com/icons/56/inv_azeriteareadenial.jpg"
-              />
-               
-              Focused Energy
-            </a>
-             - Minor Rank 
-            3
-          </label>
-          <div
-            className="value"
-          >
-            <svg
-              className="icon"
-              version="1.1"
-              viewBox="16 16 32 32"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M33.446,23.135c-0.89,0-1.612,0.722-1.612,1.612v8.049l-4.079,4.078c-0.63,0.629-0.63,1.65,0,2.28 c0.315,0.314,0.728,0.472,1.14,0.472c0.413,0,0.825-0.157,1.14-0.472l4.551-4.55c0.302-0.302,0.472-0.712,0.472-1.14v-8.716 C35.059,23.856,34.337,23.135,33.446,23.135z M32.111,16.668c-8.509,0-15.431,6.92-15.431,15.427 c0,8.506,6.922,15.426,15.431,15.426c8.509,0,15.431-6.92,15.431-15.426C47.542,23.588,40.62,16.668,32.111,16.668z M19.179,38.606c-1.025-2.031-1.545-4.222-1.545-6.511c0-7.981,6.495-14.473,14.477-14.473v2.097 c-6.826,0-12.379,5.552-12.379,12.376c0,1.959,0.444,3.831,1.32,5.566L19.179,38.606z M32.111,43.516 c-6.3,0-11.426-5.124-11.426-11.422c0-6.298,5.126-11.422,11.426-11.422s11.426,5.124,11.426,11.422 C43.537,38.392,38.411,43.516,32.111,43.516z"
-              />
-            </svg>
-             
-            277
-             
-            <small>
-              average Haste gained
-            </small>
-             
-            <br />
-            <svg
-              className="icon"
-              viewBox="10 10 80 80"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M50,86.4865c17.4361,0,31.6216-14.1855,31.6216-31.6216c0-16.6168-12.8865-30.2714-29.1892-31.5189v-4.9677h7.2973v-4.8649  H40.2703v4.8649h7.2973v4.9677c-16.3027,1.2475-29.1892,14.902-29.1892,31.5189C18.3784,72.3009,32.5639,86.4865,50,86.4865z M52.4324,28.2236c3.1101,0.2817,6.0664,1.0982,8.7798,2.356l-8.7798,15.2073V28.2236z M47.5676,28.2236v26.6412 c0,1.1008,0.7393,2.0647,1.8029,2.3497c0.209,0.0561,0.4205,0.0827,0.6295,0.0827c0.8533,0,1.6642-0.4504,2.1065-1.2162 l13.3146-23.0616c6.8507,4.8503,11.3357,12.8315,11.3357,21.8454c0,14.7537-12.0031,26.7567-26.7568,26.7567 s-26.7568-12.003-26.7568-26.7567C23.2432,40.9315,33.9501,29.4573,47.5676,28.2236z"
-              />
-            </svg>
-             
-            99.83
-            % 
-            <small>
-              uptime
-            </small>
-                        
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
 exports[`Elemental Shaman integration test: example log FlameShock matches the statistic snapshot 1`] = `
 <div
   className="col-lg-3 col-md-4 col-sm-6 col-xs-12"
 >
   <div
-    className="panel statistic standard statistic-box"
-    style={
-      Object {
-        "height": "auto",
-        "zIndex": 1,
-      }
-    }
+    className="panel statistic flexible "
+    position={0}
   >
     <div
       className="panel-body"
     >
       <div
-        className="pad"
+        className="pad boring-text "
       >
         <label>
           <a
+            className="spell-link-text"
             href="http://wowhead.com/spell=188389"
             rel="noopener noreferrer"
             target="_blank"
@@ -3258,12 +3190,33 @@ exports[`Elemental Shaman integration test: example log FlameShock matches the s
             />
           </a>
            
-          Uptime
+          <a
+            className="spell-link-text"
+            href="http://wowhead.com/spell=188389"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Flame Shock
+          </a>
         </label>
         <div
           className="value"
         >
-          99.82 %
+          <svg
+            className="icon"
+            viewBox="10 10 80 80"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M50,86.4865c17.4361,0,31.6216-14.1855,31.6216-31.6216c0-16.6168-12.8865-30.2714-29.1892-31.5189v-4.9677h7.2973v-4.8649  H40.2703v4.8649h7.2973v4.9677c-16.3027,1.2475-29.1892,14.902-29.1892,31.5189C18.3784,72.3009,32.5639,86.4865,50,86.4865z M52.4324,28.2236c3.1101,0.2817,6.0664,1.0982,8.7798,2.356l-8.7798,15.2073V28.2236z M47.5676,28.2236v26.6412 c0,1.1008,0.7393,2.0647,1.8029,2.3497c0.209,0.0561,0.4205,0.0827,0.6295,0.0827c0.8533,0,1.6642-0.4504,2.1065-1.2162 l13.3146-23.0616c6.8507,4.8503,11.3357,12.8315,11.3357,21.8454c0,14.7537-12.0031,26.7567-26.7568,26.7567 s-26.7568-12.003-26.7568-26.7567C23.2432,40.9315,33.9501,29.4573,47.5676,28.2236z"
+            />
+          </svg>
+           
+          99.82
+          % 
+          <small>
+            uptime
+          </small>
         </div>
       </div>
     </div>
@@ -3286,31 +3239,6 @@ exports[`Elemental Shaman integration test: example log FlameShock matches the s
     </div>
   </div>
 </div>
-`;
-
-exports[`Elemental Shaman integration test: example log FlameShock matches the suggestions snapshot 1`] = `
-Array [
-  Object {
-    "details": null,
-    "icon": "spell_fire_flameshock",
-    "importance": "major",
-    "issue": <React.Fragment>
-      You refreshed 
-      <ForwardRef
-        id={188389}
-      />
-       early 
-      11
-       times. The individual casts are highlighted on the timeline.
-    </React.Fragment>,
-    "stat": <React.Fragment>
-      73.33% effective duration
-       (
-      &lt;10.00% is recommended
-      )
-    </React.Fragment>,
-  },
-]
 `;
 
 exports[`Elemental Shaman integration test: example log FlaskChecker matches the suggestions snapshot 1`] = `
@@ -3425,13 +3353,13 @@ Array [
               Ability
             </th>
             <th
-              colSpan="2"
+              colSpan={2}
             >
               Maelstrom
                generated
             </th>
             <th
-              colSpan="2"
+              colSpan={2}
             >
               <dfn
                 className=""
@@ -3456,6 +3384,7 @@ Array [
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=51505"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -3549,6 +3478,7 @@ Array [
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=210712"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -3642,6 +3572,7 @@ Array [
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=214815"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -3735,6 +3666,7 @@ Array [
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=289439"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -3828,6 +3760,7 @@ Array [
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=210714"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -3921,6 +3854,7 @@ Array [
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=263819"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -4014,6 +3948,7 @@ Array [
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=195897"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -4107,6 +4042,7 @@ Array [
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=77451"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -4200,6 +4136,7 @@ Array [
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=218558"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -4293,6 +4230,7 @@ Array [
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=214816"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -4386,6 +4324,7 @@ Array [
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=219271"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -4481,13 +4420,13 @@ Array [
               Ability
             </th>
             <th
-              colSpan="2"
+              colSpan={2}
             >
               Maelstrom
                spent
             </th>
             <th
-              colSpan="2"
+              colSpan={2}
             >
               Casts
             </th>
@@ -4503,6 +4442,7 @@ Array [
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=8042"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -4596,6 +4536,7 @@ Array [
               }
             >
               <a
+                className="spell-link-text"
                 href="http://wowhead.com/spell=61882"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -4695,7 +4636,7 @@ Array [
     "importance": "major",
     "issue": "You overcapped 144 Maelstrom. Always prioritize spending it over avoiding the overcap of any other ability.",
     "stat": <React.Fragment>
-      6.72% overcapped Maelstrom
+      {"id":"shaman.shared.suggestions.maelstrom.overcapped","message":"{0}% overcapped Maelstrom","values":{"0":"6.72"}}
        (
       0.00% is recommended
       )
@@ -4709,10 +4650,10 @@ exports[`Elemental Shaman integration test: example log MasterOfTheElements matc
   className="col-lg-3 col-md-4 col-sm-6 col-xs-12"
 >
   <div
-    className="panel statistic standard statistic-box"
+    className="panel statistic flexible "
+    position={1000}
     style={
       Object {
-        "height": "auto",
         "zIndex": 1,
       }
     }
@@ -4721,10 +4662,11 @@ exports[`Elemental Shaman integration test: example log MasterOfTheElements matc
       className="panel-body"
     >
       <div
-        className="pad"
+        className="pad boring-text "
       >
         <label>
           <a
+            className="spell-link-text"
             href="http://wowhead.com/spell=16166"
             rel="noopener noreferrer"
             target="_blank"
@@ -4736,12 +4678,31 @@ exports[`Elemental Shaman integration test: example log MasterOfTheElements matc
             />
           </a>
            
-          Contributed 1,370 DPS (377k total damage, excluding EQ).
+          <a
+            className="spell-link-text"
+            href="http://wowhead.com/spell=16166"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Master of the Elements
+          </a>
         </label>
         <div
           className="value"
         >
-          3.01 %
+          <img
+            alt="Damage"
+            className="icon"
+            src="/img/sword.png"
+          />
+           
+          1,370
+           DPS
+           
+          <small>
+            3.01
+             % of total
+          </small>
         </div>
       </div>
       <div
@@ -4768,336 +4729,23 @@ exports[`Elemental Shaman integration test: example log MasterOfTheElements matc
 </div>
 `;
 
-exports[`Elemental Shaman integration test: example log Overload matches the statistic snapshot 1`] = `
-<div
-  className="col-lg-3 col-md-4 col-sm-6 col-xs-12"
->
-  <div
-    className="panel statistic standard statistic-box"
-    style={
-      Object {
-        "height": "auto",
-        "zIndex": 1,
-      }
-    }
-  >
-    <div
-      className="panel-body"
-    >
-      <div
-        className="pad"
-      >
-        <label>
-          <a
-            href="http://wowhead.com/spell=168534"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            <img
-              alt="Elemental Overload"
-              className="icon game "
-              src="//render-us.worldofwarcraft.com/icons/56/spell_nature_lightningoverload.jpg"
-            />
-          </a>
-           
-          Overload procs
-        </label>
-        <div
-          className="value"
-        >
-          <ul
-            style={
-              Object {
-                "listStyle": "none",
-                "paddingLeft": 0,
-              }
-            }
-          >
-            <li>
-              <a
-                href="http://wowhead.com/spell=285466"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                <img
-                  alt="Lava Burst Overload"
-                  className="icon game "
-                  src="//render-us.worldofwarcraft.com/icons/56/spell_shaman_lavaburst.jpg"
-                  style={
-                    Object {
-                      "height": "1.3em",
-                      "marginTop": "-.1em",
-                    }
-                  }
-                />
-              </a>
-              <span
-                style={
-                  Object {
-                    "display": "inline-block",
-                    "marginLeft": "0.5em",
-                    "textAlign": "left",
-                  }
-                }
-              >
-                22
-                 / 
-                56
-              </span>
-            </li>
-            <li>
-              <a
-                href="http://wowhead.com/spell=45284"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                <img
-                  alt="Lightning Bolt Overload"
-                  className="icon game "
-                  src="//render-us.worldofwarcraft.com/icons/56/spell_nature_lightning.jpg"
-                  style={
-                    Object {
-                      "height": "1.3em",
-                      "marginTop": "-.1em",
-                    }
-                  }
-                />
-              </a>
-              <span
-                style={
-                  Object {
-                    "display": "inline-block",
-                    "marginLeft": "0.5em",
-                    "textAlign": "left",
-                  }
-                }
-              >
-                10
-                 / 
-                27
-              </span>
-            </li>
-            <li>
-              <a
-                href="http://wowhead.com/spell=45297"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                <img
-                  alt="Chain Lightning Overload"
-                  className="icon game "
-                  src="//render-us.worldofwarcraft.com/icons/56/spell_nature_chainlightning.jpg"
-                  style={
-                    Object {
-                      "height": "1.3em",
-                      "marginTop": "-.1em",
-                    }
-                  }
-                />
-              </a>
-              <span
-                style={
-                  Object {
-                    "display": "inline-block",
-                    "marginLeft": "0.5em",
-                    "textAlign": "left",
-                  }
-                }
-              >
-                22
-                 / 
-                23
-              </span>
-            </li>
-            <li>
-              <a
-                href="http://wowhead.com/spell=219271"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                <img
-                  alt="Icefury Overload"
-                  className="icon game "
-                  src="//render-us.worldofwarcraft.com/icons/56/spell_frost_iceshard.jpg"
-                  style={
-                    Object {
-                      "height": "1.3em",
-                      "marginTop": "-.1em",
-                    }
-                  }
-                />
-              </a>
-              <span
-                style={
-                  Object {
-                    "display": "inline-block",
-                    "marginLeft": "0.5em",
-                    "textAlign": "left",
-                  }
-                }
-              >
-                2
-                 / 
-                8
-              </span>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    <div
-      className="detail-corner"
-      data-place="top"
-      onMouseEnter={[Function]}
-      onMouseLeave={[Function]}
-      onTouchStart={[Function]}
-    >
-      <svg
-        className="icon"
-        viewBox="0 0 100 100"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M58.9,82.9h7v12.9H34.1V82.9h7.1V45.5h-0.6c-3.6,0-6.4-2.9-6.4-6.4c0-3.6,2.9-6.4,6.4-6.4h0.6h17.4h0.3V82.9z M49,25.8  c6,0,10.8-4.8,10.8-10.8C59.8,9,55,4.2,49,4.2S38.2,9,38.2,15C38.2,21,43,25.8,49,25.8z"
-        />
-      </svg>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`Elemental Shaman integration test: example log OverwhelmingPower matches the statistic snapshot 1`] = `
-<div
-  className="col-lg-3 col-md-4 col-sm-6 col-xs-12"
->
-  <div
-    category="ITEMS"
-    className="panel statistic flexible "
-    position={1001}
-  >
-    <div
-      className="panel-body"
-    >
-      <div
-        className="pad boring-text "
-      >
-        <label>
-          <a
-            href="http://wowhead.com/spell=266180"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            <img
-              alt="Overwhelming Power"
-              className="icon game "
-              src="//render-us.worldofwarcraft.com/icons/56/ability_vehicle_electrocharge.jpg"
-            />
-          </a>
-           
-          <a
-            href="http://wowhead.com/spell=266180"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Overwhelming Power
-          </a>
-        </label>
-        <div
-          className="value"
-        >
-          <svg
-            className="icon"
-            viewBox="10 10 80 80"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M50,86.4865c17.4361,0,31.6216-14.1855,31.6216-31.6216c0-16.6168-12.8865-30.2714-29.1892-31.5189v-4.9677h7.2973v-4.8649  H40.2703v4.8649h7.2973v4.9677c-16.3027,1.2475-29.1892,14.902-29.1892,31.5189C18.3784,72.3009,32.5639,86.4865,50,86.4865z M52.4324,28.2236c3.1101,0.2817,6.0664,1.0982,8.7798,2.356l-8.7798,15.2073V28.2236z M47.5676,28.2236v26.6412 c0,1.1008,0.7393,2.0647,1.8029,2.3497c0.209,0.0561,0.4205,0.0827,0.6295,0.0827c0.8533,0,1.6642-0.4504,2.1065-1.2162 l13.3146-23.0616c6.8507,4.8503,11.3357,12.8315,11.3357,21.8454c0,14.7537-12.0031,26.7567-26.7568,26.7567 s-26.7568-12.003-26.7568-26.7567C23.2432,40.9315,33.9501,29.4573,47.5676,28.2236z"
-            />
-          </svg>
-           
-          48
-          % 
-          <small>
-            uptime
-          </small>
-          <br />
-          <svg
-            className="icon"
-            version="1.1"
-            viewBox="16 16 32 32"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M33.446,23.135c-0.89,0-1.612,0.722-1.612,1.612v8.049l-4.079,4.078c-0.63,0.629-0.63,1.65,0,2.28 c0.315,0.314,0.728,0.472,1.14,0.472c0.413,0,0.825-0.157,1.14-0.472l4.551-4.55c0.302-0.302,0.472-0.712,0.472-1.14v-8.716 C35.059,23.856,34.337,23.135,33.446,23.135z M32.111,16.668c-8.509,0-15.431,6.92-15.431,15.427 c0,8.506,6.922,15.426,15.431,15.426c8.509,0,15.431-6.92,15.431-15.426C47.542,23.588,40.62,16.668,32.111,16.668z M19.179,38.606c-1.025-2.031-1.545-4.222-1.545-6.511c0-7.981,6.495-14.473,14.477-14.473v2.097 c-6.826,0-12.379,5.552-12.379,12.376c0,1.959,0.444,3.831,1.32,5.566L19.179,38.606z M32.111,43.516 c-6.3,0-11.426-5.124-11.426-11.422c0-6.298,5.126-11.422,11.426-11.422s11.426,5.124,11.426,11.422 C43.537,38.392,38.411,43.516,32.111,43.516z"
-            />
-          </svg>
-           
-          219
-           
-          <small>
-            average Haste gained
-          </small>
-        </div>
-      </div>
-    </div>
-    <div
-      className="detail-corner"
-      data-place="top"
-      onMouseEnter={[Function]}
-      onMouseLeave={[Function]}
-      onTouchStart={[Function]}
-    >
-      <svg
-        className="icon"
-        viewBox="0 0 100 100"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M58.9,82.9h7v12.9H34.1V82.9h7.1V45.5h-0.6c-3.6,0-6.4-2.9-6.4-6.4c0-3.6,2.9-6.4,6.4-6.4h0.6h17.4h0.3V82.9z M49,25.8  c6,0,10.8-4.8,10.8-10.8C59.8,9,55,4.2,49,4.2S38.2,9,38.2,15C38.2,21,43,25.8,49,25.8z"
-        />
-      </svg>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`Elemental Shaman integration test: example log PrePotion matches the suggestions snapshot 1`] = `
+exports[`Elemental Shaman integration test: example log PotionChecker matches the suggestions snapshot 1`] = `
 Array [
   Object {
     "details": null,
     "icon": "inv_alchemy_90_combat2_purple",
-    "importance": "minor",
-    "issue": <React.Fragment>
-      You forgot to use a potion during combat. Using a potion during combat allows you the benefit of 
-      
-       increasing output through 
-      <ItemLink
-        icon={true}
-        id={171273}
-      />
-      
-      . 
-      
-    </React.Fragment>,
-    "stat": null,
-  },
-  Object {
-    "details": null,
-    "icon": "inv_alchemy_90_combat2_purple",
-    "importance": "minor",
-    "issue": <React.Fragment>
-      You used a weak potion. 
-      <ItemLink
-        icon={true}
-        id={171273}
-      />
-       can be used instead of 
-      <ItemLink
-        icon={true}
-        id={171273}
-      />
-       in order to get a slightly higher damage output.
-    </React.Fragment>,
+    "importance": "regular",
+    "issue": <Trans
+      id="shared.modules.items.potionChecker.suggestions.potionsUsed"
+      message="You used {0} combat {1} during this encounter, but you could have used {2}. Since you are able to use a combat potion every 5 minutes, you should ensure that you are getting the maximum number of potions in each encounter."
+      values={
+        Object {
+          "0": 0,
+          "1": "potions",
+          "2": 1,
+        }
+      }
+    />,
     "stat": null,
   },
 ]
@@ -5124,6 +4772,7 @@ exports[`Elemental Shaman integration test: example log SpiritWolf matches the s
       >
         <label>
           <a
+            className="spell-link-text"
             href="http://wowhead.com/spell=260878"
             rel="noopener noreferrer"
             target="_blank"
@@ -5135,7 +4784,10 @@ exports[`Elemental Shaman integration test: example log SpiritWolf matches the s
             />
           </a>
            
-          shaman.shared.damageReduced.label
+          <trans
+            id="shaman.shared.damageReduced.label"
+            message="Estimated damage reduced"
+          />
         </label>
         <div
           className="value"
@@ -5170,22 +4822,18 @@ exports[`Elemental Shaman integration test: example log Stormkeeper matches the 
   className="col-lg-3 col-md-4 col-sm-6 col-xs-12"
 >
   <div
-    className="panel statistic standard statistic-box"
-    style={
-      Object {
-        "height": "auto",
-        "zIndex": 1,
-      }
-    }
+    className="panel statistic flexible "
+    position={1000}
   >
     <div
       className="panel-body"
     >
       <div
-        className="pad"
+        className="pad boring-text "
       >
         <label>
           <a
+            className="spell-link-text"
             href="http://wowhead.com/spell=191634"
             rel="noopener noreferrer"
             target="_blank"
@@ -5197,108 +4845,31 @@ exports[`Elemental Shaman integration test: example log Stormkeeper matches the 
             />
           </a>
            
-          Damage Done by Buffed Casts
+          <a
+            className="spell-link-text"
+            href="http://wowhead.com/spell=191634"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Stormkeeper
+          </a>
         </label>
         <div
           className="value"
         >
-          247k damage
-        </div>
-      </div>
-    </div>
-    <div
-      className="detail-corner"
-      data-place="top"
-      onMouseEnter={[Function]}
-      onMouseLeave={[Function]}
-      onTouchStart={[Function]}
-    >
-      <svg
-        className="icon"
-        viewBox="0 0 100 100"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M58.9,82.9h7v12.9H34.1V82.9h7.1V45.5h-0.6c-3.6,0-6.4-2.9-6.4-6.4c0-3.6,2.9-6.4,6.4-6.4h0.6h17.4h0.3V82.9z M49,25.8  c6,0,10.8-4.8,10.8-10.8C59.8,9,55,4.2,49,4.2S38.2,9,38.2,15C38.2,21,43,25.8,49,25.8z"
-        />
-      </svg>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`Elemental Shaman integration test: example log TheCrucibleofFlame matches the statistic snapshot 1`] = `
-<div
-  category="ITEMS"
-  className="col-lg-3 col-md-4 col-sm-6 col-xs-12"
-  style={
-    Object {
-      "padding": 0,
-    }
-  }
->
-  <div
-    className="col-md-12"
-  >
-    <div
-      category="ITEMS"
-      className="panel statistic standard "
-      position={1000}
-    >
-      <div
-        className="panel-body"
-      >
-        <div
-          className="pad"
-        >
-          <label>
-            <a
-              href="http://wowhead.com/spell=299348"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <img
-                alt=""
-                className="icon game "
-                src="//render-us.worldofwarcraft.com/icons/56/inv_radientazeritematrix.jpg"
-              />
-               
-              Ancient Flame
-            </a>
-             - Minor Rank 
-            3
-          </label>
-          <div
-            className="value"
-          >
-            <img
-              alt="Damage"
-              className="icon"
-              src="/img/sword.png"
-            />
-             
-            1,308
-             DPS
-             
-            <small>
-              2.88
-               % of total
-            </small>
-            <br />
-            <img
-              alt="Healing"
-              className="icon"
-              src="/img/healing.png"
-            />
-             
-            0
-             HPS
-             
-            <small>
-              0.00
-              % of total
-            </small>
-          </div>
+          <img
+            alt="Damage"
+            className="icon"
+            src="/img/sword.png"
+          />
+           
+          0
+           DPS
+           
+          <small>
+            0.00
+             % of total
+          </small>
         </div>
       </div>
     </div>
@@ -5593,6 +5164,53 @@ exports[`Elemental Shaman integration test: example log ThroughputStatisticGroup
 </div>
 `;
 
+exports[`Elemental Shaman integration test: example log WeaponEnhancementChecker matches the suggestions snapshot 1`] = `
+Array [
+  Object {
+    "details": null,
+    "icon": "inv_mace_1h_pandaraid_d_01.jpg",
+    "importance": "regular",
+    "issue": <Trans
+      components={
+        Object {
+          "0": <ItemLink
+            details={
+              Object {
+                "bonusIDs": Array [
+                  5010,
+                  40,
+                  1612,
+                  4783,
+                ],
+                "icon": "inv_mace_1h_pandaraid_d_01.jpg",
+                "id": 158369,
+                "itemLevel": 440,
+                "permanentEnchant": 5949,
+                "quality": 3,
+              }
+            }
+            icon={false}
+            id={158369}
+            quality={3}
+          />,
+        }
+      }
+      id="shared.weaponEnhancementChecker.suggestions.noWeaponEnhancement.label"
+      message="Your <0>{slotName}</0> is missing a weapon enhancement (weapon oil/sharpening stone/weightstone) . Apply an enhancement to very easily increase your throughput slightly."
+      values={
+        Object {
+          "slotName": <Trans
+            id="common.slots.weapon"
+            message="Weapon"
+          />,
+        }
+      }
+    />,
+    "stat": null,
+  },
+]
+`;
+
 exports[`Elemental Shaman integration test: example log matches the checklist snapshot 1`] = `
 <ul
   className="checklist"
@@ -5623,7 +5241,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
               style={
                 Object {
                   "backgroundColor": "#a6c34c",
-                  "width": "85.48418199271332%",
+                  "width": "78.22627298906997%",
                 }
               }
             />
@@ -5681,7 +5299,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
             className="col-md-12"
           >
             Using your core abilities as often as possible can help raise your dps significantly. Some help more than others, but as a general rule of thumb you should be looking to use most of your damaging abilities and damage cooldowns as often as possible, unless you need to save them for a priority burst phase that is coming up soon.
-             
+             
             <a
               href="https://stormearthandlava.com/guide/general/priority_list.html"
               rel="noopener noreferrer"
@@ -5704,78 +5322,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
                 className="flex-main"
               >
                 <a
-                  href="http://wowhead.com/spell=198067"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  <img
-                    alt=""
-                    className="icon game "
-                    src="//render-us.worldofwarcraft.com/icons/56/spell_fire_elemental_totem.jpg"
-                  />
-                   
-                  Fire Elemental
-                </a>
-              </div>
-              <div
-                className="flex-sub content-middle text-muted"
-                style={
-                  Object {
-                    "marginLeft": 5,
-                    "marginRight": 10,
-                    "minWidth": 55,
-                  }
-                }
-              >
-                <div
-                  className="text-right"
-                  style={
-                    Object {
-                      "width": "100%",
-                    }
-                  }
-                >
-                   
-                  100.00%
-                   
-                   
-                </div>
-              </div>
-              <div
-                className="flex-sub content-middle"
-                style={
-                  Object {
-                    "width": 50,
-                  }
-                }
-              >
-                <div
-                  className="performance-bar-container"
-                >
-                  <div
-                    className="performance-bar small"
-                    style={
-                      Object {
-                        "backgroundColor": "#4ec04e",
-                        "transition": "background-color 800ms",
-                        "width": "100%",
-                      }
-                    }
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            className="col-md-6"
-          >
-            <div
-              className="flex"
-            >
-              <div
-                className="flex-main"
-              >
-                <a
+                  className="spell-link-text"
                   href="http://wowhead.com/spell=210714"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -5848,6 +5395,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
                 className="flex-main"
               >
                 <a
+                  className="spell-link-text"
                   href="http://wowhead.com/spell=191634"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -5940,7 +5488,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
               style={
                 Object {
                   "backgroundColor": "#df7102",
-                  "width": "45.5158243796942%",
+                  "width": "39.474308643930655%",
                 }
               }
             />
@@ -5999,6 +5547,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
           >
             Downtime is the time where you are not casting and not GCD locked. Ensure you are casting as much as possible by avoiding movement when you could be casting. Elemental shaman has many GCDs available from 
             <a
+              className="spell-link-text"
               href="http://wowhead.com/spell=8042"
               rel="noopener noreferrer"
               target="_blank"
@@ -6013,6 +5562,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
             </a>
             , 
             <a
+              className="spell-link-text"
               href="http://wowhead.com/spell=77762"
               rel="noopener noreferrer"
               target="_blank"
@@ -6027,6 +5577,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
             </a>
              empowered 
             <a
+              className="spell-link-text"
               href="http://wowhead.com/spell=51505"
               rel="noopener noreferrer"
               target="_blank"
@@ -6041,6 +5592,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
             </a>
             s, 
             <a
+              className="spell-link-text"
               href="http://wowhead.com/spell=196840"
               rel="noopener noreferrer"
               target="_blank"
@@ -6089,7 +5641,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
                   }
                 >
                    
-                  26.73%
+                  10.48%
                    
                    
                 </div>
@@ -6111,7 +5663,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
                       Object {
                         "backgroundColor": "#ac1f39",
                         "transition": "background-color 800ms",
-                        "width": "31.150069812019975%",
+                        "width": "19.06703834049288%",
                       }
                     }
                   />
@@ -6184,7 +5736,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
     </div>
   </li>
   <li
-    className="expandable expanded failed"
+    className="expandable  passed"
   >
     <div
       className="meta"
@@ -6208,8 +5760,8 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
               className="perf-bar"
               style={
                 Object {
-                  "backgroundColor": "#ffc84a",
-                  "width": "56.81136363636363%",
+                  "backgroundColor": "#4ec04e",
+                  "width": "100%",
                 }
               }
             />
@@ -6268,6 +5820,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
           >
             It's important to maintain flame shock on your target to guarantee 
             <a
+              className="spell-link-text"
               href="http://wowhead.com/spell=51505"
               rel="noopener noreferrer"
               target="_blank"
@@ -6282,6 +5835,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
             </a>
              will crit and to allow for 
             <a
+              className="spell-link-text"
               href="http://wowhead.com/spell=77762"
               rel="noopener noreferrer"
               target="_blank"
@@ -6296,6 +5850,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
             </a>
              procs. Applying 
             <a
+              className="spell-link-text"
               href="http://wowhead.com/spell=188389"
               rel="noopener noreferrer"
               target="_blank"
@@ -6324,6 +5879,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
                 className="flex-main"
               >
                 <a
+                  className="spell-link-text"
                   href="http://wowhead.com/spell=188389"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -6398,6 +5954,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
               >
                  Bad 
                 <a
+                  className="spell-link-text"
                   href="http://wowhead.com/spell=188389"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -6431,7 +5988,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
                   }
                 >
                    
-                  73.33%
+                  0.00%
                    
                    
                 </div>
@@ -6451,9 +6008,9 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
                     className="performance-bar small"
                     style={
                       Object {
-                        "backgroundColor": "#ac1f39",
+                        "backgroundColor": "#4ec04e",
                         "transition": "background-color 800ms",
-                        "width": "13.622727272727275%",
+                        "width": "100%",
                       }
                     }
                   />
@@ -6549,6 +6106,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
             className="col-md-12"
           >
             <a
+              className="spell-link-text"
               href="http://wowhead.com/spell=210714"
               rel="noopener noreferrer"
               target="_blank"
@@ -6563,6 +6121,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
             </a>
             's damage component itself is not a strong spell so it's important to fully utilize the talent by consuming all 4 
             <a
+              className="spell-link-text"
               href="http://wowhead.com/spell=210714"
               rel="noopener noreferrer"
               target="_blank"
@@ -6577,6 +6136,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
             </a>
              buff stacks with 
             <a
+              className="spell-link-text"
               href="http://wowhead.com/spell=196840"
               rel="noopener noreferrer"
               target="_blank"
@@ -6592,6 +6152,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
              casts during the buff's duration.
              While you should try to buff as many 
             <a
+              className="spell-link-text"
               href="http://wowhead.com/spell=210714"
               rel="noopener noreferrer"
               target="_blank"
@@ -6606,6 +6167,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
             </a>
              empowered 
             <a
+              className="spell-link-text"
               href="http://wowhead.com/spell=196840"
               rel="noopener noreferrer"
               target="_blank"
@@ -6620,6 +6182,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
             </a>
              as you can with 
             <a
+              className="spell-link-text"
               href="http://wowhead.com/spell=16166"
               rel="noopener noreferrer"
               target="_blank"
@@ -6649,6 +6212,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
               >
                 Average 
                 <a
+                  className="spell-link-text"
                   href="http://wowhead.com/spell=196840"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -6663,6 +6227,7 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
                 </a>
                  Casts within 
                 <a
+                  className="spell-link-text"
                   href="http://wowhead.com/spell=210714"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -6730,7 +6295,6 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
       </div>
     </div>
   </li>
-  
   <li
     className="expandable expanded failed"
   >
@@ -6744,7 +6308,10 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
         <div
           className="flex-main name"
         >
-          Be well prepared
+          <trans
+            id="shared.modules.features.checklist.wellPrepared"
+            message="Be well prepared"
+          />
         </div>
         <div
           className="flex-sub perf"
@@ -6814,7 +6381,10 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
           <div
             className="col-md-12"
           >
-            Being well prepared with food, flasks, potions and enchants is an easy way to improve your performance.
+            <trans
+              id="shared.modules.features.checklist.wellPreparedDetails"
+              message="Being well prepared with food, flasks, potions and enchants is an easy way to improve your performance."
+            />
           </div>
         </div>
         <div
@@ -6829,7 +6399,10 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
               <div
                 className="flex-main"
               >
-                All items enchanted
+                <trans
+                  id="shared.modules.features.checklist.enchanted"
+                  message="All items enchanted"
+                />
               </div>
               <div
                 className="flex-sub content-middle text-muted"
@@ -6890,7 +6463,10 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
               <div
                 className="flex-main"
               >
-                Using high quality enchants
+                <trans
+                  id="shared.modules.features.checklist.enchantedHigh"
+                  message="Using high quality enchants"
+                />
               </div>
               <div
                 className="flex-sub content-middle text-muted"
@@ -6951,7 +6527,9 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
               <div
                 className="flex-main"
               >
-                Used a pre-potion
+                <trans
+                  id="All weapons enhanced (oils/stones)"
+                />
               </div>
               <div
                 className="flex-sub content-middle text-muted"
@@ -6972,7 +6550,331 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
                   }
                 >
                    
-                  common.yes
+                  0
+                   
+                  / 1
+                   
+                </div>
+              </div>
+              <div
+                className="flex-sub content-middle"
+                style={
+                  Object {
+                    "width": 50,
+                  }
+                }
+              >
+                <div
+                  className="performance-bar-container"
+                >
+                  <div
+                    className="performance-bar small"
+                    style={
+                      Object {
+                        "backgroundColor": "#ac1f39",
+                        "transition": "background-color 800ms",
+                        "width": "0%",
+                      }
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            className="col-md-6"
+          >
+            <div
+              className="flex"
+            >
+              <div
+                className="flex-main"
+              >
+                <trans
+                  id="Using high quality weapon enhancements"
+                />
+              </div>
+              <div
+                className="flex-sub content-middle text-muted"
+                style={
+                  Object {
+                    "marginLeft": 5,
+                    "marginRight": 10,
+                    "minWidth": 55,
+                  }
+                }
+              >
+                <div
+                  className="text-right"
+                  style={
+                    Object {
+                      "width": "100%",
+                    }
+                  }
+                >
+                   
+                  0
+                   
+                  / 1
+                   
+                </div>
+              </div>
+              <div
+                className="flex-sub content-middle"
+                style={
+                  Object {
+                    "width": 50,
+                  }
+                }
+              >
+                <div
+                  className="performance-bar-container"
+                >
+                  <div
+                    className="performance-bar small"
+                    style={
+                      Object {
+                        "backgroundColor": "#ac1f39",
+                        "transition": "background-color 800ms",
+                        "width": "0%",
+                      }
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            className="col-md-6"
+          >
+            <div
+              className="flex"
+            >
+              <div
+                className="flex-main"
+              >
+                <trans
+                  id="shared.modules.features.checklist.combatPotionsUsed"
+                  message="Combat potions used"
+                />
+              </div>
+              <div
+                className="flex-sub content-middle text-muted"
+                style={
+                  Object {
+                    "marginLeft": 5,
+                    "marginRight": 10,
+                    "minWidth": 55,
+                  }
+                }
+              >
+                <div
+                  className="text-right"
+                  style={
+                    Object {
+                      "width": "100%",
+                    }
+                  }
+                >
+                   
+                  0
+                   
+                  / 1
+                   
+                </div>
+              </div>
+              <div
+                className="flex-sub content-middle"
+                style={
+                  Object {
+                    "width": 50,
+                  }
+                }
+              >
+                <div
+                  className="performance-bar-container"
+                >
+                  <div
+                    className="performance-bar small"
+                    style={
+                      Object {
+                        "backgroundColor": "#ac1f39",
+                        "transition": "background-color 800ms",
+                        "width": "0%",
+                      }
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            className="col-md-6"
+          >
+            <div
+              className="flex"
+            >
+              <div
+                className="flex-main"
+              >
+                <trans
+                  id="shared.modules.features.checklist.highQualityCombatPotionsUsed"
+                  message="High quality combat potions used"
+                />
+              </div>
+              <div
+                className="flex-sub content-middle text-muted"
+                style={
+                  Object {
+                    "marginLeft": 5,
+                    "marginRight": 10,
+                    "minWidth": 55,
+                  }
+                }
+              >
+                <div
+                  className="text-right"
+                  style={
+                    Object {
+                      "width": "100%",
+                    }
+                  }
+                >
+                   
+                  0
+                   
+                  / 1
+                   
+                </div>
+              </div>
+              <div
+                className="flex-sub content-middle"
+                style={
+                  Object {
+                    "width": 50,
+                  }
+                }
+              >
+                <div
+                  className="performance-bar-container"
+                >
+                  <div
+                    className="performance-bar small"
+                    style={
+                      Object {
+                        "backgroundColor": "#ac1f39",
+                        "transition": "background-color 800ms",
+                        "width": "0%",
+                      }
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            className="col-md-6"
+          >
+            <div
+              className="flex"
+            >
+              <div
+                className="flex-main"
+              >
+                <trans
+                  id="shared.modules.features.checklist.flaskHigh"
+                  message="High quality flask used"
+                />
+              </div>
+              <div
+                className="flex-sub content-middle text-muted"
+                style={
+                  Object {
+                    "marginLeft": 5,
+                    "marginRight": 10,
+                    "minWidth": 55,
+                  }
+                }
+              >
+                <div
+                  className="text-right"
+                  style={
+                    Object {
+                      "width": "100%",
+                    }
+                  }
+                >
+                   
+                  <trans
+                    id="common.no"
+                    message="No"
+                  />
+                   
+                   
+                </div>
+              </div>
+              <div
+                className="flex-sub content-middle"
+                style={
+                  Object {
+                    "width": 50,
+                  }
+                }
+              >
+                <div
+                  className="performance-bar-container"
+                >
+                  <div
+                    className="performance-bar small"
+                    style={
+                      Object {
+                        "backgroundColor": "#ac1f39",
+                        "transition": "background-color 800ms",
+                        "width": "0%",
+                      }
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            className="col-md-6"
+          >
+            <div
+              className="flex"
+            >
+              <div
+                className="flex-main"
+              >
+                <trans
+                  id="shared.modules.features.checklist.flask"
+                  message="Flask used"
+                />
+              </div>
+              <div
+                className="flex-sub content-middle text-muted"
+                style={
+                  Object {
+                    "marginLeft": 5,
+                    "marginRight": 10,
+                    "minWidth": 55,
+                  }
+                }
+              >
+                <div
+                  className="text-right"
+                  style={
+                    Object {
+                      "width": "100%",
+                    }
+                  }
+                >
+                   
+                  <trans
+                    id="common.yes"
+                    message="Yes"
+                  />
                    
                    
                 </div>
@@ -7011,7 +6913,10 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
               <div
                 className="flex-main"
               >
-                Used a second potion
+                <trans
+                  id="shared.modules.features.checklist.foodHigh"
+                  message="High quality food used"
+                />
               </div>
               <div
                 className="flex-sub content-middle text-muted"
@@ -7032,7 +6937,10 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
                   }
                 >
                    
-                  common.no
+                  <trans
+                    id="common.no"
+                    message="No"
+                  />
                    
                    
                 </div>
@@ -7071,7 +6979,10 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
               <div
                 className="flex-main"
               >
-                Used a high quality pre-potion
+                <trans
+                  id="shared.modules.features.checklist.food"
+                  message="Food used"
+                />
               </div>
               <div
                 className="flex-sub content-middle text-muted"
@@ -7092,247 +7003,10 @@ exports[`Elemental Shaman integration test: example log matches the checklist sn
                   }
                 >
                    
-                  common.no
-                   
-                   
-                </div>
-              </div>
-              <div
-                className="flex-sub content-middle"
-                style={
-                  Object {
-                    "width": 50,
-                  }
-                }
-              >
-                <div
-                  className="performance-bar-container"
-                >
-                  <div
-                    className="performance-bar small"
-                    style={
-                      Object {
-                        "backgroundColor": "#ac1f39",
-                        "transition": "background-color 800ms",
-                        "width": "0%",
-                      }
-                    }
+                  <trans
+                    id="common.yes"
+                    message="Yes"
                   />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            className="col-md-6"
-          >
-            <div
-              className="flex"
-            >
-              <div
-                className="flex-main"
-              >
-                High quality flask used
-              </div>
-              <div
-                className="flex-sub content-middle text-muted"
-                style={
-                  Object {
-                    "marginLeft": 5,
-                    "marginRight": 10,
-                    "minWidth": 55,
-                  }
-                }
-              >
-                <div
-                  className="text-right"
-                  style={
-                    Object {
-                      "width": "100%",
-                    }
-                  }
-                >
-                   
-                  common.no
-                   
-                   
-                </div>
-              </div>
-              <div
-                className="flex-sub content-middle"
-                style={
-                  Object {
-                    "width": 50,
-                  }
-                }
-              >
-                <div
-                  className="performance-bar-container"
-                >
-                  <div
-                    className="performance-bar small"
-                    style={
-                      Object {
-                        "backgroundColor": "#ac1f39",
-                        "transition": "background-color 800ms",
-                        "width": "0%",
-                      }
-                    }
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            className="col-md-6"
-          >
-            <div
-              className="flex"
-            >
-              <div
-                className="flex-main"
-              >
-                Flask used
-              </div>
-              <div
-                className="flex-sub content-middle text-muted"
-                style={
-                  Object {
-                    "marginLeft": 5,
-                    "marginRight": 10,
-                    "minWidth": 55,
-                  }
-                }
-              >
-                <div
-                  className="text-right"
-                  style={
-                    Object {
-                      "width": "100%",
-                    }
-                  }
-                >
-                   
-                  common.yes
-                   
-                   
-                </div>
-              </div>
-              <div
-                className="flex-sub content-middle"
-                style={
-                  Object {
-                    "width": 50,
-                  }
-                }
-              >
-                <div
-                  className="performance-bar-container"
-                >
-                  <div
-                    className="performance-bar small"
-                    style={
-                      Object {
-                        "backgroundColor": "#4ec04e",
-                        "transition": "background-color 800ms",
-                        "width": "100%",
-                      }
-                    }
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            className="col-md-6"
-          >
-            <div
-              className="flex"
-            >
-              <div
-                className="flex-main"
-              >
-                High quality food used
-              </div>
-              <div
-                className="flex-sub content-middle text-muted"
-                style={
-                  Object {
-                    "marginLeft": 5,
-                    "marginRight": 10,
-                    "minWidth": 55,
-                  }
-                }
-              >
-                <div
-                  className="text-right"
-                  style={
-                    Object {
-                      "width": "100%",
-                    }
-                  }
-                >
-                   
-                  common.no
-                   
-                   
-                </div>
-              </div>
-              <div
-                className="flex-sub content-middle"
-                style={
-                  Object {
-                    "width": 50,
-                  }
-                }
-              >
-                <div
-                  className="performance-bar-container"
-                >
-                  <div
-                    className="performance-bar small"
-                    style={
-                      Object {
-                        "backgroundColor": "#ac1f39",
-                        "transition": "background-color 800ms",
-                        "width": "0%",
-                      }
-                    }
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            className="col-md-6"
-          >
-            <div
-              className="flex"
-            >
-              <div
-                className="flex-main"
-              >
-                Food used
-              </div>
-              <div
-                className="flex-sub content-middle text-muted"
-                style={
-                  Object {
-                    "marginLeft": 5,
-                    "marginRight": 10,
-                    "minWidth": 55,
-                  }
-                }
-              >
-                <div
-                  className="text-right"
-                  style={
-                    Object {
-                      "width": "100%",
-                    }
-                  }
-                >
-                   
-                  common.yes
                    
                    
                 </div>

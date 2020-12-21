@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { AutoSizer } from 'react-virtualized';
 import BaseChart, { formatTime } from 'interface/others/BaseChart';
+import { t } from '@lingui/macro';
 
 const DEATH_COLOR = 'rgba(255, 0, 0, 0.8)';
 
@@ -96,12 +97,18 @@ class RaidHealthChart extends React.Component {
           field: 'y',
           type: 'quantitative',
           stack: true,
-          title: 'Total Raid Health',
+          title: t({
+            id: "shared.modules.raidHealthTab.chart.title.y",
+            message: `Total Raid Health`
+          }),
         },
         color: {
           field: 'title',
           type: 'nominal',
-          title: 'Player',
+          title: t({
+            id: "common.player",
+            message: `Player`
+          }),
         },
         opacity: {
           condition: { selection: 'player', value: 1 },

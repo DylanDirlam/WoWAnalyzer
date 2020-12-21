@@ -1,9 +1,11 @@
 import Module, { Options } from 'parser/core/Module';
+import { t } from '@lingui/macro';
+
+import Haste from 'parser/shared/modules/Haste';
 
 import { AnyEvent } from '../Events';
 import Ability, { SpellbookAbility } from './Ability';
 import AbilityTracker from '../../shared/modules/AbilityTracker';
-import Haste from '../../shared/modules/Haste';
 
 class Abilities extends Module {
   static dependencies = {
@@ -15,17 +17,50 @@ class Abilities extends Module {
 
   // TODO - Enum?
   static SPELL_CATEGORIES = {
-    ROTATIONAL: 'Rotational Spell',
-    ROTATIONAL_AOE: 'Spell (AOE)',
-    ITEMS: 'Item',
-    COOLDOWNS: 'Cooldown',
-    DEFENSIVE: 'Defensive Cooldown',
-    SEMI_DEFENSIVE: 'Offensive & Defensive Cooldown',
-    OTHERS: 'Spell',
-    UTILITY: 'Utility',
-    HEALER_DAMAGING_SPELL: 'Damaging Spell',
-    CONSUMABLE: 'Consumable',
-    HIDDEN: 'Hidden',
+    ROTATIONAL: t({
+      id: "core.abilities.spellCategories.rotational",
+      message: `Rotational Spell`
+    }),
+    ROTATIONAL_AOE: t({
+      id: "core.abilities.spellCategories.rotationalAoe",
+      message: `Spell (AOE)`
+    }),
+    ITEMS: t({
+      id: "core.abilities.spellCategories.items",
+      message: `Item`
+    }),
+    COOLDOWNS: t({
+      id: "core.abilities.spellCategories.cooldowns",
+      message: `Cooldown`
+    }),
+    DEFENSIVE: t({
+      id: "core.abilities.spellCategories.defensive",
+      message: `Defensive Cooldown`
+    }),
+    SEMI_DEFENSIVE: t({
+      id: "core.abilities.spellCategories.semiDefensive",
+      message: `Offensive & Defensive Cooldown`
+    }),
+    OTHERS: t({
+      id: "core.abilities.spellCategories.others",
+      message: `Spell`
+    }),
+    UTILITY: t({
+      id: "core.abilities.spellCategories.utility",
+      message: `Utility`
+    }),
+    HEALER_DAMAGING_SPELL: t({
+      id: "core.abilities.spellCategories.healerDamagingSpell",
+      message: `Damaging Spell`
+    }),
+    CONSUMABLE: t({
+      id: "core.abilities.spellCategories.consumable",
+      message: `Consumable`
+    }),
+    HIDDEN: t({
+      id: "core.abilities.spellCategories.hidden",
+      message: `Hidden`
+    }),
   };
   static ABILITY_CLASS = Ability;
 

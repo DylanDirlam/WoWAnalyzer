@@ -1,4 +1,6 @@
+import { t } from '@lingui/macro';
 import SPELLS from 'common/SPELLS';
+import COVENANTS from 'game/shadowlands/COVENANTS';
 import ISSUE_IMPORTANCE from 'parser/core/ISSUE_IMPORTANCE';
 import CoreAbilities from 'parser/core/modules/Abilities';
 import { SpellbookAbility } from 'parser/core/modules/Ability';
@@ -229,7 +231,10 @@ class Abilities extends CoreAbilities {
       },
       {
         spell: SPELLS.HEALING_WAVE,
-        name: `Tidal Waved ${SPELLS.HEALING_WAVE.name}`,
+        name: t({
+          id: "shaman.restoration.abilities.buffedByTidalWave",
+          message: `Tidal Waved ${SPELLS.HEALING_WAVE.name}`
+        }),
         timelineSortIndex: 13,
         gcd: {
           base: 1500,
@@ -240,7 +245,7 @@ class Abilities extends CoreAbilities {
         },
       },
       {
-        spell: SPELLS.HEALING_SURGE_RESTORATION,
+        spell: SPELLS.HEALING_SURGE,
         timelineSortIndex: 14,
         gcd: {
           base: 1500,
@@ -251,8 +256,11 @@ class Abilities extends CoreAbilities {
         },
       },
       {
-        spell: SPELLS.HEALING_SURGE_RESTORATION,
-        name: `Tidal Waved ${SPELLS.HEALING_SURGE_RESTORATION.name}`,
+        spell: SPELLS.HEALING_SURGE,
+        name: t({
+          id: "shaman.restoration.abilities.buffedByTidalWave",
+          message: `Tidal Waved ${SPELLS.HEALING_SURGE.name}`
+        }),
         timelineSortIndex: 14,
         gcd: {
           base: 1500,
@@ -270,6 +278,54 @@ class Abilities extends CoreAbilities {
         gcd: {
           base: 1500,
         },
+      },
+      {
+        spell: SPELLS.CHAIN_HARVEST,
+        category: Abilities.SPELL_CATEGORIES.ROTATIONAL,
+        timelineSortIndex: 12,
+        gcd: {
+          base: 1500,
+        },
+        enabled: combatant.hasCovenant(COVENANTS.VENTHYR.id),
+        cooldown: 90, // reduced by crits
+      },
+      {
+        spell: SPELLS.DOOR_OF_SHADOWS, //TODO: add charges based on soulbind trait
+        category: Abilities.SPELL_CATEGORIES.UTILITY,
+        cooldown: 60,
+        gcd: {
+          base: 1500,
+        },
+        enabled: combatant.hasCovenant(COVENANTS.VENTHYR.id),
+      },
+      {
+        spell: SPELLS.PRIMORDIAL_WAVE_CAST,
+        buffSpellId: SPELLS.PRIMORDIAL_WAVE_BUFF.id,
+        category: Abilities.SPELL_CATEGORIES.ROTATIONAL,
+        timelineSortIndex: 12,
+        gcd: {
+          base: 1500,
+        },
+        enabled: combatant.hasCovenant(COVENANTS.NECROLORD.id),
+        cooldown: 45,
+        healSpellIds: [
+          SPELLS.PRIMORDIAL_WAVE_HEAL.id,
+        ],
+      },
+      {
+        spell: SPELLS.FLESHCRAFT,
+        category: Abilities.SPELL_CATEGORIES.DEFENSIVE,
+        cooldown: 120,
+        enabled: combatant.hasCovenant(COVENANTS.NECROLORD.id),
+      },
+      {
+        spell: SPELLS.SOULSHAPE,
+        category: Abilities.SPELL_CATEGORIES.UTILITY,
+        cooldown: 30,
+        gcd: {
+          base: 1500,
+        },
+        enabled: combatant.hasCovenant(COVENANTS.NIGHT_FAE.id),
       },
       {
         spell: SPELLS.PURIFY_SPIRIT,
@@ -509,6 +565,24 @@ class Abilities extends CoreAbilities {
         category: Abilities.SPELL_CATEGORIES.HEALER_DAMAGING_SPELL,
         gcd: {
           base: 1500,
+        },
+      },
+      {
+        spell: SPELLS.SURGE_OF_EARTH_TALENT,
+        category: Abilities.SPELL_CATEGORIES.ROTATIONAL, // Rotational? CD? idk, is there a "useless" category?
+        cooldown: 20,
+        gcd: {
+          base: 1500,
+        },
+        enabled: combatant.hasTalent(SPELLS.SURGE_OF_EARTH_TALENT.id),
+        healSpellIds: [
+          SPELLS.SURGE_OF_EARTH_HEAL.id,
+        ],
+        castEfficiency: {
+          suggestion: true,
+          majorIssueEfficiency: .4,
+          averageIssueEfficiency: .6,
+          recommendedEfficiency: .8,
         },
       },
     ];

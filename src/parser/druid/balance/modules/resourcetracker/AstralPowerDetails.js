@@ -1,12 +1,14 @@
 import React from 'react';
 
 import Panel from 'interface/others/Panel';
-import StatisticBox, { STATISTIC_ORDER } from 'interface/others/StatisticBox';
-import Analyzer from 'parser/core/Analyzer';
+import Statistic from 'interface/statistics/Statistic';
 import ResourceBreakdown from 'parser/shared/modules/resources/resourcetracker/ResourceBreakdown';
+import BoringResourceValue from 'interface/statistics/components/BoringResourceValue';
+import RESOURCE_TYPES from 'game/RESOURCE_TYPES';
+import STATISTIC_ORDER from 'interface/others/STATISTIC_ORDER';
+
+import Analyzer from 'parser/core/Analyzer';
 import { formatPercentage } from 'common/format';
-import Icon from 'common/Icon';
-import { i18n } from '@lingui/core';
 import { t } from '@lingui/macro';
 
 import AstralPowerTracker from './AstralPowerTracker';
@@ -16,10 +18,6 @@ const AVERAGE_THRESHOLD = 0.02;
 const MAJOR_THRESHOLD = 0.05;
 
 class AstralPowerDetails extends Analyzer {
-  static dependencies = {
-    astralPowerTracker: AstralPowerTracker,
-  };
-
   get wasted() {
     return this.astralPowerTracker.wasted || 0;
   }
@@ -60,23 +58,34 @@ class AstralPowerDetails extends Analyzer {
     };
   }
 
+  static dependencies = {
+    astralPowerTracker: AstralPowerTracker,
+  };
+
   suggestions(when) {
     when(this.suggestionThresholdsWasted)
       .addSuggestion((suggest, actual, recommended) => suggest(`You overcapped ${this.wasted} Astral Power. Always prioritize spending it over avoiding the overcap of any other ability.`)
-          .icon('ability_druid_cresentburn')
-          .actual(i18n._(t('druid.balance.suggestions.astralPower.overcapped')`${formatPercentage(actual)}% overcapped Astral Power`))
-          .recommended(`${formatPercentage(recommended)}% is recommended`));
+        .icon('ability_druid_cresentburn')
+        .actual(t({
+      id: "druid.balance.suggestions.astralPower.overcapped",
+      message: `${formatPercentage(actual)}% overcapped Astral Power`
+    }))
+        .recommended(`${formatPercentage(recommended)}% is recommended`));
   }
 
   statistic() {
     return (
-      <StatisticBox
+      <Statistic
         position={STATISTIC_ORDER.CORE(1)}
-        icon={<Icon icon="ability_druid_cresentburn" />}
-        value={`${formatPercentage(this.wastedPercent)} %`}
-        label="Overcapped Astral Power"
+        size="small"
         tooltip={`${this.wasted} out of ${this.total} Astral Power wasted.`}
-      />
+      >
+        <BoringResourceValue
+          resource={RESOURCE_TYPES.ASTRAL_POWER}
+          value={`${formatPercentage(this.wastedPercent)} %`}
+          label="Overcapped Astral Power"
+        />
+      </Statistic>
     );
   }
 
@@ -93,7 +102,7 @@ class AstralPowerDetails extends Analyzer {
         </Panel>
       ),
     };
- }
+  }
 
 }
 

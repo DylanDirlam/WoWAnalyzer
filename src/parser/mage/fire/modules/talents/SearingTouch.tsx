@@ -9,10 +9,10 @@ import Analyzer, { SELECTED_PLAYER, Options } from 'parser/core/Analyzer';
 import { When, ThresholdStyle } from 'parser/core/ParseResults';
 import Events, { CastEvent, DamageEvent, RemoveBuffEvent } from 'parser/core/Events';
 import AbilityTracker from 'parser/shared/modules/AbilityTracker';
-import { i18n } from '@lingui/core';
-import { t } from '@lingui/macro';
+import { SEARING_TOUCH_THRESHOLD, COMBUSTION_END_BUFFER } from 'parser/mage/shared/constants';
+import { Trans } from '@lingui/macro';
 
-import { SEARING_TOUCH_THRESHOLD, SEARING_TOUCH_DAMAGE_MODIFIER, COMBUSTION_BUFFER } from '../../constants';
+export const DAMAGE_MODIFIER = 1.50;
 
 const debug = false;
 
@@ -54,14 +54,14 @@ class SearingTouch extends Analyzer {
       this.healthPercent < SEARING_TOUCH_THRESHOLD ? this.totalExecuteCasts += 1 : this.totalNonExecuteCasts += 1;
     }
 
-    if (spellId === SPELLS.SCORCH.id && this.healthPercent > SEARING_TOUCH_THRESHOLD && !this.selectedCombatant.hasBuff(SPELLS.COMBUSTION.id) && event.timestamp > this.combustionEnded + COMBUSTION_BUFFER) {
+    if (spellId === SPELLS.SCORCH.id && this.healthPercent > SEARING_TOUCH_THRESHOLD && !this.selectedCombatant.hasBuff(SPELLS.COMBUSTION.id) && event.timestamp > this.combustionEnded + COMBUSTION_END_BUFFER) {
       this.nonExecuteScorchCasts += 1;
     } else if (spellId === SPELLS.FIREBALL.id && this.healthPercent < SEARING_TOUCH_THRESHOLD) {
       this.fireballExecuteCasts += 1;
       if (this.lastCastEvent) {
         this.lastCastEvent.meta = this.lastCastEvent.meta || {};
         this.lastCastEvent.meta.isInefficientCast = true;
-        this.lastCastEvent.meta.inefficientCastReason = `This Fireball was cast while the target was under ${formatPercentage(SEARING_TOUCH_THRESHOLD)}% health. While talented into Searing Touch, ensure that you are casting Scorch instead of Fireball while the target is under 30% health since Scorch does ${formatPercentage(SEARING_TOUCH_DAMAGE_MODIFIER)}% additional damage.`;
+        this.lastCastEvent.meta.inefficientCastReason = `This Fireball was cast while the target was under ${formatPercentage(SEARING_TOUCH_THRESHOLD)}% health. While talented into Searing Touch, ensure that you are casting Scorch instead of Fireball while the target is under 30% health since Scorch does ${formatPercentage(DAMAGE_MODIFIER)}% additional damage.`;
         debug && this.log("Cast Fireball under 30% Health");
       }
     }
@@ -103,12 +103,12 @@ class SearingTouch extends Analyzer {
 		when(this.executeSuggestionThreshold)
 			.addSuggestion((suggest, actual, recommended) => suggest(<>You cast <SpellLink id={SPELLS.FIREBALL.id} /> instead of <SpellLink id={SPELLS.SCORCH.id} /> while the target was under 30% health {this.fireballExecuteCasts} times. When using <SpellLink id={SPELLS.SEARING_TOUCH_TALENT.id} /> always use Scorch instead of Fireball when the target is under 30% health since Scorch does 150% damage and is guaranteed to crit.</>)
 					.icon(SPELLS.SEARING_TOUCH_TALENT.icon)
-					.actual(i18n._(t('mage.fire.suggestions.searingTouch.executeCasts')`${formatPercentage(this.executeUtil)}% Utilization`))
+					.actual(<Trans id="mage.fire.suggestions.searingTouch.executeCasts">{formatPercentage(this.executeUtil)}% Utilization</Trans>)
 					.recommended(`${formatPercentage(recommended)} is recommended`));
     when(this.nonExecuteSuggestionThreshold)
 			.addSuggestion((suggest, actual, recommended) => suggest(<>You cast <SpellLink id={SPELLS.SCORCH.id} /> while the target was over 30% health {this.nonExecuteScorchCasts} times. While this is acceptable when you need to move, you should aim to minimize this by limiting your movement and using spells like <SpellLink id={SPELLS.BLINK.id} /> (or <SpellLink id={SPELLS.SHIMMER_TALENT.id} />) when possible or by using your instant abilities and procs.</>)
 					.icon(SPELLS.SEARING_TOUCH_TALENT.icon)
-					.actual(i18n._(t('mage.fire.suggestions.searingTouch.nonExecuteScorchCasts')`${formatPercentage(this.nonExecuteUtil)}% Utilization`))
+					.actual(<Trans id="mage.fire.suggestions.searingTouch.nonExecuteScorchCasts">{formatPercentage(this.nonExecuteUtil)}% Utilization</Trans>)
 					.recommended(`${formatPercentage(recommended)} is recommended`));
   }
 

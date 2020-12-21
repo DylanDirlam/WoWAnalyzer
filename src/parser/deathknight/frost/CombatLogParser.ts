@@ -1,4 +1,5 @@
 import CoreCombatLogParser from 'parser/core/CombatLogParser';
+import ArcaneTorrent from 'parser/shared/modules/racials/bloodelf/ArcaneTorrent';
 
 import CooldownThroughputTracker from './modules/features/CooldownThroughputTracker';
 import Abilities from './modules/Abilities';
@@ -10,7 +11,8 @@ import FrostFeverUptime from './modules/features/FrostFeverUptime';
 import RimeEfficiency from './modules/features/RimeEfficiency';
 import HardHowlingBlastCasts from './modules/features/HardHowlingBlastCasts';
 import KillingMachineEfficiency from './modules/features/KillingMachine';
-import BreathOfSindragosa from './modules/features/BreathOfSindragosa';
+import BreathOfSindragosa from './modules/talents/BreathOfSindragosa';
+import HypothermicPresence from './modules/talents/HypothermicPresence';
 
 import RuneTracker from './modules/features/RuneTracker';
 import RuneDetails from '../shared/RuneDetails';
@@ -19,6 +21,16 @@ import RunicPowerTracker from './modules/runicpower/RunicPowerTracker';
 
 import GatheringStorm from './modules/talents/GatheringStorm';
 import Frostscythe from './modules/talents/Frostscythe';
+
+// Runes
+import RuneOfTheFallenCrusader from '../shared/runeforges/RuneOfTheFallenCrusader';
+import RuneOfHysteria from '../shared/runeforges/RuneOfHysteria';
+
+// Legendaries
+import Superstrain from '../shared/items/Superstrain';
+
+// Covenants
+import SwarmingMist from '../shared/covenants/SwarmingMist';
 
 class CombatLogParser extends CoreCombatLogParser {
   static specModules = {
@@ -35,6 +47,7 @@ class CombatLogParser extends CoreCombatLogParser {
     rimeEfficiency: RimeEfficiency,
     killingMachineEfficiency: KillingMachineEfficiency,
     breathofSindragoa: BreathOfSindragosa,
+    hypothermicPresence: HypothermicPresence,
 
     //resource tracker
     runeTracker: RuneTracker,
@@ -45,6 +58,18 @@ class CombatLogParser extends CoreCombatLogParser {
     //talents
     gatheringStorm: GatheringStorm,
     frostscythe: Frostscythe,
+
+    // Runes
+    runeOfTheFallenCrusader: RuneOfTheFallenCrusader,
+    runeOfHysteria: RuneOfHysteria,
+
+    // Legendaries
+    superStrain: Superstrain,
+
+    // Covenants
+    swarmingMist: SwarmingMist,
+
+    arcaneTorrent: [ArcaneTorrent, { castEfficiency: 0.5 }] as const,
   };
 }
 

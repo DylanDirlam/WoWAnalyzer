@@ -9,7 +9,7 @@ import CASTS_THAT_ARENT_CASTS from 'parser/core/CASTS_THAT_ARENT_CASTS';
 import EventHistory from 'parser/shared/modules/EventHistory';
 import Events, { AnyEvent, AbsorbedEvent, ApplyBuffEvent, ApplyDebuffEvent, CastEvent, DamageEvent, HealEvent, RemoveBuffEvent, RemoveDebuffEvent, SummonEvent, DeathEvent } from 'parser/core/Events';
 import EventFilter, { SELECTED_PLAYER_PET } from 'parser/core/EventFilter';
-import { Trans } from '@lingui/macro';
+import { t, Trans } from '@lingui/macro';
 
 const debug = false;
 
@@ -258,7 +258,10 @@ class CooldownThroughputTracker extends Analyzer {
 
   tab() {
     return {
-      title: 'Cooldowns',
+    title: t({
+      id: "shared.cooldownThroughputTracker.tab",
+      message: `Cooldowns`
+    }),
       icon: CooldownIcon,
       url: 'cooldowns',
       render: () => (

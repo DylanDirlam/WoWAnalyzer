@@ -15,7 +15,6 @@ import Combatants from 'parser/shared/modules/Combatants';
 import StatisticBox, { STATISTIC_ORDER } from 'interface/others/StatisticBox';
 import { When } from 'parser/core/ParseResults';
 
-import { i18n } from '@lingui/core';
 import { t } from '@lingui/macro';
 import { Trans } from '@lingui/macro';
 
@@ -104,11 +103,17 @@ class ChainHeal extends Analyzer {
       return;
     }
     when(suggestedThreshold.actual).isLessThan(suggestedThreshold.isLessThan.minor)
-      .addSuggestion((suggest, actual, recommended) => suggest(<Trans id="shaman.restoration.suggestions.chainHeal.label">Try to always cast <SpellLink id={SPELLS.CHAIN_HEAL.id} /> on groups of people, so that it heals all {this.maxTargets} potential targets.</Trans>)
-          .icon(SPELLS.CHAIN_HEAL.icon)
-          .actual(`${suggestedThreshold.actual.toFixed(2)} ${i18n._(t('shaman.restoration.suggestions.chainHeal.averageTargets')`average targets healed`)}`)
-          .recommended(`${suggestedThreshold.isLessThan.minor} ${i18n._(t('shaman.restoration.suggestions.chainHeal.averageTargets')`average targets healed`)}`)
-          .regular(suggestedThreshold.isLessThan.average).major(suggestedThreshold.isLessThan.major));
+      .addSuggestion((suggest, _actual, _recommended) => suggest(<Trans id="shaman.restoration.suggestions.aoeTargets.label">Try to always cast <SpellLink id={SPELLS.CHAIN_HEAL.id} /> on groups of people, so that it heals all {this.maxTargets} potential targets.</Trans>)
+        .icon(SPELLS.CHAIN_HEAL.icon)
+        .actual(`${suggestedThreshold.actual.toFixed(2)} ${t({
+          id: "shaman.restoration.suggestions.aoeTargets.averageTargets",
+          message: `average targets healed`
+        })}`)
+        .recommended(`${suggestedThreshold.isLessThan.minor} ${t({
+          id: "shaman.restoration.suggestions.aoeTargets.averageTargets",
+          message: `average targets healed`
+        })}`)
+        .regular(suggestedThreshold.isLessThan.average).major(suggestedThreshold.isLessThan.major));
   }
 
   get avgHits() {
@@ -157,7 +162,7 @@ class ChainHeal extends Analyzer {
             <div>
               <Trans id="shaman.restoration.chainHeal.averageTargets.title">Below are the casts that only hit the initial target. A large list indicates that target selection is an area for improvement.</Trans>
             </div>
-            <table className="table table-condensed" style={{ fontWeight: 'bold' }}>
+            <table className="table table-condensed">
               <thead>
                 <tr>
                   <th><Trans id="common.cast">Cast</Trans></th>

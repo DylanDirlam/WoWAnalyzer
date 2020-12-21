@@ -1,6 +1,4 @@
-import { SpellList, LegendarySpell } from "common/SPELLS/Spell";
-
-const legendaries: SpellList<LegendarySpell> = {
+const legendaries = {
   //region Brewmaster
   CHARRED_PASSIONS: {
     id: 338138,
@@ -74,8 +72,16 @@ const legendaries: SpellList<LegendarySpell> = {
     name: 'Ancient Teachings of the Monastery',
     icon: 'inv_jewelcrafting_jadeserpent',
   },
-
-
+  ANCIENT_TEACHINGS_OF_THE_MONASTERY_CRIT_HEAL:{
+    id: 347572,
+    name: 'Ancient Teachings of the Monastery',
+    icon: 'inv_jewelcrafting_jadeserpent',
+  },
+  ANCIENT_TEACHINGS_OF_THE_MONASTERY_BUFF:{
+    id: 347553,
+    name: 'Ancient Teachings of the Monastery',
+    icon: 'inv_misc_book_07',
+  },
   //endregion
 
   //region Windwalker
@@ -148,5 +154,5 @@ const legendaries: SpellList<LegendarySpell> = {
   },
 
   //endregion
-};
+} as const;
 export default legendaries;
