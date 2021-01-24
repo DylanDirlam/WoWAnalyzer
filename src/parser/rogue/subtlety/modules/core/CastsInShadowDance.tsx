@@ -1,10 +1,10 @@
 import React from 'react';
 import SPELLS from 'common/SPELLS';
-import SpellIcon from 'common/SpellIcon';
+import { SpellIcon } from 'interface';
 import { formatPercentage } from 'common/format';
-import STATISTIC_CATEGORY from 'interface/others/STATISTIC_CATEGORY';
-import Statistic from 'interface/statistics/Statistic';
-import BoringValueText from 'interface/statistics/components/BoringValueText';
+import STATISTIC_CATEGORY from 'parser/ui/STATISTIC_CATEGORY';
+import Statistic from 'parser/ui/Statistic';
+import BoringValueText from 'parser/ui/BoringValueText';
 import { Options } from 'parser/core/Analyzer';
 import Spell from 'common/SPELLS/Spell';
 import { When } from 'parser/core/ParseResults';
@@ -15,6 +15,9 @@ import CastsInStealthBase from './CastsInStealthBase';
 import DanceDamageTracker from './DanceDamageTracker';
 
 class CastsInShadowDance extends CastsInStealthBase {
+  BASE_MAX_CASTS: number = 8;
+  BONUS_SUBTERFUGE_CASTS: number = 1;
+
   static dependencies = {
     damageTracker: DamageTracker,
     danceDamageTracker: DanceDamageTracker,
@@ -26,7 +29,7 @@ class CastsInShadowDance extends CastsInStealthBase {
   constructor(options: Options & { danceDamageTracker: DanceDamageTracker }) {
     super(options);
 
-    this.maxCastsPerStealth = 5 + (this.selectedCombatant.hasTalent(SPELLS.SUBTERFUGE_TALENT.id) ? 1 : 0);
+    this.maxCastsPerStealth = this.BASE_MAX_CASTS + (this.selectedCombatant.hasTalent(SPELLS.SUBTERFUGE_TALENT.id) ? this.BONUS_SUBTERFUGE_CASTS : 0);
 
     this.stealthCondition = 'Shadow Dance';
 

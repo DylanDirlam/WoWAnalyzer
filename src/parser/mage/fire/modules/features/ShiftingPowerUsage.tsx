@@ -1,6 +1,6 @@
 import React from 'react';
 import SPELLS from 'common/SPELLS';
-import SpellLink from 'common/SpellLink';
+import { SpellLink } from 'interface';
 import Analyzer, { SELECTED_PLAYER, Options } from 'parser/core/Analyzer';
 import Events, { CastEvent } from 'parser/core/Events';
 import { When, ThresholdStyle } from 'parser/core/ParseResults';
@@ -33,7 +33,7 @@ class ShiftingPowerUsage extends Analyzer {
   }
 
   get percentUsage() {
-    return this.badUses / this.abilityTracker.getAbility(SPELLS.SHIFTING_POWER.id).casts;
+    return 1 - (this.badUses / this.abilityTracker.getAbility(SPELLS.SHIFTING_POWER.id).casts);
   }
 
   get shiftingPowerUsageThresholds() {
@@ -55,7 +55,7 @@ class ShiftingPowerUsage extends Analyzer {
           .recommended(`>${formatPercentage(recommended)}% is recommended`));
   }
 
-  
+
 }
 
 export default ShiftingPowerUsage;

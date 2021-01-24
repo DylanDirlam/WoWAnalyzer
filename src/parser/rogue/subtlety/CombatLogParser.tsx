@@ -2,6 +2,8 @@ import CoreCombatLogParser from 'parser/core/CombatLogParser';
 
 import ArcaneTorrent from 'parser/shared/modules/racials/bloodelf/ArcaneTorrent';
 
+import GeneratorFollowingVanish from 'parser/rogue/subtlety/modules/core/GeneratorFollowingVanish';
+
 import Abilities from './modules/Abilities';
 import AlwaysBeCasting from './modules/features/AlwaysBeCasting';
 import Checklist from './modules/features/checklist/Module';
@@ -28,7 +30,6 @@ import Energy from './modules/core/Energy';
 import SymbolsDamageTracker from './modules/core/SymbolsDamageTracker';
 import DanceDamageTracker from './modules/core/DanceDamageTracker';
 import DarkShadowContribution from './modules/talents/DarkShadow/DarkShadowContribution';
-import FindWeakness from './modules/spells/FindWeakness';
 import BlackPowder from './modules/core/BlackPowder';
 
 import SerratedBoneSpike from '../shared/shadowlands/covenants/necrolord/SerratedBoneSpike';
@@ -41,6 +42,7 @@ import TheRotten from './modules/spells/shadowlands/legendaries/TheRotten';
 import DeeperDaggers from '../shared/shadowlands/conduits/DeeperDaggers';
 import EssenceOfBloodfang from '../shared/shadowlands/legendaries/EssenceOfBloodfang';
 import InvigoratingShadowdust from '../shared/shadowlands/legendaries/InvigoratingShadowdust';
+import VanishFindWeakness from './modules/features/VanishFindWeakness';
 
 class CombatLogParser extends CoreCombatLogParser {
   static specModules = {
@@ -71,13 +73,14 @@ class CombatLogParser extends CoreCombatLogParser {
 
     //Core
     danceCooldownReduction: DeepeningShadows,
-    findWeakness: FindWeakness,
 
     //Casts
     symbolsOfDeathUptime: SymbolsOfDeathUptime,
     shadowBladesUptime: ShadowBladesUptime,
     castsInShadowDance: CastsInShadowDance,
     castsInStealth: CastsInStealth,
+    vanishFindWeakness: VanishFindWeakness,
+    generatorFollowingVanish: GeneratorFollowingVanish,
 
     //Talents
     darkShadowContribution: DarkShadowContribution,

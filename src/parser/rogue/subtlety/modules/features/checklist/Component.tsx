@@ -2,8 +2,8 @@ import React from 'react';
 
 
 import SPELLS from 'common/SPELLS';
-import SpellLink from 'common/SpellLink';
-import { TooltipElement } from 'common/Tooltip';
+import { SpellLink } from 'interface';
+import { TooltipElement } from 'interface';
 import Checklist from 'parser/shared/modules/features/Checklist';
 import Rule from 'parser/shared/modules/features/Checklist/Rule';
 import Requirement from 'parser/shared/modules/features/Checklist/Requirement';
@@ -32,7 +32,6 @@ const SubRogueChecklist = ({ combatant, castEfficiency, thresholds }: ChecklistP
       >
         <AbilityRequirement spell={SPELLS.SHADOW_DANCE.id} />
         <AbilityRequirement spell={SPELLS.SYMBOLS_OF_DEATH.id} />
-        <AbilityRequirement spell={SPELLS.VANISH.id} />
         <AbilityRequirement spell={SPELLS.SHADOW_BLADES.id} />
         {combatant.hasTalent(SPELLS.SECRET_TECHNIQUE_TALENT.id) && (
           <AbilityRequirement spell={SPELLS.SECRET_TECHNIQUE_TALENT.id} />

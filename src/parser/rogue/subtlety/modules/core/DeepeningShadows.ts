@@ -1,4 +1,4 @@
-import SPELLS from 'common/SPELLS/index';
+import SPELLS from 'common/SPELLS';
 import RESOURCE_TYPES from 'game/RESOURCE_TYPES';
 import SpellUsable from 'parser/shared/modules/SpellUsable';
 import Analyzer, { Options, SELECTED_PLAYER } from 'parser/core/Analyzer';
@@ -9,6 +9,9 @@ import Events, { SpendResourceEvent } from 'parser/core/Events';
  * Your finishing moves reduce the remaining cooldown on Shadow Dance by 1.5 sec per combo point spent.
  */
 class DeepeningShadows extends Analyzer {
+  BASE_CDR: number = 1000;
+  ENVELOPING_SHADOWS_EXTRA_CDR: number = 500;
+
   static dependencies = {
     spellUsable: SpellUsable,
   };
@@ -17,7 +20,7 @@ class DeepeningShadows extends Analyzer {
 
   constructor(options: Options) {
     super(options);
-    this.cdrPerComboPoint = 1500 + (this.selectedCombatant.hasTalent(SPELLS.ENVELOPING_SHADOWS_TALENT.id) ? 1000 : 0);
+    this.cdrPerComboPoint = this.BASE_CDR + (this.selectedCombatant.hasTalent(SPELLS.ENVELOPING_SHADOWS_TALENT.id) ? this.ENVELOPING_SHADOWS_EXTRA_CDR : 0);
     this.addEventListener(Events.SpendResource.by(SELECTED_PLAYER), this.onSpendResource);
   }
 
