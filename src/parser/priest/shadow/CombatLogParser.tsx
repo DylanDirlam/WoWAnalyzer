@@ -2,6 +2,7 @@ import MainCombatLogParser from 'parser/core/CombatLogParser';
 
 // core
 import AbilityTracker from './modules/core/AbilityTracker';
+import CancelledCasts from './modules/features/CancelledCasts';
 import CooldownThroughputTracker from './modules/features/CooldownThroughputTracker';
 import Channeling from './modules/core/Channeling';
 import GlobalCooldown from './modules/core/GlobalCooldown';
@@ -46,6 +47,7 @@ class CombatLogParser extends MainCombatLogParser {
   static specModules = {
     // core
     abilityTracker: AbilityTracker,
+    cancelledCasts: CancelledCasts,
     cooldownThroughputTracker: CooldownThroughputTracker,
     channeling: Channeling,
     globalCooldown: GlobalCooldown,
