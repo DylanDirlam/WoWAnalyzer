@@ -4331,6 +4331,82 @@ exports[`Shadow Priest integration test: example log FortressOfTheMind matches t
 </div>
 `;
 
+exports[`Shadow Priest integration test: example log HungeringVoid matches the statistic snapshot 1`] = `
+<div
+  className="col-lg-3 col-md-4 col-sm-6 col-xs-12"
+>
+  <div
+    category="TALENTS"
+    className="panel statistic flexible "
+    style={
+      Object {
+        "zIndex": 1,
+      }
+    }
+  >
+    <div
+      className="panel-body"
+    >
+      <div
+        className="pad boring-text "
+      >
+        <label>
+          <a
+            className="spell-link-text"
+            href="http://wowhead.com/spell=345218"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <img
+              alt="Hungering Void"
+              className="icon game "
+              src="//render-us.worldofwarcraft.com/icons/56/ability_ironmaidens_convulsiveshadows.jpg"
+            />
+          </a>
+           
+          <a
+            className="spell-link-text"
+            href="http://wowhead.com/spell=345218"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Hungering Void
+          </a>
+        </label>
+        <div
+          className="value"
+        >
+          8
+          s 
+          <small>
+            Average Voidform Extension
+          </small>
+        </div>
+      </div>
+      <div
+        className="row"
+      >
+        <div
+          className="col-xs-12"
+        />
+      </div>
+      <div
+        className="statistic-expansion-button-holster"
+      >
+        <button
+          className="btn btn-primary"
+          onClick={[Function]}
+        >
+          <span
+            className="glyphicon glyphicon-chevron-down"
+          />
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`Shadow Priest integration test: example log ShadowCrash matches the statistic snapshot 1`] = `
 <div
   className="col-lg-3 col-md-4 col-sm-6 col-xs-12"
@@ -4978,6 +5054,58 @@ Array [
     </React.Fragment>,
   },
 ]
+`;
+
+exports[`Shadow Priest integration test: example log VoidBolt matches the statistic snapshot 1`] = `
+<div
+  className="col-lg-3 col-md-4 col-sm-6 col-xs-12"
+>
+  <div
+    className="panel statistic flexible "
+    position={3}
+  >
+    <div
+      className="panel-body"
+    >
+      <div
+        className="pad boring-text "
+      >
+        <label>
+          <a
+            className="spell-link-text"
+            href="http://wowhead.com/spell=205448"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <img
+              alt="Void Bolt"
+              className="icon game "
+              src="//render-us.worldofwarcraft.com/icons/56/ability_ironmaidens_convulsiveshadows.jpg"
+            />
+          </a>
+           
+          <a
+            className="spell-link-text"
+            href="http://wowhead.com/spell=205448"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Void Bolt
+          </a>
+        </label>
+        <div
+          className="value"
+        >
+          2245.39
+           
+          <small>
+            Max Casts
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 `;
 
 exports[`Shadow Priest integration test: example log VoidTorrent matches the statistic snapshot 1`] = `
