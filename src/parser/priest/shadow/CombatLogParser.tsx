@@ -14,6 +14,7 @@ import SkippableCasts from './modules/features/SkippableCasts';
 import DarkThoughts from './modules/features/DarkThoughts';
 // spells:
 import Shadowfiend from './modules/spells/Shadowfiend';
+import VoidBolt from './modules/spells/VoidBolt';
 import VampiricTouch from './modules/spells/VampiricTouch';
 import ShadowWordPain from './modules/spells/ShadowWordPain';
 import DevouringPlague from './modules/spells/DevouringPlague';
@@ -57,6 +58,7 @@ class CombatLogParser extends MainCombatLogParser {
 
     // spells:
     shadowfiend: Shadowfiend,
+    voidBolt: VoidBolt,
     vampiricTouch: VampiricTouch,
     shadowWordPain: ShadowWordPain,
     devouringPlague: DevouringPlague,

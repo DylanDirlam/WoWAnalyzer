@@ -5169,6 +5169,58 @@ Array [
 ]
 `;
 
+exports[`Shadow Priest integration test: example log VoidBolt matches the statistic snapshot 1`] = `
+<div
+  className="col-lg-3 col-md-4 col-sm-6 col-xs-12"
+>
+  <div
+    className="panel statistic flexible "
+    position={3}
+  >
+    <div
+      className="panel-body"
+    >
+      <div
+        className="pad boring-text "
+      >
+        <label>
+          <a
+            className="spell-link-text"
+            href="http://wowhead.com/spell=205448"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <img
+              alt="Void Bolt"
+              className="icon game "
+              src="//render-us.worldofwarcraft.com/icons/56/ability_ironmaidens_convulsiveshadows.jpg"
+            />
+          </a>
+           
+          <a
+            className="spell-link-text"
+            href="http://wowhead.com/spell=205448"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Void Bolt
+          </a>
+        </label>
+        <div
+          className="value"
+        >
+          2245.39
+           
+          <small>
+            Max Casts
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`Shadow Priest integration test: example log VoidTorrent matches the statistic snapshot 1`] = `
 <div
   className="col-lg-3 col-md-4 col-sm-6 col-xs-12"

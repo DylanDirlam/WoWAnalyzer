@@ -1,7 +1,6 @@
 import SPELLS from 'common/SPELLS';
 
 import CoreAbilities from 'parser/core/modules/Abilities';
-import calculateMaxCasts from 'parser/core/calculateMaxCasts';
 import COVENANTS from 'game/shadowlands/COVENANTS';
 
 class Abilities extends CoreAbilities {
@@ -9,26 +8,13 @@ class Abilities extends CoreAbilities {
     const combatant = this.selectedCombatant;
     return [
       {
-        spell: SPELLS.VOID_BOLT,
-        category: Abilities.SPELL_CATEGORIES.ROTATIONAL,
-        cooldown: (haste: number) => 4.5 / (1 + haste),
-        gcd: {
-          base: 1500,
-        },
-        castEfficiency: {
-          suggestion: true,
-          recommendedEfficiency: 0.85,
-          maxCasts: (cooldown: number) => calculateMaxCasts(cooldown, combatant.getBuffUptime(SPELLS.VOIDFORM_BUFF.id)),
-        },
-      },
-      {
         spell: SPELLS.MIND_BLAST,
         category: Abilities.SPELL_CATEGORIES.ROTATIONAL,
         cooldown: (haste: number) => 7.5 / (1 + haste),
         gcd: {
           base: 1500,
         },
-        charges: combatant.hasBuff(SPELLS.VOIDFORM_BUFF.id) ? 2 : 1,
+        charges: (combatant.hasBuff(SPELLS.VOIDFORM_BUFF.id) ? 2 : 1) + (combatant.hasBuff(SPELLS.DARK_THOUGHT_BUFF.id) ? 1 : 0),
         castEfficiency: {
           suggestion: true,
           recommendedEfficiency: 0.85,
